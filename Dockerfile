@@ -3,7 +3,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 WORKDIR /app
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt && useradd -u 10061 -r -s /usr/sbin/nologin pwyw
-COPY app.py campaigns.py brandpack.py admin.py ./
+COPY app.py campaigns.py brandpack.py admin_api.py ./
 COPY static ./static
 USER 10061
 EXPOSE 8080
