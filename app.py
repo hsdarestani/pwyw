@@ -435,5 +435,7 @@ def demo():
 
 import campaigns
 campaigns.install(app, db, user_from, owned_brand, public_brand, throttle)
+import brandpack
+brandpack.install(app, db, user_from, owned_brand, public_brand, throttle, DATA)
 
 app.mount("/static",StaticFiles(directory=BASE/"static"),name="static")
