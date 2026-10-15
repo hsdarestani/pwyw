@@ -32,6 +32,7 @@ jobs:
           set -euo pipefail
           docker build -t pwyw-ci:test .
           docker volume create pwyw-ci-data >/dev/null
+          docker run --rm -u 0 -v pwyw-ci-data:/data --entrypoint chown pwyw-ci:test 10061:10061 /data
           docker run -d --rm --name pwyw-ci -v pwyw-ci-data:/data             -e DATA_DIR=/data -e COOKIE_SECURE=0 -e PUBLIC_BASE_URL=http://localhost:18080             -p 127.0.0.1:18080:8080 pwyw-ci:test >/dev/null
           trap 'docker rm -f pwyw-ci >/dev/null 2>&1 || true; docker volume rm pwyw-ci-data >/dev/null 2>&1 || true' EXIT
           for i in $(seq 1 30); do
