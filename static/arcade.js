@@ -47,11 +47,36 @@
       const r=canvas.getBoundingClientRect();
       return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height};
     };
-    on(canvas,"pointermove",e=>{const v=xy(e);s.input.x=v.x;s.input.y=v.y;if(s.state.move)s.state.move(v)});
-    on(canvas,"pointerdown",e=>{const v=xy(e);s.input.x=v.x;s.input.y=v.y;s.input.pressed=true;
+    // One coordinate system for iOS Safari, Android Chrome and mouse.
+    // Pointer Events prevent native swipe-to-scroll from stealing game gestures.
+    const begin=e=>{
+      if(e.cancelable)e.preventDefault();
+      const v=xy(e);
+      s.input.x=v.x;s.input.y=v.y;s.input.pressed=true;
+      s.input.startX=v.x;s.input.startY=v.y;
       try{canvas.setPointerCapture(e.pointerId)}catch{}
-      if(s.state.tap)s.state.tap(v);});
-    on(canvas,"pointerup",()=>s.input.pressed=false);
+      if(s.state.tap)s.state.tap(v);
+    };
+    on(canvas,"pointerdown",begin,{passive:false});
+    on(canvas,"pointermove",e=>{
+      if(!s.input.pressed)return;
+      if(e.cancelable)e.preventDefault();
+      const v=xy(e);s.input.x=v.x;s.input.y=v.y;
+      if(s.state.move)s.state.move(v);
+    },{passive:false});
+    const end=e=>{
+      if(!s.input.pressed)return;
+      const v=xy(e);
+      if(s.state.swipe)s.state.swipe({
+        dx:v.x-(s.input.startX||v.x),
+        dy:v.y-(s.input.startY||v.y),
+        x:v.x,y:v.y
+      });
+      s.input.pressed=false;
+      try{canvas.releasePointerCapture(e.pointerId)}catch{}
+    };
+    on(canvas,"pointerup",end,{passive:false});
+    on(canvas,"pointercancel",()=>{s.input.pressed=false});
     on(window,"keydown",e=>{if(!active||active!==s)return;
       if(["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"," "].includes(e.key))e.preventDefault();
       if(s.state.key)s.state.key(e.key);});
@@ -165,14 +190,17 @@
       const eat=()=>{do{food={x:random(cols),y:random(rows)}}while(body.some(v=>v.x===food.x&&v.y===food.y))};
       const change=(x,y)=>{if(x!==-dir.x||y!==-dir.y)next={x,y}};
       let x0=0,y0=0;
-      s.state.move=({x,y})=>{};
-      s.canvas.addEventListener("touchstart",e=>{x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});
+
       s.state.key=k=>({ArrowUp:()=>change(0,-1),ArrowDown:()=>change(0,1),ArrowLeft:()=>change(-1,0),ArrowRight:()=>change(1,0)})[k]?.();
-      // Pointer swipe is handled through pointerdown/move; mobile friendly.
+      // The unified pointer gesture uses board coordinates consistently.
       s.state.tap=({x,y})=>{x0=x;y0=y};
       s.state.move=({x,y})=>{if(!s.input.pressed)return;let dx=x-x0,dy=y-y0;
         if(Math.max(Math.abs(dx),Math.abs(dy))<30)return;
         Math.abs(dx)>Math.abs(dy)?change(dx>0?1:-1,0):change(0,dy>0?1:-1);x0=x;y0=y;};
+      s.state.swipe=({dx,dy})=>{
+        if(Math.max(Math.abs(dx),Math.abs(dy))>22)
+          Math.abs(dx)>Math.abs(dy)?change(dx>0?1:-1,0):change(0,dy>0?1:-1);
+      };
       const off=9,g=19;
       return {duration:54,update(dt){acc+=dt;if(acc<.115)return;acc=0;dir=next;
         const h={x:body[0].x+dir.x,y:body[0].y+dir.y};
