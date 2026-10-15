@@ -250,7 +250,12 @@
       btn.type="button";btn.className="touch-key";btn.textContent=label;
       btn.setAttribute("aria-label",label+" game control");
       let repeat=null;
-      const fire=()=>document.dispatchEvent(new KeyboardEvent("keydown",{key,bubbles:true}));
+      const fire=()=>{
+        // Dispatch directly to the game instance. Mobile browsers are allowed
+        // to ignore synthetic KeyboardEvent handlers on touch targets.
+        if(id==="merge")document.dispatchEvent(new KeyboardEvent("keydown",{key,bubbles:true}));
+        else if(window.PWYWArcade?.key)window.PWYWArcade.key(key);
+      };
       btn.addEventListener("pointerdown",e=>{
         e.preventDefault();
         btn.classList.add("pressed");
