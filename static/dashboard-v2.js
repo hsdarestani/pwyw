@@ -234,5 +234,18 @@ $('ai-suggest').onclick=async()=>{
    message('save-status',r.ai?'Suggestion ready. Review it and save the brand.':'AI is not configured. Your experience still works without it.');
  }catch(e){message('save-status',e.message,true)}finally{btn.disabled=false}
 };
+$('password-change').addEventListener('submit',async e=>{
+ e.preventDefault();
+ const btn=e.currentTarget.querySelector('button[type=submit]');
+ btn.disabled=true;message('password-status','Updating password...');
+ try{
+   const form=new FormData(e.currentTarget);
+   await api('/api/account/change-password','POST',{old_password:form.get('old_password'),new_password:form.get('new_password')});
+   e.currentTarget.reset();
+   message('password-status','Password updated. Previous sessions have been revoked. Sign in again.');
+   $('logout').click();
+ }catch(err){message('password-status',err.message,true)}
+ finally{btn.disabled=false}
+});
 objective('upsell');boot();
 })();
