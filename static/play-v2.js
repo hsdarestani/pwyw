@@ -256,16 +256,35 @@
         if(id==="merge")document.dispatchEvent(new KeyboardEvent("keydown",{key,bubbles:true}));
         else if(window.PWYWArcade?.key)window.PWYWArcade.key(key);
       };
-      btn.addEventListener("pointerdown",e=>{
-        e.preventDefault();
+      let lastPress=0;
+      const press=e=>{
+        if(e?.cancelable)e.preventDefault();
+        const now=performance.now();
+        if(now-lastPress<90)return; // pointerdown and touchstart can accompany the same physical touch
+        lastPress=now;
         btn.classList.add("pressed");
         fire();
-        if(["orbit","breaker"].includes(id))repeat=setInterval(fire,115);
+        if(["orbit","breaker"].includes(id)&&!repeat)repeat=setInterval(fire,115);
+      };
+      const end=()=>{
+        btn.classList.remove("pressed");
+        if(repeat)clearInterval(repeat);
+        repeat=null;
+      };
+      // Explicit Touch Events fallback for older WebKit and webview implementations.
+      btn.addEventListener("touchstart",press,{passive:false});
+      btn.addEventListener("touchend",end,{passive:true});
+      btn.addEventListener("touchcancel",end,{passive:true});
+      btn.addEventListener("pointerdown",e=>{
+        if(e.pointerType!=="touch")press(e);
       });
-      const end=()=>{btn.classList.remove("pressed");if(repeat)clearInterval(repeat);repeat=null};
       btn.addEventListener("pointerup",end);
       btn.addEventListener("pointercancel",end);
       btn.addEventListener("pointerleave",end);
+      btn.addEventListener("click",e=>{
+        if(performance.now()-lastPress>180)press(e);
+        end();
+      });
       controls.append(btn);
     }
   }
