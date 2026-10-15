@@ -4,6 +4,11 @@ on:
     branches: [main]
     paths:
       - 'app.py'
+      - 'admin_api.py'
+      - 'admin_bootstrap.py'
+      - 'campaigns.py'
+      - 'brandpack.py'
+      - 'Dockerfile'
       - 'static/**'
       - 'tests/**'
       - '.github/workflows/qa.yml'
