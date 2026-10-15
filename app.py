@@ -444,8 +444,6 @@ import campaigns
 campaigns.install(app, db, user_from, owned_brand, public_brand, throttle)
 import brandpack
 brandpack.install(app, db, user_from, owned_brand, public_brand, throttle, DATA)
-import admin
-admin.install(app, db, user_from, throttle, check_password, password_hash, BASE)
 import admin_api
 admin_api.install(app, db, user_from)
 
