@@ -77,6 +77,9 @@ def init_db():
           PRIMARY KEY (brand_id, day)
         );
         """)
+        columns=[row["name"] for row in c.execute("PRAGMA table_info(users)").fetchall()]
+        if "role" not in columns:
+            c.execute("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'merchant'")
         c.execute("DELETE FROM sessions WHERE expires_at < ?", (int(time.time()),))
         # Demo tenants are public read-only, not assigned to any sign-in.
         for slug, name, industry, theme, accent, tagline in [
@@ -123,7 +126,7 @@ def user_from(request: Request):
     if not token:
         raise HTTPException(401, "Please sign in")
     with db() as c:
-        row = c.execute("""SELECT u.id,u.email FROM sessions s
+        row = c.execute("""SELECT u.id,u.email,u.role FROM sessions s
             JOIN users u ON u.id=s.user_id WHERE s.token_hash=? AND s.expires_at>?""",
             (hashlib.sha256(token.encode()).hexdigest(),int(time.time()))).fetchone()
     if not row: raise HTTPException(401, "Session expired")
@@ -420,6 +423,10 @@ def health():
 def homepage():
     return FileResponse(BASE/"static"/"index.html")
 
+@app.get("/admin")
+def admin_page():
+    return FileResponse(BASE/"static"/"admin.html")
+
 @app.get("/dashboard")
 def dashboard():
     return FileResponse(BASE/"static"/"dashboard.html")
@@ -437,5 +444,7 @@ import campaigns
 campaigns.install(app, db, user_from, owned_brand, public_brand, throttle)
 import brandpack
 brandpack.install(app, db, user_from, owned_brand, public_brand, throttle, DATA)
+import admin_api
+admin_api.install(app, db, user_from)
 
 app.mount("/static",StaticFiles(directory=BASE/"static"),name="static")
