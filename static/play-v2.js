@@ -17,6 +17,25 @@
   const gameHints={memory:"MATCH / 1–2 MIN",merge:"THINK / 90 SEC",rush:"REFLEX / 30 SEC",snake:"CLASSIC / 54 SEC",breaker:"ARCADE / 65 SEC",hop:"FLY / 52 SEC",orbit:"CATCH / 45 SEC",bloom:"POP / 40 SEC",lane:"ACTION / 48 SEC",sequence:"RECALL / 58 SEC"};
   const goalNames={upsell:"Play to Upsell",return:"Play to Return",refer:"Play to Refer",learn:"Play to Learn"};
   let objective="upsell",campaigns={},campaign=null,refCode=new URLSearchParams(location.search).get("ref")||"",rewardCode="";
+  let brandArt={}; let brandedToken=null;
+  async function fetchBrandArt(){
+    try{brandArt=await request("/api/public/brands/"+encodeURIComponent(slug)+"/art");
+      const intro=document.querySelector(".campaign-intro");
+      if(brandArt.scene){
+        const dark=["noir","neon","chrome"].includes(brand?.theme);
+        const overlay=dark?"rgba(8,11,22,.75)":"rgba(248,241,222,.8)";
+        intro.style.backgroundImage="linear-gradient("+overlay+","+overlay+"),url('"+brandArt.scene+"')";
+        intro.style.backgroundSize="cover";intro.style.backgroundPosition="center";
+        intro.style.border="2px solid currentColor";intro.style.padding="20px";
+      }
+      if(brandArt.token){
+        brandedToken=new Image();brandedToken.src=brandArt.token;
+        brand.tokenUrl=brandArt.token;
+      }
+      if(brandArt.scene)brand.sceneUrl=brandArt.scene;
+    }catch{}
+  }
+
   let brand=null, game=null, score=0, seconds=0, timer=null, timeoutIds=[], running=false, sound=true, visitSent=false;
   const sid = (() => {
     let s=sessionStorage.getItem("pwyw_sid");
@@ -132,6 +151,13 @@
     if(campaign?.destination && /^https:\/\//.test(campaign.destination)){
       const link=$("merchant-link");link.href=campaign.destination;link.hidden=false;
     }
+  }
+  function brandedCard(card, symbol){
+    if(symbol==="BRAND_ITEM" && brandArt.token){
+      card.replaceChildren();const img=new Image();img.src=brandArt.token;img.alt="Branded matching object";
+      img.style.cssText="max-width:78%;max-height:78%;object-fit:contain";
+      card.append(img);
+    }else{card.textContent=symbol==="BRAND_ITEM"?"✳":symbol}
   }
   function setText(){
     $("score").textContent=String(score).padStart(3,"0");
@@ -262,7 +288,8 @@
   }
   /* Match pairs: 16 tiles. Every round is solvable; locking prevents rapid double selection. */
   function memory(){
-    const symbols=icons[brand.industry]||icons.other;
+    const symbols=[...(icons[brand.industry]||icons.other)];
+    if(brandArt.token)symbols[0]="BRAND_ITEM";
     const values=shuffle([...symbols,...symbols]);
     const board=$("game-board");
     const cards=[];
@@ -275,7 +302,7 @@
       card.setAttribute("aria-label","Hidden card "+(i+1));
       card.addEventListener("click",()=>{
         if(!running||locked||revealed.includes(i)||card.classList.contains("matched"))return;
-        card.classList.add("revealed");card.textContent=values[i];
+        card.classList.add("revealed");brandedCard(card,values[i]);
         card.setAttribute("aria-label","Card "+values[i]);
         tone(510,.06);
         revealed.push(i);
@@ -454,7 +481,7 @@
   buildGamePicks();
   window.addEventListener("pagehide",cleanup);
   request("/api/public/brands/"+encodeURIComponent(slug)).then(async b=>{
-    brandView(b);await loadCampaigns();
+    brandView(b);await fetchBrandArt();await loadCampaigns();
   }).catch(()=>{
     $("load-overlay").textContent="This game lounge is not available.";
     $("load-overlay").style.fontSize="1rem";
