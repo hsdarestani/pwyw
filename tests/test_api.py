@@ -84,4 +84,25 @@ class PilotTests(unittest.TestCase):
     self.assertEqual(self.client.post("/api/public/brands/intent-lab/campaigns/learn/track",
       json={"sid":"learnerunique001","event":"learn_answer","game":"sequence"}).status_code,200)
     owner.close();stranger.close()
+
+  def test_admin_roles_and_password_rotation(self):
+    c=TestClient(self.mod.app)
+    created=c.post("/api/register",json={"email":"operator@pwyw.test","password":"SafeInitialOperator12345"})
+    self.assertEqual(created.status_code,200)
+    self.assertEqual(c.get("/api/admin/overview").status_code,403)
+    with self.mod.db() as db:
+      db.execute("UPDATE users SET role='admin' WHERE email=?",("operator@pwyw.test",))
+    overview=c.get("/api/admin/overview")
+    self.assertEqual(overview.status_code,200)
+    self.assertIn("brands",overview.json())
+    self.assertEqual(c.get("/api/admin/users").status_code,200)
+    self.assertEqual(c.get("/api/admin/brands").status_code,200)
+    changed=c.post("/api/account/change-password",json={"old_password":"SafeInitialOperator12345",
+      "new_password":"NewUniquePassword123456789"})
+    self.assertEqual(changed.status_code,200)
+    self.assertEqual(c.get("/api/admin/overview").status_code,401)
+    self.assertEqual(c.post("/api/login",json={"email":"operator@pwyw.test","password":"SafeInitialOperator12345"}).status_code,401)
+    self.assertEqual(c.post("/api/login",json={"email":"operator@pwyw.test","password":"NewUniquePassword123456789"}).status_code,200)
+    self.assertEqual(c.get("/api/admin/overview").status_code,200)
+    c.close()
 if __name__=="__main__": unittest.main()
