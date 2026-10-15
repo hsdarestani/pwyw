@@ -228,13 +228,46 @@
   function showHome(){
     cleanup();game=null;score=0;
     $("game-home").hidden=false;$("game-active").hidden=true;$("finish-modal").hidden=true;
+    $("touch-controls").replaceChildren();$("touch-controls").hidden=true;
     $("back-home").style.visibility="hidden";
     window.scrollTo({top:0,behavior:"instant"});
+  }
+  function mobileControls(id){
+    const controls=$("touch-controls");controls.replaceChildren();
+    const options={
+      snake:[["↑","ArrowUp"],["←","ArrowLeft"],["↓","ArrowDown"],["→","ArrowRight"]],
+      merge:[["↑","ArrowUp"],["←","ArrowLeft"],["↓","ArrowDown"],["→","ArrowRight"]],
+      orbit:[["← MOVE LEFT","ArrowLeft"],["MOVE RIGHT →","ArrowRight"]],
+      breaker:[["← LEFT","ArrowLeft"],["RIGHT →","ArrowRight"]],
+      lane:[["← LANE","ArrowLeft"],["LANE →","ArrowRight"]],
+      hop:[["TAP TO FLY"," "]],
+      sequence:[["1","1"],["2","2"],["3","3"],["4","4"]]
+    };
+    const set=options[id]||[];
+    controls.hidden=!set.length;
+    for(const [label,key] of set){
+      const btn=document.createElement("button");
+      btn.type="button";btn.className="touch-key";btn.textContent=label;
+      btn.setAttribute("aria-label",label+" game control");
+      let repeat=null;
+      const fire=()=>document.dispatchEvent(new KeyboardEvent("keydown",{key,bubbles:true}));
+      btn.addEventListener("pointerdown",e=>{
+        e.preventDefault();
+        btn.classList.add("pressed");
+        fire();
+        if(["orbit","breaker"].includes(id))repeat=setInterval(fire,115);
+      });
+      const end=()=>{btn.classList.remove("pressed");if(repeat)clearInterval(repeat);repeat=null};
+      btn.addEventListener("pointerup",end);
+      btn.addEventListener("pointercancel",end);
+      btn.addEventListener("pointerleave",end);
+      controls.append(btn);
+    }
   }
   function startGame(id){
     cleanup();
     if(!gameLabels[id])return;
-    game=id;score=0;seconds=0;running=true;setText();
+    game=id;score=0;seconds=0;running=true;setText();mobileControls(id);
     $("game-home").hidden=true;$("game-active").hidden=false;$("finish-modal").hidden=true;
     $("back-home").style.visibility="visible";
     $("active-title").textContent=gameLabels[id];
