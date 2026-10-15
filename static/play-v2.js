@@ -134,8 +134,39 @@
     $("merchant-link").hidden=true;$("referral-share").hidden=true;
     $("reward-note").textContent="Codes must be verified by the business. No prize is awarded for a game score.";
   }
+  async function renderQuiz(){
+    const slot=$("quiz-slot");slot.replaceChildren();slot.hidden=true;
+    if(objective!=="learn"||!campaign)return;
+    try{
+      const data=await request("/api/public/brands/"+encodeURIComponent(slug)+"/campaigns/learn");
+      if(!data.quiz)return;
+      slot.hidden=false;
+      const heading=document.createElement("h4");heading.textContent=data.quiz.question;
+      slot.append(heading);
+      const note=document.createElement("p");note.textContent="Choose the best answer. The result helps you understand the service, not win a prize.";
+      slot.append(note);
+      data.quiz.options.forEach((answer,i)=>{
+        const btn=document.createElement("button");btn.type="button";btn.textContent=(i+1)+". "+answer;
+        btn.className="quiz-answer";
+        btn.addEventListener("click",async()=>{
+          slot.querySelectorAll("button").forEach(x=>x.disabled=true);
+          try{
+            const result=await request("/api/public/brands/"+encodeURIComponent(slug)+"/campaigns/learn/answer",{
+              method:"POST",body:JSON.stringify({sid,selected_index:i})});
+            const outcome=document.createElement("p");outcome.className="quiz-feedback";
+            outcome.textContent=result.correct?"Correct! You're prepared.":"Not quite. Ask the team for clarification before proceeding.";
+            slot.append(outcome);
+            $("reward-note").textContent="Knowledge check complete. A correct answer does not establish staff-time savings.";
+          }catch(e){slot.querySelectorAll("button").forEach(x=>x.disabled=false);$("reward-note").textContent="Quiz couldn't be recorded. Please try again."}
+        });
+        slot.append(btn);
+      });
+    }catch{}
+  }
   function renderReward(){
     resetReward();
+    $("quiz-slot").hidden=true;
+    if(objective==="learn"){ $("claim-reward").hidden=true;renderQuiz(); }
     $("reward-kicker").textContent="PLAY TO "+objective.toUpperCase()+" / YOUR NEXT MOVE";
     $("reward-title").textContent=campaign?.product_name||"Your next move.";
     $("reward-copy").textContent=campaign?.offer||"Ask the team about your next step.";
