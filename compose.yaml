@@ -1,0 +1,30 @@
+name: pwyw
+services:
+  web:
+    build: .
+    restart: unless-stopped
+    user: "10061:10061"
+    read_only: true
+    tmpfs:
+      - /tmp
+    volumes:
+      - ./data:/data
+    environment:
+      DATA_DIR: /data
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-https://pwyw.smarbiz.sbs}
+      COOKIE_SECURE: "1"
+      PWYW_OPENAI_API_KEY: ${PWYW_OPENAI_API_KEY:-}
+      PWYW_OPENAI_MODEL: ${PWYW_OPENAI_MODEL:-gpt-4o-mini}
+    mem_limit: 384m
+    cpus: 0.7
+    pids_limit: 80
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      publisher:
+        aliases:
+          - pwyw-web
+networks:
+  publisher:
+    external: true
+    name: ${PUBLISHER_NETWORK:?Publisher network required}
