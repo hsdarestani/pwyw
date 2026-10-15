@@ -399,6 +399,7 @@
   window.PWYWArcade={start,stop,modes:Object.keys(modes),palette:colors,
   key:(value)=>{
     if(!active||active.ended||!active.state.key)return false;
+    if(!active.started){active.started=true;active.last=performance.now();}
     active.keyboardEvents++;
     active.state.key(value);
     return true;
