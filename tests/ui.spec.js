@@ -41,7 +41,17 @@ const {chromium}=require('playwright');
       await page.waitForTimeout(120);
       if(!['merge'].includes(mode)){
         const input=await page.evaluate(()=>window.PWYWArcade?.debugState?.());
-        if(!input || input.keyboardEvents<1)throw Error(mode+' ignored on-screen control touch');
+        if(!input || input.keyboardEvents<1){
+          const info=await page.evaluate(()=>({
+            body:document.body.className,
+            active:window.PWYWArcade?.debugState?.(),
+            buttons:[...document.querySelectorAll('#touch-controls button')].map(x=>({name:x.textContent,display:getComputedStyle(x).display})),
+            board:document.querySelector('#game-board')?.innerText?.slice(0,100),
+            gameVisible:!document.querySelector('#game-active')?.hidden,
+            modalVisible:!document.querySelector('#finish-modal')?.hidden
+          }));
+          throw Error(mode+' ignored on-screen control touch: '+JSON.stringify(info));
+        }
       }
     }
     if(mode==='orbit')await page.screenshot({path:'/tmp/pwyw-orbit-mobile.png'});
