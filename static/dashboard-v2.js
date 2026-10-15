@@ -114,7 +114,8 @@ function clearLogo(){
 }
 function newBrand(){
  state.brand=null;state.campaigns={};$('brand-form').reset();$('brand-slug').disabled=false;
- $('brand-logo').value='';$('brand-accent').value='#d8ff3e';
+ $('brand-logo').value='';$('brand-scene').value='';$('brand-token').value='';$('brand-accent').value='#d8ff3e';
+ $('editor-preview').style.backgroundImage='';$('art-status').textContent='Upload a background scene and game object to make a world your own.';
  setTheme('atelier');clearLogo();
  $('open-play').hidden=true;$('results-section').hidden=true;$('campaign-section').hidden=true;$('redeem-section').hidden=true;
  $('workspace-subtitle').textContent='Not the game. The action you want your customers to take.';
@@ -126,7 +127,19 @@ async function selectBrand(b){
  $('brand-name').value=b.name;$('brand-industry').value=b.industry;
  $('brand-tagline').value=b.tagline;$('brand-accent').value=b.accent;
  $('brand-slug').value=b.slug;$('brand-slug').disabled=true;
- $('brand-logo').value='';setTheme(b.theme);clearLogo();
+ $('brand-logo').value='';$('brand-scene').value='';$('brand-token').value='';
+ setTheme(b.theme);clearLogo();
+ api('/api/public/brands/'+encodeURIComponent(b.slug)+'/art').then(art=>{
+   if(state.brand?.slug!==b.slug)return;
+   const phone=$('editor-preview');
+   if(art.scene){
+     const dark=['neon','chrome','noir'].includes(b.theme);
+     phone.style.backgroundImage=(dark?'linear-gradient(180deg,rgba(7,9,20,.45),rgba(7,9,20,.8)),':'linear-gradient(180deg,rgba(253,248,230,.48),rgba(253,248,230,.8)),')+'url("'+art.scene+'")';
+     phone.style.backgroundSize='cover';phone.style.backgroundPosition='center';
+   }else phone.style.backgroundImage='';
+   $('art-status').textContent='SCENE: '+(art.scene?'ACTIVE':'GENERATED')+' · OBJECT: '+(art.token?'ACTIVE':'GENERATED');
+ }).catch(()=>{});
+
  if(b.logo_path){
    const img=document.createElement('img');img.src='/brand-logo/'+encodeURIComponent(b.logo_path);
    img.alt='Brand logo';img.style.cssText='max-height:60px;max-width:115px;object-fit:contain';
@@ -150,6 +163,13 @@ $('brand-form').addEventListener('submit',async e=>{
    state.brand?'PUT':'POST',body);
    if($('brand-logo').files.length){const form=new FormData();form.append('file',$('brand-logo').files[0]);
      await api('/api/brands/'+encodeURIComponent(result.slug)+'/logo','POST',form)}
+   for(const slot of ['scene','token']){
+     const picker=$('brand-'+slot);
+     if(picker?.files.length){
+       const form=new FormData();form.append('file',picker.files[0]);
+       await api('/api/brands/'+encodeURIComponent(result.slug)+'/art/'+slot,'POST',form);
+     }
+   }
    state.brand=null;await fetchBrands(result.slug);message('save-status','Brand saved. Set up your first business objective below.');
  }catch(err){message('save-status',err.message,true)}finally{btn.disabled=false}
 });
