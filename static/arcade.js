@@ -397,6 +397,12 @@
     }
   };
   window.PWYWArcade={start,stop,modes:Object.keys(modes),palette:colors,
+  key:(value)=>{
+    if(!active||active.ended||!active.state.key)return false;
+    active.keyboardEvents++;
+    active.state.key(value);
+    return true;
+  },
   debugState:()=>active?{mode:active.mode,score:active.score,started:active.started,pointerEvents:active.inputEvents,
   keyboardEvents:active.keyboardEvents,position:{x:active.input.x,y:active.input.y},
   running:!active.ended,time:active.time}:null};
