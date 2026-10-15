@@ -124,7 +124,15 @@ def install(app, db, user_from, owned_brand, public_brand, throttle):
         brand=owned_brand(slug,user)
         with db() as con:
             rows=con.execute("SELECT * FROM campaigns WHERE brand_id=? ORDER BY id DESC",(brand["id"],)).fetchall()
-            return [dict(x) for x in rows]
+            result=[dict(x) for x in rows]
+            for row in result:
+                if row["objective"]=="learn":
+                    q=con.execute("SELECT * FROM campaign_quiz WHERE campaign_id=?",(row["id"],)).fetchone()
+                    if q:
+                        row["quiz_question"]=q["question"]
+                        row["quiz_options"]=__import__("json").loads(q["options"])
+                        row["quiz_correct_index"]=q["correct_index"]
+            return result
 
     @app.put("/api/brands/{slug}/campaigns/{objective}")
     def save_campaign(slug:str,objective:str,data:CampaignInput,request:Request):
