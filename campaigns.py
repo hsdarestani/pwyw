@@ -174,14 +174,14 @@ def install(app, db, user_from, owned_brand, public_brand, throttle):
     def public_campaigns(slug:str):
         public_brand(slug)
         with db() as con:
-            rows=con.execute("""SELECT objective,title,description,cta,offer,product_name,game
+            rows=con.execute("""SELECT objective,title,description,cta,offer,product_name,game,destination
                     FROM campaigns c JOIN brands b ON b.id=c.brand_id
                     WHERE b.slug=? AND is_active=1 ORDER BY c.id""",(slug,)).fetchall()
         if rows:return [dict(x) for x in rows]
         # Rich live demos only for system-seeded demo brands; no fake campaigns for real businesses.
         if slug in {"luna-cafe","volt-garage","little-forest","poppy-studio"}:
             return [{k:v for k,v in lookup_campaign(slug,o).items() if k in
-                ("objective","title","description","cta","offer","product_name","game")}
+                ("objective","title","description","cta","offer","product_name","game","destination")}
                 for o in OBJECTIVES]
         return []
 
