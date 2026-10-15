@@ -38,7 +38,7 @@
       input:{x:W/2,y:H/2,pressed:false},particles:[],items:[],state:{},stamp:performance.now(),last:performance.now()};
     active=s;
     for(const [field,url] of [["sceneImg",brand.sceneUrl],["tokenImg",brand.tokenUrl]]){
-      if(url && url.startsWith("/brand-art/")){
+      if(url && (url.startsWith("/brand-art/")||url.startsWith("/static/worlds/"))){
         const img=new Image();img.onload=()=>{};img.src=url;s[field]=img;
       }
     }
@@ -86,7 +86,7 @@
     c.fillStyle=bg;c.fillRect(0,0,W,H);
     if(s.sceneImg && s.sceneImg.complete && s.sceneImg.naturalWidth){
       const pic=s.sceneImg,ratio=Math.max(W/pic.width,H/pic.height);
-      c.save();c.globalAlpha=.2;c.drawImage(pic,(W-pic.width*ratio)/2,(H-pic.height*ratio)/2,pic.width*ratio,pic.height*ratio);c.restore();
+      c.save();c.globalAlpha=.38;c.drawImage(pic,(W-pic.width*ratio)/2,(H-pic.height*ratio)/2,pic.width*ratio,pic.height*ratio);c.restore();
     }
     c.save();c.globalAlpha=.13;c.strokeStyle=p[1];
     if(theme==="neon"||theme==="chrome"){c.lineWidth=1;
