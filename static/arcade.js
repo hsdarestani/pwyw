@@ -35,7 +35,7 @@
     const brand=host.brand||{};
     const palette=colors[brand.theme]||colors.atelier;
     const s={ctx,canvas,mode,brand,palette,host,raf:0,listeners:[],time:0,score:0,ended:false,
-      input:{x:W/2,y:H/2,pressed:false},inputEvents:0,keyboardEvents:0,particles:[],items:[],state:{},stamp:performance.now(),last:performance.now()};
+      input:{x:W/2,y:H/2,pressed:false},inputEvents:0,keyboardEvents:0,started:false,particles:[],items:[],state:{},stamp:performance.now(),last:performance.now()};
     active=s;
     for(const [field,url] of [["sceneImg",brand.sceneUrl],["tokenImg",brand.tokenUrl]]){
       if(url && (url.startsWith("/brand-art/")||url.startsWith("/static/worlds/"))){
@@ -52,6 +52,7 @@
     const begin=e=>{
       if(e.cancelable)e.preventDefault();
       const v=xy(e);
+      if(!s.started){s.started=true;s.last=performance.now();}
       s.input.x=v.x;s.input.y=v.y;s.input.pressed=true;s.inputEvents++;
       s.input.startX=v.x;s.input.startY=v.y;
       try{canvas.setPointerCapture(e.pointerId)}catch{}
@@ -79,7 +80,10 @@
     on(canvas,"pointercancel",()=>{s.input.pressed=false});
     on(window,"keydown",e=>{if(!active||active!==s)return;
       if(["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"," "].includes(e.key))e.preventDefault();
-      if(s.state.key){s.keyboardEvents++;s.state.key(e.key)}});
+      if(s.state.key){
+        if(!s.started){s.started=true;s.last=performance.now();}
+        s.keyboardEvents++;s.state.key(e.key);
+      }});
     s.addPoints=(n)=>{s.score=Math.max(0,s.score+n);host.onScore(Math.round(s.score))};
     s.finish=(reason)=>{if(s.ended||active!==s)return;s.ended=true;host.onFinish(reason||"Nicely played!")};
     s.emit=(x,y,n=12)=>{for(let i=0;i<n;i++)s.particles.push({x,y,vx:rand(-140,140),vy:rand(-150,100),
@@ -87,16 +91,27 @@
     s.state = {...s.state, ...(modes[mode] ? modes[mode](s) : modes.orbit(s))};
     function frame(now){
       if(active!==s)return;
-      const dt=clamp((now-s.last)/1000,0,.034);s.last=now;s.time+=dt;
+      const dt=clamp((now-s.last)/1000,0,.034);s.last=now;
+      if(s.started)s.time+=dt;
       backdrop(s,now/1000);
-      if(!s.ended){
+      if(!s.ended && s.started){
         s.state.update(dt);
         const max=s.state.duration||50;
         host.onSeconds(Math.floor(s.time),Math.max(0,Math.ceil(max-s.time)));
         if(s.time>=max)s.finish("Time's up. Beautiful run!");
       }
       s.state.draw(ctx);
-      drawParticles(s,dt);
+      drawParticles(s,s.started?dt:0);
+      if(!s.started&&!s.ended){
+        ctx.save();
+        ctx.fillStyle="rgba(9,13,25,.67)";
+        rect(ctx,40,157,W-80,128,23);ctx.fill();
+        ctx.fillStyle="#ffffff";ctx.textAlign="center";
+        ctx.font="800 27px system-ui";ctx.fillText("TAP TO START",W/2,213);
+        ctx.fillStyle="#dfdeff";ctx.font="600 13px system-ui";
+        ctx.fillText("Your time starts with your first move.",W/2,244);
+        ctx.restore();
+      }
       s.raf=requestAnimationFrame(frame);
     }
     s.raf=requestAnimationFrame(frame);
@@ -382,7 +397,7 @@
     }
   };
   window.PWYWArcade={start,stop,modes:Object.keys(modes),palette:colors,
-  debugState:()=>active?{mode:active.mode,score:active.score,pointerEvents:active.inputEvents,
+  debugState:()=>active?{mode:active.mode,score:active.score,started:active.started,pointerEvents:active.inputEvents,
   keyboardEvents:active.keyboardEvents,position:{x:active.input.x,y:active.input.y},
   running:!active.ended,time:active.time}:null};
 })();
