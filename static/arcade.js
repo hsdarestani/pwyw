@@ -88,7 +88,11 @@
     s.finish=(reason)=>{if(s.ended||active!==s)return;s.ended=true;host.onFinish(reason||"Nicely played!")};
     s.emit=(x,y,n=12)=>{for(let i=0;i<n;i++)s.particles.push({x,y,vx:rand(-140,140),vy:rand(-150,100),
       life:rand(.3,.9),max:1,size:rand(2,7),color:palette[2+random(3)]})};
-    s.state = {...s.state, ...(modes[mode] ? modes[mode](s) : modes.orbit(s))};
+    // Critical: evaluate mode BEFORE copying state. Each mode attaches live
+    // touch, swipe and key handlers to s.state while it is being constructed.
+    // Spreading s.state first loses every handler (all 7 Canvas games were inert).
+    const gameplay=modes[mode] ? modes[mode](s) : modes.orbit(s);
+    Object.assign(s.state,gameplay);
     function frame(now){
       if(active!==s)return;
       const dt=clamp((now-s.last)/1000,0,.034);s.last=now;
