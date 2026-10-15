@@ -54,7 +54,7 @@
     s.finish=(reason)=>{if(s.ended||active!==s)return;s.ended=true;host.onFinish(reason||"Nicely played!")};
     s.emit=(x,y,n=12)=>{for(let i=0;i<n;i++)s.particles.push({x,y,vx:rand(-140,140),vy:rand(-150,100),
       life:rand(.3,.9),max:1,size:rand(2,7),color:palette[2+random(3)]})};
-    s.state = modes[mode] ? modes[mode](s) : modes.orbit(s);
+    s.state = {...s.state, ...(modes[mode] ? modes[mode](s) : modes.orbit(s))};
     function frame(now){
       if(active!==s)return;
       const dt=clamp((now-s.last)/1000,0,.034);s.last=now;s.time+=dt;
