@@ -18,3 +18,17 @@
 
 /* Preserve semantic hidden state over layout display rules. */
 [hidden]{display:none!important}
+
+/* Commerce-ready brand assets: not just a palette change. */
+.brand-assets{padding:19px;border:2px dashed #c0b7a8;background:#f8f5ed;margin:16px 0 23px}
+.brand-assets label small{font:500 10px/1.5 var(--mono);color:#55555a;margin-top:2px}
+.brand-assets input[type=file]{padding:10px 9px;background:#fff;font-size:11px}
+.memory-tile img{width:80%;height:80%;object-fit:contain;filter:drop-shadow(0 4px 8px rgba(0,0,0,.15))}
+.quiz-slot{margin:16px 0;padding:13px;background:#fff2c6;border:2px solid #151520}
+.quiz-slot h4{font:800 14px/1.4 var(--head);letter-spacing:-.04em;margin:0 0 9px}
+.quiz-slot>p{font:500 11px/1.5 var(--mono);margin-bottom:12px}
+.quiz-answer{display:block;width:100%;background:#fff;border:1px solid #17171b;padding:12px;text-align:left;font:700 11px/1.4 var(--mono);margin:6px 0}
+.quiz-answer:hover:not(:disabled){background:#d8ff3e}
+.quiz-feedback{background:#14141b;color:#fff;padding:10px;font:600 11px/1.5 var(--mono);margin-top:12px}
+.leaderboard{font:600 11px/1.4 var(--mono);max-height:120px;overflow:auto;margin:12px 0}
+.leaderboard p{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #777;padding:7px 0}
