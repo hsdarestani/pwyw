@@ -111,7 +111,7 @@
     $("purpose-summary").textContent=campaign?.description||"This experience has not been published by the business yet.";
     $("game-heading").textContent=campaign?.title||"A LITTLE PLAY. A LOT MORE.";
     $("game-heading").style.overflowWrap="anywhere";
-    $("purpose-brief").style.borderLeftColor=brand?.accent||"currentColor";
+    document.querySelector(".purpose-brief").style.borderLeftColor=brand?.accent||"currentColor";
     const featured=campaign?.game||"orbit";
     const picks=[...document.querySelectorAll("[data-game]")];
     picks.forEach(el=>el.style.order=el.dataset.game===featured?"-1":"0");
