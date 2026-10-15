@@ -27,6 +27,22 @@ jobs:
           python -m pip install -q -r requirements.txt httpx==0.28.1
           npm install --no-save playwright@1.56.1
           npx playwright install --with-deps chromium
+      - name: Smoke test the actual production Docker image
+        run: |
+          set -euo pipefail
+          docker build -t pwyw-ci:test .
+          docker volume create pwyw-ci-data >/dev/null
+          docker run -d --rm --name pwyw-ci -v pwyw-ci-data:/data             -e DATA_DIR=/data -e COOKIE_SECURE=0 -e PUBLIC_BASE_URL=http://localhost:18080             -p 127.0.0.1:18080:8080 pwyw-ci:test >/dev/null
+          trap 'docker rm -f pwyw-ci >/dev/null 2>&1 || true; docker volume rm pwyw-ci-data >/dev/null 2>&1 || true' EXIT
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:18080/api/health; then
+              echo "Production Docker container responds to health check"
+              exit 0
+            fi
+            sleep 1
+          done
+          docker logs pwyw-ci --tail 90
+          exit 1
       - name: Validate API and browser gameplay
         env:
           DATA_DIR: /tmp/pwyw-e2e-data
@@ -37,3 +53,11 @@ jobs:
           uvicorn app:app --port 8080 > /tmp/pwyw-e2e.log 2>&1 &
           for i in $(seq 1 30); do curl -fsS http://127.0.0.1:8080/api/health && break; sleep 1; done
           node tests/ui.spec.js
+      - name: Save visual QA screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pwyw-browser-screenshots
+          path: /tmp/pwyw-*-mobile.png
+          if-no-files-found: ignore
+          retention-days: 7
