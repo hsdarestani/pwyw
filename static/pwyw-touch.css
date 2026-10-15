@@ -1,0 +1,25 @@
+
+/* A real handheld control surface, not tiny decorative buttons. */
+.touch-controls{display:flex;flex-wrap:wrap;justify-content:center;align-items:stretch;gap:9px;padding:5px 1px 13px;touch-action:manipulation}
+.touch-controls[hidden]{display:none!important}
+.touch-key{font:800 14px/1.2 ui-sans-serif,system-ui,sans-serif;letter-spacing:.025em;min-height:54px;min-width:59px;flex:1 1 auto;padding:13px 15px;border:2px solid var(--pfg);background:var(--pcard);color:var(--pfg);border-radius:13px;box-shadow:0 4px 0 var(--pshape);-webkit-tap-highlight-color:transparent;touch-action:none;user-select:none;-webkit-user-select:none;transition:transform .12s}
+.touch-key.pressed,.touch-key:active{background:var(--pshape);transform:translateY(3px);box-shadow:0 1px 0 var(--pshape)}
+.game-board.canvas-board{touch-action:none;overscroll-behavior:contain}
+.game-board canvas{touch-action:none;-webkit-user-select:none;user-select:none}
+.memory-tile,.rush-pad{touch-action:manipulation;-webkit-tap-highlight-color:transparent;min-height:55px}
+.player-v2{overscroll-behavior-x:none}
+.player-v2 .play-area,.player-v2 .game-active{min-width:0;width:100%}
+.player-v2 .game-board{max-width:100%}
+.play-lounge-title{word-break:normal}
+@media(max-width:390px){
+ .player-v2 .play-area{padding-left:12px;padding-right:12px}
+ .play-brand{font-size:12px}
+ .game-stats b{font-size:18px}
+ .game-topline{font-size:11px}
+ .game-topline button{padding:7px 8px}
+ .touch-controls{gap:7px}
+ .touch-key{padding:11px 8px;min-height:54px;min-width:52px}
+ .campaign-intro h1{font-size:clamp(31px,10vw,42px)}
+ .play-game-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(prefers-reduced-motion:reduce){.touch-key{transition:none}}
