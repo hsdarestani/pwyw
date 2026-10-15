@@ -21,23 +21,28 @@ const {chromium}=require('playwright');
       await page.locator('.memory-tile').nth(0).click();
     }else if(mode==='merge'){
       if(await page.locator('.merge-cell').count()!==16)throw Error('2048 board count wrong');
-      await page.keyboard.press('ArrowLeft');
+      await page.locator('#touch-controls button').first().tap();
     }else if(mode==='rush'){
       if(await page.locator('.rush-pad').count()!==9)throw Error('Quick tap count wrong');
       await page.locator('.rush-pad.active').click();
     }else{
       await page.locator('#game-board canvas').waitFor({state:'visible'});
-      await page.locator('#game-board canvas').click({position:{x:130,y:210}});
-      await page.keyboard.press('ArrowRight');
+      const area=await page.locator('#game-board canvas').boundingBox();
+      await page.touchscreen.tap(area.x+area.width*.48,area.y+area.height*.48);
+      const touch=await page.evaluate(()=>window.PWYWArcade?.debugState?.());
+      if(!touch||touch.mode!==mode||touch.pointerEvents<1)
+        throw Error('Mobile Canvas game failed to register actual touch: '+mode);
       await page.waitForTimeout(180);
     }
     if(['snake','merge','orbit','breaker','hop','lane','sequence'].includes(mode)){
       const touchKeys=page.locator('#touch-controls .touch-key');
       if(await touchKeys.count()<1)throw Error(mode+' is missing mobile controls');
-      await touchKeys.first().dispatchEvent('pointerdown',{pointerType:'touch',pointerId:37});
+      await touchKeys.first().tap();
       await page.waitForTimeout(120);
-      await touchKeys.first().dispatchEvent('pointerup',{pointerType:'touch',pointerId:37});
-      await page.waitForTimeout(120);
+      if(!['merge'].includes(mode)){
+        const input=await page.evaluate(()=>window.PWYWArcade?.debugState?.());
+        if(!input || input.keyboardEvents<1)throw Error(mode+' ignored on-screen control touch');
+      }
     }
     if(mode==='orbit')await page.screenshot({path:'/tmp/pwyw-orbit-mobile.png'});
     if(mode==='lane')await page.screenshot({path:'/tmp/pwyw-lane-mobile.png'});
