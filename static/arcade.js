@@ -37,6 +37,11 @@
     const s={ctx,canvas,mode,brand,palette,host,raf:0,listeners:[],time:0,score:0,ended:false,
       input:{x:W/2,y:H/2,pressed:false},particles:[],items:[],state:{},stamp:performance.now(),last:performance.now()};
     active=s;
+    for(const [field,url] of [["sceneImg",brand.sceneUrl],["tokenImg",brand.tokenUrl]]){
+      if(url && url.startsWith("/brand-art/")){
+        const img=new Image();img.onload=()=>{};img.src=url;s[field]=img;
+      }
+    }
     const on=(node,name,fn,opts)=>{node.addEventListener(name,fn,opts);s.listeners.push([node,name,fn,opts])};
     const xy=e=>{
       const r=canvas.getBoundingClientRect();
@@ -79,6 +84,10 @@
     if(["neon","chrome","noir"].includes(theme)){bg.addColorStop(0,p[0]);bg.addColorStop(.65,p[0]);bg.addColorStop(1,"#304053")}
     else {bg.addColorStop(0,p[0]);bg.addColorStop(1,theme==="dream"?"#fce8df":p[0])}
     c.fillStyle=bg;c.fillRect(0,0,W,H);
+    if(s.sceneImg && s.sceneImg.complete && s.sceneImg.naturalWidth){
+      const pic=s.sceneImg,ratio=Math.max(W/pic.width,H/pic.height);
+      c.save();c.globalAlpha=.2;c.drawImage(pic,(W-pic.width*ratio)/2,(H-pic.height*ratio)/2,pic.width*ratio,pic.height*ratio);c.restore();
+    }
     c.save();c.globalAlpha=.13;c.strokeStyle=p[1];
     if(theme==="neon"||theme==="chrome"){c.lineWidth=1;
       for(let x=0;x<W;x+=25){c.beginPath();c.moveTo(x,0);c.lineTo(x,H);c.stroke()}
@@ -125,6 +134,15 @@
     g.addColorStop(0,col);g.addColorStop(.46,col+"aa");g.addColorStop(1,"transparent");
     c.fillStyle=g;circle(c,x,y,r);c.fill();c.restore();
   }
+  function token(c,s,x,y,r){
+    const img=s.tokenImg;
+    if(!img||!img.complete||!img.naturalWidth)return false;
+    c.save();c.beginPath();c.arc(x,y,r,0,TAU);c.clip();
+    c.fillStyle="#ffffffdd";c.fill();
+    const scale=Math.min((r*1.8)/img.width,(r*1.8)/img.height);
+    c.drawImage(img,x-img.width*scale/2,y-img.height*scale/2,img.width*scale,img.height*scale);
+    c.restore();return true;
+  }
   function badge(c,text,x,y,col,scale=1){
     c.save();c.translate(x,y);c.scale(scale,scale);c.shadowColor=col;c.shadowBlur=20;
     c.fillStyle=col;circle(c,0,0,15);c.fill();c.shadowBlur=0;
@@ -168,7 +186,7 @@
       },draw(c){headline(c,"SNAKE CIRCUIT","Swipe to steer · Collect the glowing marks",s);
         rect(c,5,62,370,370,13);c.fillStyle=s.palette[0]+"aa";c.fill();
         for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){c.fillStyle=(x+y)%2?s.palette[3]+"1d":s.palette[1]+"10";rect(c,off+x*g,67+y*g,g-2,g-2,4);c.fill()}
-        glowing(c,off+food.x*g+8,67+food.y*g+8,23,s.palette[2]);badge(c,"✦",off+food.x*g+8,67+food.y*g+8,s.palette[4],.8);
+        glowing(c,off+food.x*g+8,67+food.y*g+8,23,s.palette[2]);if(!token(c,s,off+food.x*g+8,67+food.y*g+8,12))badge(c,"✦",off+food.x*g+8,67+food.y*g+8,s.palette[4],.8);
         body.forEach((v,i)=>{c.fillStyle=i===0?s.palette[2]:s.palette[i%2?3:4];rect(c,off+v.x*g,67+v.y*g,g-1,g-1,i?5:7);c.fill()});
       }};
     },
@@ -245,6 +263,7 @@
         objects=objects.filter(x=>x.y<H+20);
       },draw(c){headline(c,"ORBIT CATCH","Move to collect sparks · Avoid dark crystals",s);
         objects.forEach(o=>{glowing(c,o.x,o.y,o.r*2,o.bad?s.palette[1]:s.palette[2]);
+          if(!o.bad && token(c,s,o.x,o.y,o.r)){return}
           c.save();c.translate(o.x,o.y);c.rotate(o.rot);c.fillStyle=o.bad?s.palette[1]:s.palette[4];
           c.beginPath();for(let i=0;i<8;i++){let a=i*Math.PI/4,r=i%2?o.r*.52:o.r;
             i?c.lineTo(Math.cos(a)*r,Math.sin(a)*r):c.moveTo(Math.cos(a)*r,Math.sin(a)*r)}
@@ -271,7 +290,8 @@
           c.translate(f.x,f.y);c.rotate(f.age*.2+f.phase);
           glowing(c,0,0,f.r*2.3,s.palette[2]);
           for(let k=0;k<7;k++){c.rotate(TAU/7);c.fillStyle=s.palette[2+(i+k)%3];c.beginPath();c.ellipse(0,f.r*.62,f.r*.39,f.r*.65,0,0,TAU);c.fill()}
-          c.fillStyle=s.palette[4];circle(c,0,0,f.r*.4);c.fill();c.restore()});
+          c.fillStyle=s.palette[4];circle(c,0,0,f.r*.4);c.fill();c.restore();
+          token(c,s,f.x,f.y,f.r*.45)});
         c.fillStyle=s.palette[1];c.font="800 12px system-ui";c.fillText("MISSES "+misses,20,425);
       }};
     },
