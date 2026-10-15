@@ -101,6 +101,11 @@ function objective(value){
  $('campaign-destination').value=c.destination||'';
  $('campaign-margin').value=Number(c.margin_per_sale||0);
  $('campaign-reward').value=Number(c.reward_cost||0);
+ $('learning-builder').hidden=value!=='learn';
+ $('quiz-question').value=c.quiz_question||'';
+ const quizOpts=Array.isArray(c.quiz_options)?c.quiz_options:[];
+ for(let i=0;i<3;i++)$('quiz-option-'+i).value=quizOpts[i]||'';
+ $('quiz-correct').value=String(c.quiz_correct_index||0);
  if(state.brand){
    $('campaign-share-link').href='/play/'+encodeURIComponent(state.brand.slug)+'?objective='+value;
    $('redeem-section').hidden=value==='learn';
@@ -181,7 +186,10 @@ $('campaign-form').addEventListener('submit',async e=>{
    description:$('campaign-description').value.trim(),cta:$('campaign-cta').value.trim(),
    offer:$('campaign-offer').value.trim(),product_name:$('campaign-product').value.trim(),
    destination:$('campaign-destination').value.trim(),game:$('campaign-game').value,
-   margin_per_sale:Number($('campaign-margin').value||0),reward_cost:Number($('campaign-reward').value||0),is_active:true};
+   margin_per_sale:Number($('campaign-margin').value||0),reward_cost:Number($('campaign-reward').value||0),is_active:true,
+   quiz_question:state.objective==='learn'?$('quiz-question').value.trim():'',
+   quiz_options:state.objective==='learn'?[0,1,2].map(i=>$('quiz-option-'+i).value.trim()).filter(Boolean):[],
+   quiz_correct_index:Number($('quiz-correct').value||0)};
  try{await api('/api/brands/'+encodeURIComponent(state.brand.slug)+'/campaigns/'+state.objective,'PUT',body);
    state.campaigns[state.objective]=body;message('campaign-status','Live. Your campaign is ready to share.');
    $('campaign-share-link').href='/play/'+encodeURIComponent(state.brand.slug)+'?objective='+state.objective;
