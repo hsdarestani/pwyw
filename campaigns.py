@@ -26,6 +26,9 @@ class CampaignInput(BaseModel):
     destination: str = Field(default="",max_length=500)
     game: str = "orbit"
     is_active: bool = True
+    quiz_question: str = Field(default="",max_length=220)
+    quiz_options: list[str] = Field(default_factory=list,max_length=4)
+    quiz_correct_index: int = Field(default=0,ge=0,le=3)
 
 class ClaimInput(BaseModel):
     sid: str = Field(min_length=12,max_length=80)
@@ -35,6 +38,10 @@ class RedeemInput(BaseModel):
     code: str = Field(min_length=8,max_length=24)
     verified_value: float = Field(default=0,ge=0,le=99999)
     note: str = Field(default="",max_length=160)
+
+class AnswerInput(BaseModel):
+    sid: str = Field(min_length=12,max_length=80)
+    selected_index: int = Field(ge=0,le=3)
 
 class TrackInput(BaseModel):
     sid: str = Field(min_length=12,max_length=80)
@@ -70,6 +77,18 @@ def install(app, db, user_from, owned_brand, public_brand, throttle):
           detail TEXT NOT NULL DEFAULT '', created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
         );
         CREATE INDEX IF NOT EXISTS campaign_events_idx ON campaign_events(campaign_id,created_at);
+        CREATE TABLE IF NOT EXISTS campaign_quiz(
+          campaign_id INTEGER PRIMARY KEY REFERENCES campaigns(id),
+          question TEXT NOT NULL,
+          options TEXT NOT NULL,
+          correct_index INTEGER NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS quiz_attempts(
+          id INTEGER PRIMARY KEY,campaign_id INTEGER NOT NULL REFERENCES campaigns(id),
+          sid TEXT NOT NULL, selected_index INTEGER NOT NULL,correct INTEGER NOT NULL,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          UNIQUE(campaign_id,sid)
+        );
         """)
 
     def lookup_campaign(slug, objective):
@@ -129,6 +148,18 @@ def install(app, db, user_from, owned_brand, public_brand, throttle):
                   data.cta.strip(),data.offer.strip(),data.product_name.strip(),
                   data.reward_cost,data.margin_per_sale,data.destination.strip(),
                   data.game,int(data.is_active)))
+        if objective=="learn":
+            if data.quiz_question.strip():
+                options=[str(x).strip() for x in data.quiz_options]
+                if len(options)!=3 or not all(1<=len(x)<=110 for x in options) or data.quiz_correct_index>=3:
+                    raise HTTPException(422,"Learning quizzes require three short answers and a valid correct option")
+                with db() as con:
+                    row=con.execute("SELECT id FROM campaigns WHERE brand_id=? AND objective='learn'",
+                                    (brand["id"],)).fetchone()
+                    con.execute("""INSERT INTO campaign_quiz(campaign_id,question,options,correct_index) VALUES(?,?,?,?)
+                      ON CONFLICT(campaign_id) DO UPDATE SET question=excluded.question,
+                        options=excluded.options,correct_index=excluded.correct_index""",
+                        (row["id"],data.quiz_question.strip(),__import__("json").dumps(options),data.quiz_correct_index))
         return {"ok":True,"objective":objective}
 
     @app.get("/api/public/brands/{slug}/campaigns")
@@ -150,8 +181,38 @@ def install(app, db, user_from, owned_brand, public_brand, throttle):
     def public_campaign(slug:str,objective:str):
         public_brand(slug)
         c=lookup_campaign(slug,objective)
-        return {k:c[k] for k in ("objective","title","description","cta","offer",
+        result={k:c[k] for k in ("objective","title","description","cta","offer",
                 "product_name","game","destination")}
+        if objective=="learn":
+            if c["id"]:
+                with db() as con:
+                    q=con.execute("SELECT question,options FROM campaign_quiz WHERE campaign_id=?",
+                                  (c["id"],)).fetchone()
+                if q:result["quiz"]={"question":q["question"],"options":__import__("json").loads(q["options"])}
+            else:result["quiz"]={"question":"What should you do before your appointment?",
+                 "options":["Bring the requested documents","Ignore all instructions","Arrive without booking"]}
+        return result
+
+    @app.post("/api/public/brands/{slug}/campaigns/learn/answer")
+    def answer_quiz(slug:str,data:AnswerInput,request:Request):
+        throttle(request,"learn-quiz",12,3600)
+        c=lookup_campaign(slug,"learn")
+        if not re.fullmatch(r"[A-Za-z0-9_-]{12,80}",data.sid):raise HTTPException(422,"Invalid session")
+        if c["id"] is None:return {"correct":data.selected_index==0,"demo":True,
+                "message":"This is a demonstration, not a verified training result."}
+        with db() as con:
+            q=con.execute("SELECT correct_index FROM campaign_quiz WHERE campaign_id=?",(c["id"],)).fetchone()
+            if not q:raise HTTPException(404,"No learning quiz configured")
+            previous=con.execute("SELECT correct FROM quiz_attempts WHERE campaign_id=? AND sid=?",
+                                 (c["id"],data.sid)).fetchone()
+            if previous:return {"correct":bool(previous["correct"]),"already_submitted":True}
+            correct=int(data.selected_index==q["correct_index"])
+            con.execute("""INSERT INTO quiz_attempts(campaign_id,sid,selected_index,correct)
+                VALUES(?,?,?,?)""",(c["id"],data.sid,data.selected_index,correct))
+            con.execute("""INSERT INTO campaign_events(campaign_id,sid,kind,game,detail)
+                VALUES(?,?,'learn_answer','','')""",(c["id"],data.sid))
+        return {"correct":bool(correct),"demo":False,
+            "message":"Answer recorded. This is not proof of reduced staff work."}
 
     @app.post("/api/public/brands/{slug}/campaigns/{objective}/track")
     def campaign_track(slug:str,objective:str,data:TrackInput,request:Request):
@@ -230,6 +291,10 @@ def install(app, db, user_from, owned_brand, public_brand, throttle):
                 (SELECT COUNT(*) FROM campaign_events e WHERE e.campaign_id=c.id AND e.kind='cta') actions,
                 (SELECT COUNT(*) FROM claims cl WHERE cl.campaign_id=c.id) issued,
                 (SELECT COUNT(*) FROM claims cl WHERE cl.campaign_id=c.id AND cl.redeemed_at IS NOT NULL) redeemed,
+                (SELECT COUNT(*) FROM claims cl WHERE cl.campaign_id=c.id
+                 AND cl.redeemed_at IS NOT NULL AND cl.ref_code<>'') referred_buyers,
+                (SELECT COUNT(*) FROM quiz_attempts qa WHERE qa.campaign_id=c.id) quiz_attempts,
+                (SELECT COUNT(*) FROM quiz_attempts qa WHERE qa.campaign_id=c.id AND qa.correct=1) quiz_correct,
                 (SELECT COALESCE(SUM(cl.verified_value),0) FROM claims cl WHERE cl.campaign_id=c.id
                     AND cl.redeemed_at IS NOT NULL) declared_total
                 FROM campaigns c WHERE c.brand_id=? ORDER BY c.id""",(brand["id"],)).fetchall()
