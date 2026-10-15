@@ -29,8 +29,8 @@ DATA.mkdir(parents=True, exist_ok=True)
 DB = DATA / "pwyw.sqlite3"
 PUBLIC_URL = os.getenv("PUBLIC_BASE_URL", "").rstrip("/")
 COOKIE_SECURE = os.getenv("COOKIE_SECURE", "1") == "1"
-GAMES = {"memory", "merge", "rush"}
-THEMES = {"atelier", "neon", "garden", "pop"}
+GAMES = {"memory", "merge", "rush", "snake", "breaker", "hop", "orbit", "bloom", "lane", "sequence"}
+THEMES = {"atelier", "neon", "garden", "pop", "noir", "chrome", "dream", "heritage"}
 CATEGORIES = {"cafe", "restaurant", "salon", "auto", "hotel", "health", "other"}
 app = FastAPI(title="PWYW API", docs_url=None, redoc_url=None)
 hit_log = defaultdict(list)
@@ -432,5 +432,8 @@ def play(slug:str):
 @app.get("/demo")
 def demo():
     return RedirectResponse("/play/luna-cafe")
+
+import campaigns
+campaigns.install(app, db, user_from, owned_brand, public_brand, throttle)
 
 app.mount("/static",StaticFiles(directory=BASE/"static"),name="static")
