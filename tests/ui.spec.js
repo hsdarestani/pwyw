@@ -7,7 +7,8 @@ const {chromium}=require('playwright');
   page.on('console',m=>{if(m.type()==='error' && !m.text().includes('401 (Unauthorized)'))errors.push('CONSOLE '+m.text())});
   const base='http://127.0.0.1:8080';
   await page.goto(base+'/',{waitUntil:'networkidle'});
-  if(!await page.locator('text=GIVE').count())throw Error('Branded landing not rendered');
+  if(!await page.locator('.hero h1').count() || !(await page.locator('.hero h1').innerText()).trim())
+    throw Error('Branded landing headline missing');
   await page.screenshot({path:'/tmp/pwyw-landing-mobile.png',fullPage:true});
   await page.goto(base+'/demo',{waitUntil:'networkidle'});
   await page.locator('#load-overlay').waitFor({state:'hidden',timeout:12000});
@@ -30,6 +31,14 @@ const {chromium}=require('playwright');
       await page.keyboard.press('ArrowRight');
       await page.waitForTimeout(180);
     }
+    if(['snake','merge','orbit','breaker','hop','lane','sequence'].includes(mode)){
+      const touchKeys=page.locator('#touch-controls .touch-key');
+      if(await touchKeys.count()<1)throw Error(mode+' is missing mobile controls');
+      await touchKeys.first().dispatchEvent('pointerdown',{pointerType:'touch',pointerId:37});
+      await page.waitForTimeout(120);
+      await touchKeys.first().dispatchEvent('pointerup',{pointerType:'touch',pointerId:37});
+      await page.waitForTimeout(120);
+    }
     if(mode==='orbit')await page.screenshot({path:'/tmp/pwyw-orbit-mobile.png'});
     if(mode==='lane')await page.screenshot({path:'/tmp/pwyw-lane-mobile.png'});
     await page.locator('#back-home').click();
@@ -39,6 +48,13 @@ const {chromium}=require('playwright');
   await page.locator('[data-game="rush"]').click();
   await page.waitForTimeout(150);
   await page.locator('#back-home').click();
+  // Phone widths below 390px must not shift the entire page horizontally.
+  await page.setViewportSize({width:320,height:700});
+  await page.goto(base+'/demo',{waitUntil:'networkidle'});
+  await page.locator('#load-overlay').waitFor({state:'hidden'});
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+  if(overflow>4)throw Error('Mobile viewport has horizontal overflow: '+overflow);
+  await page.setViewportSize({width:390,height:844});
   await page.goto(base+'/dashboard',{waitUntil:'networkidle'});
   await page.locator('#tab-signup').click();
   await page.locator('input[name=email]').fill('pwyw-e2e-'+Date.now()+'@example.org');
