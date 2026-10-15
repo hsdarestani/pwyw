@@ -20,6 +20,15 @@
   let brandArt={}; let brandedToken=null;
   async function fetchBrandArt(){
     try{brandArt=await request("/api/public/brands/"+encodeURIComponent(slug)+"/art");
+      const samples={
+        "luna-cafe":"luna","volt-garage":"volt",
+        "little-forest":"forest","poppy-studio":"poppy"
+      };
+      const builtin=samples[slug];
+      if(builtin){
+        brandArt.scene=brandArt.scene||"/static/worlds/"+builtin+"-scene.svg";
+        brandArt.token=brandArt.token||"/static/worlds/"+builtin+"-token.svg";
+      }
       const intro=document.querySelector(".campaign-intro");
       if(brandArt.scene){
         const dark=["noir","neon","chrome"].includes(brand?.theme);
