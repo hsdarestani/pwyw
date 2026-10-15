@@ -3,41 +3,74 @@ const {chromium}=require('playwright');
   const browser=await chromium.launch({headless:true});
   const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
   const errors=[];
-  page.on('pageerror',e=>errors.push(e.message));
+  page.on('pageerror',e=>errors.push('PAGE '+e.message));
+  page.on('console',m=>{if(m.type()==='error')errors.push('CONSOLE '+m.text())});
   const base='http://127.0.0.1:8080';
+  await page.goto(base+'/',{waitUntil:'networkidle'});
+  if(!await page.locator('text=GIVE').count())throw Error('Branded landing not rendered');
+  await page.screenshot({path:'/tmp/pwyw-landing-mobile.png',fullPage:true});
   await page.goto(base+'/demo',{waitUntil:'networkidle'});
-  await page.locator('#load-overlay').waitFor({state:'hidden'});
-  if(!(await page.locator('[data-game]').count())===3)throw Error('Game launchers missing');
-  await page.locator('[data-game="memory"]').click();
-  if(await page.locator('.memory-tile').count()!==16)throw Error('Memory board not ready');
-  await page.locator('.memory-tile').nth(0).click();
-  await page.locator('.memory-tile').nth(1).click();
-  await page.locator('#back-home').click();
-  await page.locator('[data-game="merge"]').click();
-  if(await page.locator('.merge-cell').count()!==16)throw Error('2048 board not ready');
-  await page.keyboard.press('ArrowLeft');
-  await page.locator('#back-home').click();
+  await page.locator('#load-overlay').waitFor({state:'hidden',timeout:12000});
+  if(await page.locator('[data-game]').count()!==10)throw Error('Expected 10 game launchers');
+  await page.screenshot({path:'/tmp/pwyw-lounge-mobile.png',fullPage:true});
+  for(const mode of ['memory','merge','rush','snake','breaker','hop','orbit','bloom','lane','sequence']){
+    await page.locator('[data-game="'+mode+'"]').click();
+    if(mode==='memory'){
+      if(await page.locator('.memory-tile').count()!==16)throw Error('Memory board count wrong');
+      await page.locator('.memory-tile').nth(0).click();
+    }else if(mode==='merge'){
+      if(await page.locator('.merge-cell').count()!==16)throw Error('2048 board count wrong');
+      await page.keyboard.press('ArrowLeft');
+    }else if(mode==='rush'){
+      if(await page.locator('.rush-pad').count()!==9)throw Error('Quick tap count wrong');
+      await page.locator('.rush-pad.active').click();
+    }else{
+      await page.locator('#game-board canvas').waitFor({state:'visible'});
+      await page.locator('#game-board canvas').click({position:{x:130,y:210}});
+      await page.keyboard.press('ArrowRight');
+      await page.waitForTimeout(180);
+    }
+    if(mode==='orbit')await page.screenshot({path:'/tmp/pwyw-orbit-mobile.png'});
+    if(mode==='lane')await page.screenshot({path:'/tmp/pwyw-lane-mobile.png'});
+    await page.locator('#back-home').click();
+    await page.locator('#game-home').waitFor({state:'visible'});
+  }
+  await page.locator('[data-objective="learn"]').click();
   await page.locator('[data-game="rush"]').click();
-  if(await page.locator('.rush-pad').count()!==9)throw Error('Quick tap board not ready');
-  await page.locator('.rush-pad.active').click();
+  await page.waitForTimeout(150);
+  await page.locator('#back-home').click();
   await page.goto(base+'/dashboard',{waitUntil:'networkidle'});
   await page.locator('#tab-signup').click();
-  await page.locator('input[name=email]').fill('pwyw-ui-'+Date.now()+'@example.org');
+  await page.locator('input[name=email]').fill('pwyw-e2e-'+Date.now()+'@example.org');
   await page.locator('input[name=password]').fill('StrongTestPassword123');
   await page.locator('#auth-submit').click();
   await page.locator('#app-shell').waitFor({state:'visible'});
+  await page.locator('[data-objective="return"]').first().click();
   await page.locator('#brand-name').fill('Playwright Garage');
   await page.locator('#brand-slug').fill('playwright-garage');
   await page.locator('[data-theme=neon]').click();
+  await page.screenshot({path:'/tmp/pwyw-studio-mobile.png',fullPage:true});
   await page.locator('#brand-save').click();
   await page.locator('#results-section').waitFor({state:'visible'});
   const url=await page.locator('#open-play').getAttribute('href');
-  if(url!=='/play/playwright-garage')throw Error('Brand did not persist');
-  await page.goto(base+url,{waitUntil:'networkidle'});
+  if(url!=='/play/playwright-garage')throw Error('New brand not saved');
+  await page.locator('#campaign-title').fill('Your next visit starts here');
+  await page.locator('#campaign-game').selectOption('bloom');
+  await page.locator('#campaign-product').fill('Next visit');
+  await page.locator('#campaign-offer').fill('Return with this staff-verified code');
+  await page.locator('#campaign-save').click();
+  await page.waitForFunction(()=>document.querySelector('#campaign-status')?.textContent.includes('Live.'),null,{timeout:8000});
+  await page.goto(base+url+'?objective=return',{waitUntil:'networkidle'});
   await page.locator('#load-overlay').waitFor({state:'hidden'});
-  if(!await page.locator('body.theme-neon').count())throw Error('Neon skin missing');
-  if(!await page.locator('#game-business').textContent().then(s=>s.includes('PLAYWRIGHT GARAGE')))throw Error('Brand identity missing');
-  if(errors.length)throw Error('Browser errors: '+errors.join(' | '));
-  console.log('PASS: mobile demo, three game boards, account, tenant creation, selected branding, live lounge.');
+  if(!await page.locator('body.theme-neon').count())throw Error('Neon brand skin missing');
+  if(!(await page.locator('#game-business').textContent()).includes('PLAYWRIGHT GARAGE'))throw Error('Brand identity missing');
+  if(!(await page.locator('#purpose-title').textContent()).includes('Return'))throw Error('Outcome selection missing');
+  // Test server-side claim issuance directly (games cannot be completed instantly).
+  const issued=await page.evaluate(async()=>{const sid='pwuybrowserfaketest1';
+    const r=await fetch('/api/public/brands/playwright-garage/campaigns/return/claim',{method:'POST',
+      headers:{'Content-Type':'application/json'},body:JSON.stringify({sid})});return {status:r.status,body:await r.json()}});
+  if(issued.status!==200||!issued.body.code.startsWith('PW'))throw Error('Merchant claim issuance failed');
+  if(errors.length)throw Error('Browser runtime errors: '+errors.join(' | ').slice(0,1600));
+  console.log('PASS: branded landing, 10 playable game modes, 4 objective UI, business signup, branding, campaign publishing, merchant claim issuance.');
   await browser.close();
 })().catch(e=>{console.error(e);process.exit(1)});
