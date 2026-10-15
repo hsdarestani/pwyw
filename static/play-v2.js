@@ -275,9 +275,7 @@
       btn.addEventListener("touchstart",press,{passive:false});
       btn.addEventListener("touchend",end,{passive:true});
       btn.addEventListener("touchcancel",end,{passive:true});
-      btn.addEventListener("pointerdown",e=>{
-        if(e.pointerType!=="touch")press(e);
-      });
+      btn.addEventListener("pointerdown",press);
       btn.addEventListener("pointerup",end);
       btn.addEventListener("pointercancel",end);
       btn.addEventListener("pointerleave",end);
