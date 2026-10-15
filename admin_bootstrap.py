@@ -10,7 +10,7 @@ import sys
 def main():
     email=sys.stdin.readline().strip().lower()
     password=sys.stdin.readline().rstrip("\n")
-    if not re.fullmatch(r"[^@\\s]+@[^@\\s]+\\.[^@\\s]+",email):
+    if email.count("@")!=1 or any(ch.isspace() for ch in email) or "." not in email.split("@")[1]:
         raise SystemExit("Invalid admin email")
     if len(password)<20 or len(password)>256:
         raise SystemExit("Operator password must have at least 20 characters")
