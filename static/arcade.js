@@ -201,9 +201,9 @@
   const modes={
     snake(s){
       const size=19,cols=19,rows=19;
-      let body=[{x:9,y:9},{x:8,y:9},{x:7,y:9}],dir={x:1,y:0},next=dir,food={x:13,y:10},acc=0;
+      let body=[{x:9,y:9},{x:8,y:9},{x:7,y:9}],dir={x:1,y:0},next=dir,food={x:13,y:10},acc=0,steering=false;
       const eat=()=>{do{food={x:random(cols),y:random(rows)}}while(body.some(v=>v.x===food.x&&v.y===food.y))};
-      const change=(x,y)=>{if(x!==-dir.x||y!==-dir.y)next={x,y}};
+      const change=(x,y)=>{if(x!==-dir.x||y!==-dir.y){next={x,y};steering=true}};
       let x0=0,y0=0;
 
       s.state.key=k=>({ArrowUp:()=>change(0,-1),ArrowDown:()=>change(0,1),ArrowLeft:()=>change(-1,0),ArrowRight:()=>change(1,0)})[k]?.();
@@ -217,7 +217,7 @@
           Math.abs(dx)>Math.abs(dy)?change(dx>0?1:-1,0):change(0,dy>0?1:-1);
       };
       const off=9,g=19;
-      return {duration:54,update(dt){acc+=dt;if(acc<.115)return;acc=0;dir=next;
+      return {duration:54,update(dt){if(!steering)return;acc+=dt;if(acc<.17)return;acc=0;dir=next;
         const h={x:body[0].x+dir.x,y:body[0].y+dir.y};
         const willEat=h.x===food.x&&h.y===food.y;
         const obstacles=willEat?body:body.slice(0,-1);
@@ -226,7 +226,7 @@
         body.unshift(h);
         if(willEat){s.addPoints(125);s.emit(off+h.x*g,72+h.y*g,14);s.host.tone(680,.08);eat()}
         else body.pop();
-      },draw(c){headline(c,"SNAKE CIRCUIT","Swipe to steer · Collect the glowing marks",s);
+      },draw(c){headline(c,"SNAKE CIRCUIT",steering?"Swipe to steer · Collect the glowing marks":"Start by swiping or using the on-screen arrows",s);
         rect(c,5,62,370,370,13);c.fillStyle=s.palette[0]+"aa";c.fill();
         for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){c.fillStyle=(x+y)%2?s.palette[3]+"1d":s.palette[1]+"10";rect(c,off+x*g,67+y*g,g-2,g-2,4);c.fill()}
         glowing(c,off+food.x*g+8,67+food.y*g+8,23,s.palette[2]);if(!token(c,s,off+food.x*g+8,67+food.y*g+8,12))badge(c,"✦",off+food.x*g+8,67+food.y*g+8,s.palette[4],.8);
