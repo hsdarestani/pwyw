@@ -120,7 +120,7 @@ window.PWYWNATIVEFA = {
   "YOUR CAMPAIGN STUDIO / PWYW®": "پنل ساخت بازی PWYW",
   "MAKE": "برای برندت",
   "YOUR BRAND": "یه بازی",
-  "PLAY.": "بازی کن،",
+  "PLAY.": "بساز.",
   "Don’t start with a game. Start with what you want customers to do.": "اول مشخص کن می‌خوای مشتری بعد از بازی چه کاری انجام بده. بعد بازی مناسبش رو بساز.",
   "BRAND LAB / 01": "پنل طراحی بازی / ۰۱",
   "PRIVATE PILOT / NO BILLING": "نسخه آزمایشی / بدون پرداخت",
