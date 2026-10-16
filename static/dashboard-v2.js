@@ -140,6 +140,7 @@ function objective(value){
    $('redeem-section').hidden=value==='learn';
  }
  message('campaign-status','');
+ document.dispatchEvent(new CustomEvent('pwyw:objective-selected',{detail:{slug:state.brand?.slug||'',objective:value}}));
 }
 document.querySelectorAll('.purpose-option').forEach(b=>b.onclick=()=>objective(b.dataset.objective));
 function clearLogo(){
@@ -147,7 +148,8 @@ function clearLogo(){
  $('preview-logo').textContent='✳';
 }
 function newBrand(){
- state.brand=null;state.campaigns={};$('brand-form').reset();$('brand-slug').disabled=false;
+ state.brand=null;state.campaigns={};$('brand-form').reset();
+ $('brand-settings').open=true;$('studio-tools').open=false;$('brand-slug').disabled=false;
  $('brand-logo').value='';$('brand-scene').value='';$('brand-token').value='';$('brand-accent').value='#d8ff3e';
  $('editor-preview').style.backgroundImage='';$('art-status').textContent='Upload a background scene and game object to make a world your own.';
  setTheme('atelier');clearLogo();
@@ -158,6 +160,8 @@ function newBrand(){
 $('new-brand').onclick=newBrand;
 async function selectBrand(b){
  state.brand=b;
+ $('brand-settings').open=false;$('studio-tools').open=false;
+ $('manual-campaign-settings').open=false;
  $('brand-name').value=b.name;$('brand-industry').value=b.industry;
  $('brand-tagline').value=b.tagline;$('brand-tagline-fa').value=b.tagline_fa||'';$('brand-accent').value=b.accent;
  $('brand-slug').value=b.slug;$('brand-slug').disabled=true;
@@ -289,6 +293,16 @@ document.addEventListener('DOMContentLoaded',setCampaignLocale);
 for(const x of document.querySelectorAll('#campaign-copy-fa input,#campaign-copy-fa textarea')){
  x.addEventListener('input',()=>x.setCustomValidity(''));
 }
+window.PWYWStudio={
+ getBrand:()=>state.brand,
+ getObjective:()=>state.objective,
+ afterApproval:campaign=>{
+  state.campaigns[campaign.objective]=campaign;
+  if(!state.brand)return;
+  $('campaign-share-link').href='/play/'+encodeURIComponent(state.brand.slug)+'?objective='+campaign.objective;
+  refreshStats();
+ }
+};
 objective('upsell');boot();
 document.addEventListener('pwyw:language-changed',()=>{
  setCampaignLocale();preview();if(state.brand)refreshStats();
