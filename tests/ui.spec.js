@@ -19,6 +19,8 @@ const {chromium}=require('playwright');
   await page.locator('#pwyw-language-switch [data-lang=fa]').click();
   if(await page.locator('html').getAttribute('dir')!=='rtl')throw Error('Persian RTL mode missing');
   if(!/[\u0600-\u06FF]/.test(await page.locator('#game-heading').textContent()))throw Error('Persian game heading missing');
+  const canvasCopy=await page.evaluate(()=>window.PWYWArcade?.uiText?.('TAP TO START'));
+  if(canvasCopy!=='برای شروع لمس کن')throw Error('Canvas game UI did not localize to Persian: '+canvasCopy);
   await page.locator('#pwyw-language-switch [data-lang=de]').click();
   await page.locator('#load-overlay').waitFor({state:'hidden',timeout:12000});
   if(await page.locator('[data-game]').count()!==10)throw Error('Expected 10 game launchers');
