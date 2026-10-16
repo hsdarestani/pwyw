@@ -580,6 +580,13 @@
     if(previous && typeof translation==='string')catalog.set(source.trim(),{de:previous.de,fa:translation});
   }
 
+  // A few runtime-only strings are not part of the static copy catalog.
+  for(const [source,de,fa] of [
+    ["Gemeinsam macht es mehr Spaß","Zusammen macht es mehr Spaß","با هم بیشتر خوش می‌گذره!"],
+    ["CREATE ACCOUNT ","KONTO ERSTELLEN ","ثبت‌نام "],
+    ["Could not load campaigns: ","Kampagnen konnten nicht geladen werden: ","کمپین‌ها بارگذاری نشدن: "]
+  ]) catalog.set(source.trim(),{de,fa});
+  const initialDocumentTitle=document.title;
   const normalized = new WeakMap();
   const emitted = new WeakMap();
   const attrOriginal = new WeakMap();
@@ -648,6 +655,11 @@
     document.documentElement.lang=selected;
     document.documentElement.dir=selected==='fa'?'rtl':'ltr';
     document.documentElement.dataset.locale=selected;
+    // Page titles are part of the localized experience too. Do not overwrite dynamic tenant titles.
+    if(!document.body?.classList.contains('player-v2')){
+      const translatedTitle=t(initialDocumentTitle);
+      if(document.title!==translatedTitle)document.title=translatedTitle;
+    }
     document.querySelectorAll('body *').forEach(translateElement);
     const walk=document.createTreeWalker(document.documentElement,NodeFilter.SHOW_TEXT);
     let node;while((node=walk.nextNode()))translateNode(node);
