@@ -131,6 +131,7 @@ def install(app, db, user_from, owned_brand, public_brand, throttle):
             rows=con.execute("SELECT * FROM campaigns WHERE brand_id=? ORDER BY id DESC",(brand["id"],)).fetchall()
             result=[dict(x) for x in rows]
             for row in result:
+                row["translations"]=json.loads(row.pop("translations_json","{}"))
                 if row["objective"]=="learn":
                     q=con.execute("SELECT * FROM campaign_quiz WHERE campaign_id=?",(row["id"],)).fetchone()
                     if q:
@@ -199,7 +200,13 @@ def install(app, db, user_from, owned_brand, public_brand, throttle):
             rows=con.execute("""SELECT objective,title,description,cta,offer,product_name,game,destination
                     FROM campaigns c JOIN brands b ON b.id=c.brand_id
                     WHERE b.slug=? AND is_active=1 ORDER BY c.id""",(slug,)).fetchall()
-        if rows:return [dict(x) for x in rows]
+        if rows:
+            result=[]
+            for x in rows:
+                obj=dict(x)
+                obj["translations"]=json.loads(obj.pop("translations_json","{}"))
+                result.append(obj)
+            return result
         # Rich live demos only for system-seeded demo brands; no fake campaigns for real businesses.
         if slug in {"luna-cafe","volt-garage","little-forest","poppy-studio"}:
             return [{k:v for k,v in lookup_campaign(slug,o).items() if k in
@@ -213,6 +220,7 @@ def install(app, db, user_from, owned_brand, public_brand, throttle):
         c=lookup_campaign(slug,objective)
         result={k:c[k] for k in ("objective","title","description","cta","offer",
                 "product_name","game","destination")}
+        result["translations"]=json.loads(c.get("translations_json","{}"))
         if objective=="learn":
             if c["id"]:
                 with db() as con:
