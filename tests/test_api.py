@@ -86,6 +86,7 @@ class PilotTests(unittest.TestCase):
     owner.close();stranger.close()
 
   def test_persian_brand_and_campaign_copy(self):
+    self.mod.hit_log.clear()
     owner=TestClient(self.mod.app)
     self.assertEqual(owner.post("/api/register",json={"email":"fa-owner@sample.de","password":"GermanPersian123456"}).status_code,200)
     data={"name":"Two Worlds","slug":"two-worlds","industry":"cafe","theme":"atelier",
