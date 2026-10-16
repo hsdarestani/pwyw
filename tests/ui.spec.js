@@ -179,6 +179,9 @@ const {chromium}=require('playwright');
     throw Error('Customer walkthrough needs exactly three steps');
   if(await page.locator('[data-customer-stage="2"]').getAttribute('aria-pressed')!=='true')
     throw Error('Postgame customer message must be previewed by default');
+  const ownerReason=await page.locator('#proposal-owner-note').innerText();
+  if(ownerReason.trim().length<35)
+    throw Error('Merchant cannot understand the business goal behind this campaign');
   const previewResult=await page.locator('#proposal-product').textContent();
   if(!previewResult.trim())throw Error('Postgame offer preview has no content');
   await page.locator('[data-customer-stage="0"]').click();
