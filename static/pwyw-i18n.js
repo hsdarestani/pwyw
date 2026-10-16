@@ -488,7 +488,7 @@
     if(el.tagName==='A' && el.hasAttribute('href')){
       const href=el.getAttribute('href');
       if(href && href.startsWith('/') && !href.startsWith('//') && !href.startsWith('/static/') && !href.startsWith('/qr/')){
-        try {const u=new URL(href,location.origin);u.searchParams.set('lang',selected);{const next=u.pathname+u.search+u.hash;if(href!==next)el.setAttribute('href',next);}}catch{}
+        try {const u=new URL(href,location.origin);if(selected==='fa')u.searchParams.set('lang','fa');else u.searchParams.delete('lang');{const next=u.pathname+u.search+u.hash;if(href!==next)el.setAttribute('href',next);}}catch{}
       }
     }
   }
@@ -512,7 +512,7 @@
     if(locale!=='fa'&&locale!=='de')return;
     selected=locale;
     try {localStorage.setItem('pwyw.locale',locale)}catch {}
-    try {const u=new URL(location.href);u.searchParams.set('lang',locale);history.replaceState(history.state,'',u.pathname+u.search+u.hash)} catch {}
+    try {const u=new URL(location.href);if(locale==='fa')u.searchParams.set('lang','fa');else u.searchParams.delete('lang');history.replaceState(history.state,'',u.pathname+u.search+u.hash)} catch {}
     render();
   }
   function addSwitch() {
