@@ -15,6 +15,10 @@ class PilotTests(unittest.TestCase):
     import app
     cls.mod=importlib.reload(app)
     cls.client=TestClient(cls.mod.app)
+  def setUp(self):
+    # Each isolated test starts with fresh in-memory request rate buckets.
+    self.mod.hit_log.clear()
+
   @classmethod
   def tearDownClass(cls):
     cls.client.close();cls.tmp.cleanup()
