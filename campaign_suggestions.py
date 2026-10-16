@@ -94,24 +94,27 @@ def cloudflare_candidate(brand,objective,index,base=None):
         return None
     base=base or template(brand,objective,index)
     model="@cf/meta/llama-3.3-70b-instruct-fp8-fast"
-    system=("You are a senior bilingual copywriter. Improve an existing approved campaign CONCEPT"
-        " for a German and Iranian Persian audience. Keep the exact product/service concept."
-        " Output ONLY valid JSON: {\\\"de\\\":{\\\"title\\\":string,\\\"description\\\":string,\\\"offer\\\":string},"
-        " \\\"fa\\\":{\\\"title\\\":string,\\\"description\\\":string,\\\"offer\\\":string}}."
-        " Title <= 85 chars. Description <= 180 chars. Offer <= 150 chars."
-        " Fa must sound natural in colloquial Iranian Persian, de natural in German."
-        " NO generic platitudes, ALL text should be coherent with the listed product."
-        " Mention that availability of the item must be checked with the merchant."
-        " Do NOT invent prices, discounts, gifts, prizes, stock, policies, medical promises,"
-        " availability or services beyond the supplied product concept."
-        " No emojis, markdown, commentary or additional fields.")
+    system=("You are a senior German and Iranian Persian UX copy editor."
+       " Rewrite ONLY a draft headline and a short opening sentence for a SPECIFIC"
+       " product or service that the merchant may choose to promote."
+       " Return ONLY a JSON object with de and fa, each holding title and description."
+       " The TITLE MUST explicitly include the supplied product or its distinctive main noun."
+       " The description must clearly say that a short game leads to the offer."
+       " Keep each title under 85 chars, description under 180 chars."
+       " Use idiomatic, conversational Iranian Persian and clear natural German."
+       " Do NOT output discounts, freebies, bonuses, prices, false availability,"
+       " made-up services or facts, uncertain marketing promises, generic slogans,"
+       " or a warning to consult staff."
+       " Never change the concrete featured product, postgame instruction, code mechanic,"
+       " or owner explanation: those are validated separately."
+       " No markdown, preamble, commentary or additional fields.")
     prompt=json.dumps({
        "business_name":brand["name"][:65],"business_category":brand["industry"],
        "objective":objective,"product_de":base["product_name"],
        "product_fa":base["translations"]["fa"]["product_name"],
        "approved_concept_de":{k:base[k] for k in ("title","description","offer")},
        "approved_concept_fa":{k:base["translations"]["fa"][k] for k in ("title","description","offer")},
-       "attempt":index+1,"task":"Polish language only, retain the same offer and mechanic."
+       "attempt":index+1,"task":"Polish headline and short introduction only; keep the product recognizable in the headline."
      },ensure_ascii=False)
     body=json.dumps({"messages":[{"role":"system","content":system},{"role":"user","content":prompt}],
        "max_tokens":1200,"temperature":0.45,"stream":False}).encode("utf-8")
@@ -130,7 +133,7 @@ def cloudflare_candidate(brand,objective,index,base=None):
         for lang in ("de","fa"):
             item=data.get(lang)
             if not isinstance(item,dict):return None
-            for key,limit in (("title",85),("description",180),("offer",150)):
+            for key,limit in (("title",85),("description",180)):
                 value=item.get(key)
                 if not isinstance(value,str):return None
                 value=value.strip()
@@ -141,7 +144,7 @@ def cloudflare_candidate(brand,objective,index,base=None):
                 product=base["translations"]["fa"]["product_name"] if lang=="fa" else base["product_name"]
                 anchor=_anchor_word(product)
                 combined=" ".join((item.get("title",""),item.get("description",""),item.get("offer",""))).casefold()
-                if anchor and anchor not in combined:
+                if anchor and anchor not in item.get("title","").casefold():
                     LOG.info("PWYW AI copy rejected: off_topic_%s",lang)
                     return None
         result["concept_id"]=base["concept_id"]
