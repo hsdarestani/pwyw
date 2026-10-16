@@ -254,5 +254,5 @@ $('password-change').addEventListener('submit',async e=>{
  finally{btn.disabled=false}
 });
 objective('upsell');boot();
-document.addEventListener('pwyw:locale',preview);
+document.addEventListener('pwyw:language-changed',preview);
 })();
