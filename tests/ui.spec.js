@@ -39,15 +39,26 @@ const {chromium}=require('playwright');
   await page.evaluate(()=>document.getElementById('finish-modal').hidden=false);
   const resultBg=await page.locator('.result-inside').evaluate(el=>getComputedStyle(el).backgroundColor);
   if(resultBg==='rgb(216, 255, 62)')throw Error('Unbranded neon result overlay still appears for Luna Coffee');
+  if(await page.locator('#scoreboard-details').evaluate(e=>e.open))throw Error('Optional leaderboard must be collapsed by default');
+  if(await page.locator('#nickname').isVisible())throw Error('Nickname entry should not appear without consent');
+  await page.locator('#scoreboard-details summary').click();
+  if(!await page.locator('#nickname').isVisible())throw Error('Optional leaderboard cannot be revealed');
+  await page.locator('#scoreboard-details summary').click();
   await page.evaluate(()=>document.getElementById('finish-modal').hidden=true);
   const canvasCopy=await page.evaluate(()=>window.PWYWArcade?.uiText?.('TAP TO START'));
   if(canvasCopy!=='برای شروع روی صفحه بزن')throw Error('Canvas game UI did not localize to Persian: '+canvasCopy);
 
   const localizedGoal=await page.locator('[data-objective=refer]').innerText();
   if(!localizedGoal.includes('دعوت از دوستان'))throw Error('Customer-facing goal still reads as a literal business translation: '+localizedGoal);
+  if(await page.locator('#all-games').evaluate(e=>e.open))throw Error('Full game library must be collapsed by default');
+  if(!await page.locator('#start-featured').isVisible())throw Error('Featured-game primary CTA is missing');
+  if(await page.locator('#game-choices [data-game=memory]').isVisible())throw Error('Other games should not compete with the featured game at first glance');
+  await page.locator('#all-games summary').click();
+  if(!await page.locator('#game-choices [data-game=memory]').isVisible())throw Error('Expanded game library is inaccessible');
   const nativePicks=await page.locator('#game-choices').innerText();
   if(!nativePicks.includes('پیدا کردن جفت‌ها')||!nativePicks.includes('ستاره‌گیر')||!nativePicks.includes('حافظه تصویری'))
     throw Error('Game labels are not natural Persian: '+nativePicks);
+  // Switching language must not re-expose business setup choices or close the list.
   await page.locator('#pwyw-language-switch [data-lang=de]').click();
   await page.locator('#load-overlay').waitFor({state:'hidden',timeout:12000});
   if(await page.locator('[data-game]').count()!==10)throw Error('Expected 10 game launchers');
