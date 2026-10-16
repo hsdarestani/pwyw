@@ -147,6 +147,22 @@ def install(app, db, user_from, owned_brand, public_brand, throttle):
         if data.game not in GAMES: raise HTTPException(422,"Invalid game")
         if data.destination and not re.fullmatch(r"https://[A-Za-z0-9.-]+(?::[0-9]+)?(?:/[^\s]*)?",data.destination):
             raise HTTPException(422,"Only HTTPS destination links are supported")
+        translations={}
+        for lang,fields in data.translations.items():
+            if lang!="fa" or not isinstance(fields,dict):
+                raise HTTPException(422,"Only Persian translations are supported")
+            lengths={"title":100,"description":300,"cta":90,"offer":180,"product_name":90,"quiz_question":220}
+            clean={}
+            for key,value in fields.items():
+                if key=="quiz_options":
+                    if not isinstance(value,list) or len(value) not in (0,3) or any(not isinstance(v,str) or len(v)>110 for v in value):
+                        raise HTTPException(422,"Persian quiz needs zero or three short options")
+                    clean[key]=[v.strip() for v in value]
+                elif key not in lengths or not isinstance(value,str) or len(value)>lengths[key]:
+                    raise HTTPException(422,"Invalid Persian text length")
+                else:
+                    clean[key]=value.strip()
+            translations[lang]=clean
         with db() as con:
             con.execute("""INSERT INTO campaigns(
                 brand_id,objective,title,description,cta,offer,product_name,reward_cost,
