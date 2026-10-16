@@ -198,7 +198,8 @@ const {chromium}=require('playwright');
   await page.locator('#proposal-published').waitFor({state:'visible',timeout:14000});
   if(!await page.locator('#proposal-open').getAttribute('href'))
     throw Error('Approved campaign has no share link');
-  await page.locator('#studio-extra-tools>summary').click();
+  await page.locator('#open-studio-settings').click();
+  await page.locator('#security-settings>summary').click();
   if(!await page.locator('#password-change input').first().isVisible())
     throw Error('Account security is missing from expanded optional tools');
   await page.locator('#studio-tools>summary').click();
