@@ -171,6 +171,21 @@ const {chromium}=require('playwright');
   await page.screenshot({path:'/tmp/pwyw-studio-mobile.png',fullPage:true});
   await page.locator('#brand-save').click();
   await page.locator('#results-section').waitFor({state:'visible'});
+  // Once a brand is saved, the editor must really work on a 390px touchscreen.
+  await page.locator('#pwyw-language-switch [data-lang=fa]').click();
+  await page.locator('#campaign-copy-primary #campaign-fa-title').fill('باز هم به ما سر بزن');
+  if(await page.locator('#campaign-copy-secondary #campaign-title').isVisible())
+    throw Error('German inputs should be behind a disclosure in Persian mode');
+  await page.locator('#campaign-alternate summary').click();
+  if(!await page.locator('#campaign-title').isVisible())throw Error('Cannot edit German variant');
+  await page.locator('#campaign-alternate summary').click();
+  await page.locator('#campaign-advanced summary').click();
+  if(!await page.locator('#campaign-margin').isVisible())throw Error('Advanced fields not accessible');
+  await page.locator('#campaign-advanced summary').click();
+  const horizontalOverflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
+  if(horizontalOverflow>4)throw Error('Studio overflows a phone screen by '+horizontalOverflow+'px');
+  await page.locator('#pwyw-language-switch [data-lang=de]').click();
+
   // Phone screen layout: security fields must be separate, QR must fit on screen.
   const security=await page.locator('#password-change input').evaluateAll(xs=>xs.map(x=>{const r=x.getBoundingClientRect();return {top:r.top,bottom:r.bottom,width:r.width}}));
   if(security.length!==2||security[0].bottom>security[1].top-5)
