@@ -6,22 +6,52 @@
 <div class="builder-grid"><div class="builder-main">
 <section class="mission-picker"><span class="section-index">STEP 01 / BUSINESS OBJECTIVE</span><h2>WHAT SHOULD PLAY DO?</h2><p>Choose a customer outcome. Every game uses the same underlying game engine. The journey and measurement change with your objective.</p><div class="purpose-options" id="purpose-options"><button type="button" class="purpose-option active" data-objective="upsell"><span>01 / GROW THE ORDER</span><strong>PLAY TO UPSELL ↗</strong><small>Suggest an add-on after the game</small></button><button type="button" class="purpose-option" data-objective="return"><span>02 / KEEP THEM COMING</span><strong>PLAY TO RETURN ↗</strong><small>Make a return visit worth remembering</small></button><button type="button" class="purpose-option" data-objective="refer"><span>03 / BRING A FRIEND</span><strong>PLAY TO REFER ↗</strong><small>Reward a verified recommendation</small></button><button type="button" class="purpose-option" data-objective="learn"><span>04 / TELL IT BETTER</span><strong>PLAY TO LEARN ↗</strong><small>Replace repetitive instructions with play</small></button></div></section>
 
-<section id="campaign-section" class="campaign-editor" hidden><span class="section-index">YOUR CAMPAIGN PROPOSAL</span><h2 id="campaign-heading">BUILD PLAY TO <em>UPSELL</em></h2><div id="campaign-wizard" class="campaign-wizard">
- <div id="proposal-loading" class="proposal-loading" role="status" hidden>GENERATING A NEW CAMPAIGN…</div>
- <div id="proposal-card" class="proposal-card" hidden>
-  <span class="proposal-eyebrow">YOUR NEXT CAMPAIGN IDEA</span>
-  <div class="proposal-game"><span id="proposal-game-icon" aria-hidden="true">✳</span><span id="proposal-game-name"></span></div>
-  <h3 id="proposal-title"></h3>
-  <p id="proposal-description"></p>
-  <div class="proposal-offer"><span>AFTER THE GAME</span><strong id="proposal-product"></strong><p id="proposal-offer"></p><span id="proposal-cta"></span></div>
-  <p id="proposal-quiz" hidden></p>
-  <div class="proposal-actions"><button id="proposal-approve" class="solid-btn" type="button">APPROVE AND PUBLISH ↗</button><button id="proposal-reject" type="button">NOT THIS ONE · NEW IDEA</button></div>
-  <p class="proposal-trust">NOTHING IS PUBLISHED UNTIL YOU APPROVE.</p>
+<section id="campaign-section" class="campaign-editor" hidden>
+ <h2 id="campaign-heading">YOUR CUSTOMERS' GAME</h2>
+ <p class="customer-journey-intro">YOUR CUSTOMER OPENS YOUR LINK, PLAYS A SHORT GAME, AND SEES YOUR MESSAGE AFTERWARDS. HERE IS WHAT EACH STEP LOOKS LIKE.</p>
+ <div id="campaign-wizard" class="campaign-wizard">
+  <div id="proposal-loading" class="proposal-loading" role="status" hidden>GENERATING A NEW CAMPAIGN…</div>
+  <div id="proposal-card" class="proposal-card" hidden>
+   <span class="proposal-eyebrow">CUSTOMER EXPERIENCE PREVIEW</span>
+   <h3 id="proposal-title"></h3>
+   <p id="proposal-description" class="proposal-owner-excerpt"></p>
+   <div class="proposal-flow" role="group" aria-label="Customer journey preview">
+    <button type="button" data-customer-stage="0" aria-pressed="false"><span>01</span><strong>OPENS THE LINK</strong></button>
+    <button type="button" data-customer-stage="1" aria-pressed="false"><span>02</span><strong>PLAYS A GAME</strong></button>
+    <button type="button" data-customer-stage="2" aria-pressed="true"><span>03</span><strong>SEES YOUR MESSAGE</strong></button>
+   </div>
+   <div class="customer-preview">
+    <div class="customer-preview-heading"><span id="customer-preview-caption">AFTER THE GAME</span><span>PREVIEW · NOT LIVE</span></div>
+    <div class="customer-screen" aria-live="polite">
+     <div class="customer-screen-brand"><span id="customer-screen-logo">✳</span><span id="customer-screen-brand">YOUR BRAND</span></div>
+     <section id="customer-stage-start" class="customer-stage" hidden>
+      <span class="customer-screen-overline">WELCOME TO YOUR GAME</span>
+      <h4 id="customer-welcome-title"></h4>
+      <p id="customer-welcome-desc"></p>
+      <span class="customer-preview-button">START THE GAME ↗</span>
+     </section>
+     <section id="customer-stage-game" class="customer-stage" hidden>
+      <span class="customer-screen-overline">A SHORT GAME ON YOUR PHONE</span>
+      <div class="customer-game-symbol" id="proposal-game-icon" aria-hidden="true">✳</div>
+      <h4 id="proposal-game-name"></h4>
+      <p id="customer-game-description"></p>
+      <span class="customer-preview-button">GAME PLAY</span>
+     </section>
+     <section id="customer-stage-result" class="customer-stage">
+      <span class="customer-screen-overline">AFTER THE GAME</span>
+      <div class="proposal-offer"><strong id="proposal-product"></strong><p id="proposal-offer"></p><span id="proposal-cta" class="customer-preview-button"></span></div>
+      <div id="customer-quiz-preview" hidden><strong id="proposal-quiz"></strong><div id="customer-quiz-options"></div></div>
+     </section>
+    </div>
+    <p class="customer-preview-note">THIS IS A REPRESENTATIVE PREVIEW, NOT A PLAYABLE GAME. THE CUSTOMER WILL SEE YOUR APPROVED CONTENT INSIDE THE REAL GAME.</p>
+   </div>
+   <div class="proposal-actions"><button id="proposal-approve" class="solid-btn" type="button">APPROVE AND PUBLISH ↗</button><button id="proposal-reject" type="button">NOT THIS ONE · NEW IDEA</button></div>
+   <p class="proposal-trust">NOTHING IS PUBLISHED UNTIL YOU APPROVE.</p>
+  </div>
+  <div id="proposal-published" class="proposal-published" hidden><strong>YOUR CAMPAIGN IS LIVE!</strong><p>SHARE THE GAME WITH YOUR CUSTOMERS.</p><a id="proposal-open" href="#" target="_blank" rel="noopener">OPEN CAMPAIGN ↗</a><button id="proposal-new" type="button">MAKE ANOTHER SUGGESTION</button></div>
+  <div id="proposal-error" class="notice error" role="alert" hidden></div>
  </div>
- <div id="proposal-published" class="proposal-published" hidden><strong>YOUR CAMPAIGN IS LIVE!</strong><p>SHARE THE GAME WITH YOUR CUSTOMERS.</p><a id="proposal-open" href="#" target="_blank" rel="noopener">OPEN CAMPAIGN ↗</a><button id="proposal-new" type="button">MAKE ANOTHER SUGGESTION</button></div>
- <div id="proposal-error" class="notice error" role="alert" hidden></div>
- </div>
- </section>
+</section>
 
 </div>
 <aside class="studio-aside"><span>LIVE DIRECTION / YOUR WORLD</span><div id="editor-preview" class="phone-frame theme-atelier"><span class="phone-flag">NOW PLAYING / YOUR BRAND</span><span class="phone-symbol" id="preview-logo">✳</span><h3 id="preview-name">YOUR<br>BRAND.</h3><p id="preview-tagline">A little fun while you wait.</p><div class="phone-game"><span>✦</span><span>◈</span><span>❀</span></div></div><p class="studio-note">This is a direction preview, not a screenshot of the full game. Launch the lounge to play all ten.</p><div class="studio-note">AI is optional: only use it where it helps generate a good brand voice or content safely. Game runtime never waits for AI.</div><button id="ai-suggest" type="button" class="mini-link">✦ SUGGEST A WELCOME LINE</button></aside>
