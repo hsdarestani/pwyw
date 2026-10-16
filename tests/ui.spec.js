@@ -41,7 +41,7 @@ const {chromium}=require('playwright');
   if(resultBg==='rgb(216, 255, 62)')throw Error('Unbranded neon result overlay still appears for Luna Coffee');
   await page.evaluate(()=>document.getElementById('finish-modal').hidden=true);
   const canvasCopy=await page.evaluate(()=>window.PWYWArcade?.uiText?.('TAP TO START'));
-  if(canvasCopy!=='برای شروع لمس کن')throw Error('Canvas game UI did not localize to Persian: '+canvasCopy);
+  if(canvasCopy!=='برای شروع روی صفحه بزن')throw Error('Canvas game UI did not localize to Persian: '+canvasCopy);
 
   const localizedGoal=await page.locator('[data-objective=refer]').innerText();
   if(!localizedGoal.includes('دعوت از دوستان'))throw Error('Customer-facing goal still reads as a literal business translation: '+localizedGoal);
