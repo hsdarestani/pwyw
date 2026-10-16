@@ -425,7 +425,7 @@
     ["DEMO ONLY — NO VALID REWARD","NUR DEMO — KEIN ECHTER PREIS","فقط نسخه آزمایشی — بدون پاداش واقعی"],
     ["Preview campaign only. No real reward, offer or discount is issued.","Nur Vorschau. Es wird keine echte Prämie oder Ermäßigung ausgegeben.","این فقط پیش‌نمایش است؛ پاداش یا تخفیف واقعی صادر نمی‌شود."],
     ["Show this code to the business. Staff must verify a real action before counting it.","Zeig diesen Code im Betrieb. Das Personal muss die Aktion bestätigen.","این کد را به کسب‌وکار نشان بده؛ کارکنان باید اقدام واقعی را تأیید کنند."],
-    ["Play with me","Spiel mit mir","با من بازی کن"]
+    ["Play with me","Spiel mit mir","با من بازی کن"],
     ["PWYW — Make waiting worth it.","PWYW — Warten lohnt sich.","PWYW — انتظار را به فرصت تبدیل کن."],
     ["PWYW® Brand Lab — Build games with a purpose","PWYW® Markenstudio — Spiele mit Wirkung","استودیوی PWYW® — بازی‌هایی با هدف"],
     ["PWYW® Game Lounge","PWYW® Spielwelt","دنیای بازی PWYW®"],
