@@ -20,7 +20,14 @@ def main():
         if row:
             if row["role"]!="admin":
                 raise SystemExit("Existing merchant account cannot be silently promoted")
-            print("Existing operator retained; password unchanged")
+            stored=con.execute("SELECT password_hash FROM users WHERE id=?",(row["id"],)).fetchone()
+            if app.check_password(password,stored["password_hash"]):
+                print("Existing operator credentials already current")
+                return
+            con.execute("UPDATE users SET password_hash=? WHERE id=?",
+                        (app.password_hash(password),row["id"]))
+            con.execute("DELETE FROM sessions WHERE user_id=?",(row["id"],))
+            print("Existing operator password rotated from Actions secrets; sessions revoked")
             return
         con.execute("INSERT INTO users(email,password_hash,role) VALUES(?,?,?)",
                     (email,app.password_hash(password),"admin"))
