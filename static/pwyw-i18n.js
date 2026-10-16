@@ -413,7 +413,19 @@
     ["What should I know?","Was muss ich wissen?","چه چیزی باید بدانم؟"],
     ["Read the important preparation steps","Wichtige Hinweise lesen","خواندن نکات ضروری"],
     ["Service guide","Servicehinweise","راهنمای خدمات"],
-    ["I UNDERSTAND ✓","VERSTANDEN ✓","متوجه شدم ✓"]
+    ["I UNDERSTAND ✓","VERSTANDEN ✓","متوجه شدم ✓"],
+    ["CREATE MY CHALLENGE ↗","CHALLENGE ERSTELLEN ↗","ساخت چالش ↗"],
+    ["Swipe or use arrows to collect marks and avoid the walls.","Wischen oder Pfeiltasten nutzen: Symbole sammeln, Wände meiden.","انگشتت را بکش یا از کلیدهای جهت استفاده کن؛ علامت‌ها را جمع کن و به دیوار نخور."],
+    ["Move the paddle. Break every glowing block.","Schiebe den Schläger und zerstöre alle leuchtenden Blöcke.","راکت را جابه‌جا کن و همه آجرهای درخشان را بشکن."],
+    ["Tap to fly through the gates.","Tippen, um durch die Tore zu fliegen.","لمس کن تا از بین دروازه‌ها پرواز کنی."],
+    ["Catch the bright objects and dodge the dark ones.","Fange die hellen Objekte und meide die dunklen.","اشیای روشن را بگیر و از اشیای تیره دوری کن."],
+    ["Tap flowers before they fade away.","Tippe die Blumen an, bevor sie verblühen.","قبل از محو شدن گل‌ها، روی آن‌ها بزن."],
+    ["Switch between three lanes and dodge obstacles.","Wechsle zwischen drei Bahnen und weiche Hindernissen aus.","بین سه مسیر جابه‌جا شو و از موانع جاخالی بده."],
+    ["Watch the pattern, then repeat it. Tap quadrants 1 to 4.","Präge dir das Muster ein und wiederhole es. Tippe Felder 1 bis 4.","الگو را به خاطر بسپار و تکرار کن؛ مربع‌های ۱ تا ۴ را لمس کن."],
+    ["DEMO ONLY — NO VALID REWARD","NUR DEMO — KEIN ECHTER PREIS","فقط نسخه آزمایشی — بدون پاداش واقعی"],
+    ["Preview campaign only. No real reward, offer or discount is issued.","Nur Vorschau. Es wird keine echte Prämie oder Ermäßigung ausgegeben.","این فقط پیش‌نمایش است؛ پاداش یا تخفیف واقعی صادر نمی‌شود."],
+    ["Show this code to the business. Staff must verify a real action before counting it.","Zeig diesen Code im Betrieb. Das Personal muss die Aktion bestätigen.","این کد را به کسب‌وکار نشان بده؛ کارکنان باید اقدام واقعی را تأیید کنند."],
+    ["Play with me","Spiel mit mir","با من بازی کن"]
   ];
   for (const [source,de,fa] of entries) catalog.set(source.trim(),{de,fa});
   const normalized = new WeakMap();
@@ -476,7 +488,7 @@
     if(el.tagName==='A' && el.hasAttribute('href')){
       const href=el.getAttribute('href');
       if(href && href.startsWith('/') && !href.startsWith('//') && !href.startsWith('/static/') && !href.startsWith('/qr/')){
-        try {const u=new URL(href,location.origin);u.searchParams.set('lang',selected);el.setAttribute('href',u.pathname+u.search+u.hash);}catch{}
+        try {const u=new URL(href,location.origin);u.searchParams.set('lang',selected);{const next=u.pathname+u.search+u.hash;if(href!==next)el.setAttribute('href',next);}}catch{}
       }
     }
   }
@@ -500,6 +512,7 @@
     if(locale!=='fa'&&locale!=='de')return;
     selected=locale;
     try {localStorage.setItem('pwyw.locale',locale)}catch {}
+    try {const u=new URL(location.href);u.searchParams.set('lang',locale);history.replaceState(history.state,'',u.pathname+u.search+u.hash)} catch {}
     render();
   }
   function addSwitch() {
