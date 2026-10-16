@@ -140,13 +140,39 @@ const {chromium}=require('playwright');
   await page.locator('input[name=password]').fill('StrongTestPassword123');
   await page.locator('#auth-submit').click();
   await page.locator('#app-shell').waitFor({state:'visible'});
+  // Native form language is the primary editor. Secondary copy remains editable, but hidden.
+  await page.locator('#pwyw-language-switch [data-lang=fa]').click();
   await page.locator('[data-objective="return"]').first().click();
+  if(await page.locator('#campaign-copy-primary #campaign-copy-fa').count()!==1)
+    throw Error('Persian editor is not the primary campaign form');
+  if(await page.locator('#campaign-copy-secondary #campaign-copy-de').count()!==1)
+    throw Error('German content is not preserved in secondary editor');
+  if(await page.locator('#campaign-alternate').evaluate(x=>x.open))
+    throw Error('Secondary-language inputs should start collapsed');
+  const faDefault=await page.locator('#campaign-fa-title').inputValue();
+  if(!faDefault.includes('دفعه بعد'))throw Error('Persian campaign still displays German default instead of native text: '+faDefault);
+  if(!await page.locator('#campaign-title').inputValue())throw Error('German campaign data was lost');
+  await page.locator('#campaign-copy-primary #campaign-fa-title').fill('پیشنهاد بازگشت مخصوص ما');
+  await page.locator('#pwyw-language-switch [data-lang=de]').click();
+  if(await page.locator('#campaign-copy-primary #campaign-copy-de').count()!==1)
+    throw Error('German editor was not restored');
+  await page.locator('#pwyw-language-switch [data-lang=fa]').click();
+  if(await page.locator('#campaign-fa-title').inputValue()!=='پیشنهاد بازگشت مخصوص ما')
+    throw Error('Language switching erased unsaved Persian edits');
+  await page.locator('#pwyw-language-switch [data-lang=de]').click();
   await page.locator('#brand-name').fill('Playwright Garage');
   await page.locator('#brand-slug').fill('playwright-garage');
   await page.locator('[data-theme=neon]').click();
   await page.screenshot({path:'/tmp/pwyw-studio-mobile.png',fullPage:true});
   await page.locator('#brand-save').click();
   await page.locator('#results-section').waitFor({state:'visible'});
+  // Phone screen layout: security fields must be separate, QR must fit on screen.
+  const security=await page.locator('#password-change input').evaluateAll(xs=>xs.map(x=>{const r=x.getBoundingClientRect();return {top:r.top,bottom:r.bottom,width:r.width}}));
+  if(security.length!==2||security[0].bottom>security[1].top-5)
+    throw Error('Security password inputs overlap on mobile');
+  const qr=await page.locator('#qr-image').evaluate(el=>{const r=el.getBoundingClientRect();return {w:r.width,left:r.left,right:r.right}});
+  if(qr.w<110||qr.right>innerWidth+2||qr.left<0)throw Error('Mobile QR sizing is broken: '+JSON.stringify(qr));
+
   const url=await page.locator('#open-play').getAttribute('href');
   if(new URL(url,base).pathname!=='/play/playwright-garage')throw Error('New brand not saved');
   await page.locator('#campaign-title').fill('Your next visit starts here');
