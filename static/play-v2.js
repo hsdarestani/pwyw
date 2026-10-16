@@ -578,7 +578,7 @@
   $("close-result").addEventListener("click",showHome);
   buildGamePicks();
   window.addEventListener("pagehide",cleanup);
-  document.addEventListener('pwyw:locale',()=>{if(brand)brandView(brand);chooseObjective(objective);if(!$("finish-modal").hidden)renderReward()});
+  document.addEventListener('pwyw:language-changed',()=>{if(brand)brandView(brand);chooseObjective(objective);if(!$("finish-modal").hidden)renderReward()});
   request("/api/public/brands/"+encodeURIComponent(slug)).then(async b=>{
     brandView(b);await fetchBrandArt();await loadCampaigns();
   }).catch(()=>{
