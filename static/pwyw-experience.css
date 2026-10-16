@@ -1,0 +1,275 @@
+/* PWYW / visual coherence pass · 2026-10-16
+   Shared experience language, deliberate brand variation, mobile-first finish flow.
+   No changes to transaction/reward semantics. */
+:root{
+  --pw-night:#101625;--pw-violet:#aa9afa;--pw-rose:#ff967b;
+  --pw-paper:#f5f4f0;--pw-hairline:#dcdfe8;
+}
+html{scroll-padding-top:85px}
+body{overflow-x:clip}
+button,a{-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:3px solid #7d6beb;outline-offset:3px}
+[hidden]{display:none!important}
+
+/* Editorial site / deliberate rhythm, not a dozen unrelated page templates. */
+.site-nav{height:76px;gap:22px;border-bottom-color:#353d55}
+.site-nav nav{gap:25px}
+.site-nav nav a,.nav-link{font-size:13px}
+.hero{min-height:675px}
+.hero-grid{min-height:675px;max-width:1420px}
+.hero-copy{padding-top:88px;padding-bottom:70px}
+.hero h1{font-size:clamp(68px,7.8vw,114px);line-height:1.04;max-width:780px;margin-block:36px 31px}
+.hero-description{font-size:clamp(16px,1.25vw,19px);line-height:1.78;max-width:590px}
+.hero-caption{margin-top:53px}
+.hero-visual{min-height:610px}
+.demo-device{transform:rotate(4deg);box-shadow:10px 22px 0 #05070e50,0 40px 80px #02030a60}
+.signal-strip{padding-block:20px;gap:clamp(14px,3.2vw,42px)}
+.manifesto,.four,.game-lab{padding-top:83px;padding-bottom:91px}
+.section-cap{margin-bottom:43px;font-size:11px}
+.manifesto-content{gap:45px;align-items:center}
+.manifesto h2,.four h2,.studio-story h2,.game-lab h2{line-height:1.12;margin:12px 0}
+.manifesto-right p,.four-intro>p,.story-head>p,.lab-head>p{font-size:16px;line-height:1.8}
+.goal-row{min-height:160px;grid-template-columns:48px minmax(0,1fr) 118px 135px 24px;gap:15px}
+.goal-title h3{font-size:clamp(28px,3.1vw,42px)}
+.goal-illustration{font-size:67px}
+.goal-title p{font-size:14px}
+.studio-story{padding-top:86px;padding-bottom:86px}
+.world-panel{min-height:410px;border-radius:24px}
+.world-stage{height:255px}
+.lab-list a{padding:24px 19px}
+.lab-list a b{font-size:17px}
+.closing{min-height:500px;padding-block:95px}
+.closing h2{line-height:1.08}
+
+/* One mobile game lounge that really feels native to the merchant world. */
+.player-v2{
+  font-family:var(--font);background:color-mix(in srgb,var(--pbg),#080d18 18%);
+}
+.player-v2 .play-area{
+  width:min(100%,480px);padding-inline:clamp(16px,5vw,27px);
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--pfg),transparent 88%),0 28px 85px #00000024;
+}
+.player-v2 .play-area:before{opacity:.18;pointer-events:none}
+.play-header{height:79px;border-bottom:1px solid color-mix(in srgb,var(--pfg),transparent 78%);gap:7px}
+.play-brand{max-width:none;min-width:0;flex:1;justify-content:center;font-size:clamp(12px,3.1vw,15px)}
+.play-brand strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.play-nav{height:42px;width:42px;flex-basis:42px;border:1px solid color-mix(in srgb,var(--pfg),transparent 57%);background:color-mix(in srgb,var(--pcard),transparent 30%)}
+.play-nav:hover{background:var(--pcard)}
+.campaign-intro{
+  isolation:isolate;padding:38px 22px 33px;margin:16px 0 15px;
+  border:1px solid color-mix(in srgb,var(--pfg),transparent 70%)!important;
+  border-radius:24px;background-color:var(--pcard);
+  box-shadow:0 10px 25px #0000000b;overflow:hidden;
+}
+.campaign-intro:after{
+  content:"";position:absolute;width:190px;height:190px;border:1px solid currentColor;
+  border-radius:50%;opacity:.14;inset:auto -60px -83px auto;pointer-events:none
+}
+.campaign-intro .eyebrow{font-size:10px;letter-spacing:.025em;opacity:.7}
+.campaign-intro h1{
+  font-family:var(--pstyle);font-size:clamp(31px,8vw,46px);
+  line-height:1.16;margin:31px 0 14px;max-width:330px;
+  text-wrap:balance;letter-spacing:-.04em;text-shadow:none!important;
+}
+.campaign-intro>p{max-width:300px;font-size:14px;line-height:1.7}
+.campaign-intro>.scene-emblem{top:30px;right:12px;z-index:-1;opacity:.22;font-size:125px}
+.purpose-dial{gap:8px;scrollbar-width:none;padding:2px 0 16px}
+.purpose-dial::-webkit-scrollbar{display:none}
+.purpose-dial button{
+  min-height:40px;flex:0 0 auto;line-height:1.2;border-radius:99px;
+  border:1px solid color-mix(in srgb,var(--pfg),transparent 62%);
+  font-size:11px;padding:11px 14px;
+}
+.purpose-dial button.selected{background:var(--pfg);color:var(--pbg);box-shadow:0 3px 11px #00000018}
+.purpose-brief{
+  background:color-mix(in srgb,var(--pcard),transparent 5%);
+  border-inline-start:3px solid var(--brand-accent,var(--pfg));
+  border-left:0;padding:15px 16px;border-radius:0 12px 12px 0;
+  font-size:12px;line-height:1.75;margin-bottom:30px;
+}
+.purpose-brief strong{font-size:15px;margin-bottom:4px}
+.play-lounge-title{font-size:12px;font-weight:700;line-height:1.5;padding:13px 0}
+.play-game-list{gap:12px;margin-top:5px}
+.game-pick,.theme-atelier .game-pick,.theme-neon .game-pick,.theme-pop .game-pick,.theme-noir .game-pick,.theme-garden .game-pick,.theme-heritage .game-pick,.theme-dream .game-pick,.theme-chrome .game-pick{
+  border:1px solid color-mix(in srgb,var(--pfg),transparent 57%);
+  border-radius:17px;clip-path:none;min-height:150px;padding:15px;
+  box-shadow:none;background:var(--pcard);color:var(--pfg);
+  text-align:start;
+}
+.game-pick:nth-child(4n+2){background:color-mix(in srgb,var(--pcard),var(--pshape) 22%)}
+.game-pick .pick-icon{margin:7px 0 auto;font-size:44px;transform:none}
+.game-pick b{font-size:clamp(13px,3.3vw,16px);line-height:1.25;letter-spacing:0}
+.game-pick small{font-size:10px;opacity:.72;line-height:1.5}
+.game-pick:active{transform:scale(.97)}
+.play-footer{font-size:10px;line-height:1.5;opacity:.74}
+.game-topline{font-size:14px;line-height:1.4}
+.game-stats{border-block:1px solid color-mix(in srgb,var(--pfg),transparent 52%);padding-block:15px}
+.game-stats span{font-size:11px}
+.game-stats b{font-size:23px}
+.game-instructions{font-size:13px;line-height:1.75}
+.touch-key{min-height:60px;border-radius:15px}
+
+/* The result belongs to the same brand as the play surface.
+   Replace hard-coded fluorescent green + black with the active merchant palette. */
+.play-result{
+  inset:0;z-index:100;padding:16px max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom));
+  background:rgba(5,10,20,.72);backdrop-filter:blur(11px);
+  align-items:center;justify-items:center;overflow:hidden;
+}
+.player-v2.is-result-open{overflow:hidden}
+.result-inside{
+  width:min(100%,470px);max-height:min(94dvh,850px);overflow-y:auto;overscroll-behavior:contain;
+  padding:clamp(20px,5vw,29px);border:1px solid color-mix(in srgb,var(--pfg),transparent 62%);
+  border-radius:24px;background:var(--pbg);color:var(--pfg);
+  box-shadow:0 24px 95px #0008;scrollbar-width:thin;
+}
+.result-inside>span{font-size:11px;line-height:1.6;opacity:.75}
+.result-inside h2{font-family:var(--pstyle);font-size:clamp(28px,7vw,37px);line-height:1.17;margin:15px 0}
+.result-inside>p{font-size:14px;line-height:1.7}
+.result-score{font-size:27px;line-height:1.3;margin:19px 0;color:var(--pfg)}
+.reward-box{
+  margin:17px 0 22px;padding:18px;background:var(--pcard);color:var(--pfg);
+  border:1px solid color-mix(in srgb,var(--pfg),transparent 67%);border-radius:19px;
+}
+.reward-box span{font-size:11px;line-height:1.5;opacity:.8}
+.reward-box strong{font:800 21px/1.3 var(--font);margin:7px 0}
+.reward-box p{font-size:13px;line-height:1.85}
+.reward-box button,.reward-box a,.action-btn{
+  background:var(--pfg);color:var(--pbg);border:1px solid var(--pfg);
+  border-radius:12px;padding:13px 15px;line-height:1.5;font-size:12px;
+  font-family:var(--font);font-weight:750;text-align:center;justify-content:center;
+}
+.reward-box button:hover,.reward-box a:hover{opacity:.85}
+.reward-code{font:800 21px var(--font);letter-spacing:.02em}
+.quiz-slot{
+  padding:0;margin:18px 0 8px;border:0;background:transparent;border-radius:0;
+}
+.quiz-slot h4{font:800 17px/1.6 var(--font);margin:0 0 10px}
+.quiz-slot>p{font:500 13px/1.7 var(--font);margin:0 0 15px;opacity:.75}
+.quiz-answer{
+  display:flex;width:100%;align-items:center;gap:12px;min-height:57px;
+  margin:9px 0;padding:14px;border:1px solid color-mix(in srgb,var(--pfg),transparent 70%);
+  border-radius:13px;background:var(--pbg);color:var(--pfg);
+  font:650 13px/1.65 var(--font);text-align:start;opacity:1;
+}
+.quiz-answer:hover:not(:disabled){background:color-mix(in srgb,var(--pshape),var(--pcard) 55%)}
+.quiz-answer:disabled{opacity:.78;cursor:default}
+.quiz-answer.is-picked{border-color:var(--pfg);box-shadow:inset 0 0 0 1px var(--pfg)}
+.quiz-feedback{border-radius:12px;background:var(--pfg);color:var(--pbg);padding:14px;font:650 13px/1.7 var(--font)}
+.result-inside label.overline{display:block;font-size:12px;line-height:1.7}
+.result-inside input#nickname{
+  width:auto!important;flex:1;min-width:0;min-height:48px!important;
+  border:1px solid color-mix(in srgb,var(--pfg),transparent 55%)!important;
+  border-radius:12px!important;background:var(--pcard)!important;color:var(--pfg);font-size:14px!important;
+}
+.result-inside .share-row{flex-wrap:nowrap;align-items:stretch;gap:9px}
+.result-inside #post-score{width:auto!important;flex:0 0 auto;margin-top:0;min-height:48px}
+.result-inside #play-again{width:100%;padding:15px 18px;justify-content:space-between}
+.result-inside #close-result{display:block;margin:10px auto 0;color:var(--pfg);font-size:12px}
+.leaderboard{font:600 12px/1.6 var(--font);max-height:170px}
+.leaderboard p{padding:10px 0;border-color:color-mix(in srgb,var(--pfg),transparent 77%)}
+
+/* RTL designed intentionally, rather than mirrored by accident. */
+html[lang="fa"] body{font-family:'Estedad',sans-serif}
+html[lang="fa"] :is(h1,h2,h3,h4,.hero h1,.campaign-intro h1,.result-inside h2,.goal-title h3,.brand-type,.studio-auth-art h1){
+  font-family:'Estedad',sans-serif!important;font-weight:900!important;
+  line-height:1.33!important;letter-spacing:-.025em!important;
+}
+html[lang="fa"] .hero h1{font-size:clamp(48px,6.5vw,91px);line-height:1.42!important}
+html[lang="fa"] .campaign-intro h1{font-size:clamp(29px,7.4vw,41px);line-height:1.45!important;margin-block:22px 13px}
+html[lang="fa"] .purpose-brief{border-left:0;border-inline-start:3px solid var(--brand-accent,var(--pfg));border-radius:12px 0 0 12px}
+html[lang="fa"] .campaign-intro{text-align:right}
+html[lang="fa"] .campaign-intro>.scene-emblem{right:auto;left:10px}
+html[lang="fa"] .quiz-answer{text-align:right;font-family:'Estedad',sans-serif;font-size:13px}
+html[lang="fa"] .result-inside{line-height:1.9}
+html[lang="fa"] .result-inside h2{font-size:clamp(29px,7vw,36px)}
+html[lang="fa"] .result-inside :is(.reward-box strong,.reward-box p,.quiz-slot h4,.quiz-slot>p){font-family:'Estedad',sans-serif}
+html[lang="fa"] .game-board,html[lang="fa"] canvas{direction:ltr}
+
+/* Contrastful thematic variations instead of every result sharing one neon template. */
+.theme-neon .result-inside,.theme-chrome .result-inside{background:color-mix(in srgb,var(--pbg),#fff 5%)}
+.theme-noir .result-inside{background:#24202d}
+.theme-garden .campaign-intro{border-radius:26px 7px 25px 10px}
+.theme-pop .campaign-intro{border-radius:30px}
+.theme-heritage .campaign-intro{border-radius:6px}
+
+@media(max-width:980px){
+ .site-nav{padding-inline:24px}
+ .site-nav nav{gap:13px}
+ .hero-grid{grid-template-columns:1.05fr .95fr}
+ .hero h1{font-size:clamp(56px,8vw,85px)}
+ .demo-device{transform:scale(.89) rotate(4deg)}
+ .world-panel{min-height:360px}
+ .world-stage{height:215px}
+}
+@media(max-width:760px){
+ .site-nav{height:67px;padding-inline:17px;gap:7px}
+ .site-nav nav{display:none}
+ .site-nav .brand-glyph{width:35px;height:35px}
+ .site-nav .brand-type{font-size:23px}
+ .site-nav .nav-link{padding:11px 12px;font-size:11px;gap:7px}
+ .site-nav .pwyw-locale-switch{margin-inline-start:auto}
+ .hero{min-height:0}
+ .hero-grid{display:flex;flex-direction:column;min-height:0;padding-inline:22px}
+ .hero-copy{padding:64px 0 22px}
+ .hero h1{font-size:clamp(61px,14vw,94px);margin:25px 0}
+ .hero-description{font-size:16px}
+ .hero-caption{margin-top:35px}
+ .hero-visual{min-height:495px;max-height:510px}
+ .demo-device{transform:scale(.72) rotate(5deg)}
+ .orbit-a{max-height:88%;height:450px}
+ .orbit-b{height:340px}
+ .floating-tile{transform:scale(.7) rotate(-12deg)}
+ .tile-two{transform:scale(.7) rotate(12deg)}
+ .section-cap{margin-bottom:32px}
+ .manifesto,.four,.game-lab{padding:63px 22px}
+ .manifesto-content{display:block}
+ .manifesto h2,.four h2,.studio-story h2,.game-lab h2{font-size:clamp(42px,10vw,70px);margin:20px 0}
+ .manifesto-right{margin-top:32px}
+ .four-intro,.story-head,.lab-head{display:block;margin-bottom:36px}
+ .four-intro>p,.story-head>p,.lab-head>p{margin-top:16px;max-width:530px}
+ .goal-row{grid-template-columns:30px minmax(0,1fr) 31px;min-height:128px;padding:16px 0;gap:11px}
+ .goal-title h3{font-size:clamp(22px,5vw,32px)}
+ .goal-title p{font-size:12px;line-height:1.6}
+ .goal-illustration,.goal-outcome{display:none}
+ .goal-arrow{font-size:21px}
+ .studio-story{padding:63px 22px}
+ .worlds-grid{display:grid;grid-template-columns:1fr;gap:14px}
+ .world-panel{min-height:285px}
+ .world-stage{height:160px}
+ .world-art{font-size:100px}
+ .world-ring{width:150px;height:150px}
+ .lab-list{grid-template-columns:1fr}
+ .lab-list a{padding:19px}
+ .closing{min-height:0;padding:76px 22px}
+ .closing h2{font-size:clamp(54px,12vw,83px)}
+ .signal-strip{gap:10px;padding:16px 10px;flex-wrap:wrap;font-size:10px}
+ .signal-strip svg{width:18px;flex-basis:18px}
+ .site-footer{gap:15px}
+}
+@media(max-width:480px){
+ .player-v2 .play-area{box-shadow:none}
+ .play-brand{font-size:12px}
+ .pwyw-locale-switch{border-radius:99px}
+ .play-header{gap:5px}
+ .play-header .pwyw-locale-switch{margin:0}
+ .play-nav{width:38px;height:38px;flex-basis:38px}
+ .play-game-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .game-pick{min-height:140px!important;padding:12px!important}
+ .game-pick .pick-icon{font-size:37px}
+ .result-inside{width:100%;max-height:calc(100dvh - 20px);padding:20px;border-radius:20px}
+ .play-result{padding:10px}
+ .result-inside #post-score{font-size:11px;padding-inline:10px}
+ .reward-box{padding:15px}
+ .hero-visual{min-height:400px;max-height:420px}
+ .demo-device{transform:scale(.6) rotate(4deg)}
+ .floating-tile{display:none}
+ .hero h1{font-size:clamp(53px,14vw,73px)}
+ .world-panel{min-height:270px}
+ .lab-list a{grid-template-columns:27px minmax(0,1fr) 63px 17px;padding:17px 12px}
+ .lab-list a b{font-size:15px}
+ .lab-list a small{font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
