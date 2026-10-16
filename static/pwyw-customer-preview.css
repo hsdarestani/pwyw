@@ -1,0 +1,139 @@
+/* PWYW customer journey preview — owner sees what happens before approving. */
+.studio-v2 #campaign-section .customer-journey-intro{
+  margin:0 0 16px;color:#53566e;
+  font:500 14px/1.85 'Estedad',Manrope,sans-serif;max-width:760px;
+}
+.studio-v2 .proposal-card{padding:clamp(18px,2.8vw,26px)}
+.studio-v2 .proposal-card h3{
+  font:800 clamp(21px,4.4vw,29px)/1.5 'Estedad',Manrope,sans-serif;
+  margin:8px 0 3px;
+}
+.studio-v2 .proposal-card .proposal-owner-excerpt{font-size:13px;line-height:1.85;margin:0 0 16px;color:#53506b}
+.studio-v2 .proposal-flow{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;margin:18px 0 13px;max-width:100%;
+}
+.studio-v2 .proposal-flow button{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:70px;border-radius:13px;border:1px solid #d6d0e8;
+  background:#fff;color:#625675;padding:8px 7px;cursor:pointer;
+  transition:background .15s,border-color .15s;color:inherit;
+}
+.studio-v2 .proposal-flow button span{
+  font:800 11px/1.4 Manrope,system-ui,sans-serif;
+  color:#7a70a4;margin-bottom:4px
+}
+.studio-v2 .proposal-flow button strong{
+  font:750 12px/1.5 'Estedad',Manrope,sans-serif;
+  text-align:center;overflow-wrap:anywhere;color:#423c5b
+}
+.studio-v2 .proposal-flow button[aria-pressed=true]{
+  background:#7260cb;color:#fff;border-color:#7260cb;
+}
+.studio-v2 .proposal-flow button[aria-pressed=true] strong,
+.studio-v2 .proposal-flow button[aria-pressed=true] span{color:white}
+.studio-v2 .proposal-flow button:focus-visible{outline:3px solid #443586;outline-offset:2px}
+.studio-v2 .customer-preview{
+  background:#ebe8f7;padding:16px;border-radius:20px;
+  border:1px solid #d4cee6;margin:10px 0 17px;min-width:0
+}
+.studio-v2 .customer-preview-heading{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin:0 0 13px}
+.studio-v2 .customer-preview-heading span{
+  font:750 11px/1.55 'Estedad',Manrope,sans-serif;color:#615785
+}
+.studio-v2 .customer-preview-heading span:last-child{font-weight:550;font-size:10px}
+.studio-v2 .customer-screen{
+  width:min(100%,370px);min-height:245px;margin:0 auto;
+  background:#fff;border:1px solid #ddd9e8;border-radius:23px;
+  padding:18px 18px 20px;box-shadow:0 14px 30px rgba(48,42,89,.09);
+  color:#1c1b2e;min-width:0
+}
+.studio-v2 .customer-screen-brand{
+  display:flex;align-items:center;gap:10px;
+  padding-bottom:12px;margin-bottom:14px;
+  border-bottom:1px solid #efedf4;
+  font:750 12px/1.5 'Estedad',Manrope,sans-serif;overflow-wrap:anywhere;
+}
+.studio-v2 #customer-screen-logo{
+  flex:0 0 31px;display:grid;place-items:center;
+  width:31px;height:31px;border-radius:11px;
+  background:#e8e3fb;color:#6d57b6;font-size:19px;
+}
+.studio-v2 .customer-stage[hidden]{display:none}
+.studio-v2 .customer-stage{min-width:0;display:flex;flex-direction:column;gap:10px;align-items:stretch}
+.studio-v2 .customer-screen-overline{
+  display:block;font:750 10px/1.6 'Estedad',Manrope,sans-serif;
+  color:#716695;
+}
+.studio-v2 .customer-stage h4{
+  font:850 21px/1.5 'Estedad',Manrope,sans-serif;
+  margin:0;color:#232039;overflow-wrap:anywhere
+}
+.studio-v2 .customer-stage p{
+  font:500 13px/1.85 'Estedad',Manrope,sans-serif;
+  margin:0;color:#555267;overflow-wrap:anywhere;
+}
+.studio-v2 .customer-preview-button{
+  display:flex;align-items:center;justify-content:center;
+  border-radius:12px;min-height:45px;padding:11px 13px;
+  background:#35294f;color:#fff;
+  font:750 12px/1.5 'Estedad',Manrope,sans-serif;
+  width:100%;margin-top:5px;text-align:center;
+}
+.studio-v2 .customer-game-symbol{
+  display:grid;place-items:center;align-self:center;
+  height:95px;width:95px;flex:0 0 95px;
+  border-radius:24px;background:#ede9fc;
+  font:850 48px/1 Manrope,sans-serif;color:#6751ba
+}
+.studio-v2 #customer-stage-game{text-align:center}
+.studio-v2 #customer-stage-result .proposal-offer{
+  display:flex;flex-direction:column;gap:10px;
+  padding:0;background:transparent;border:0;
+  box-shadow:none;margin:0;min-width:0;align-items:stretch
+}
+.studio-v2 #customer-stage-result .proposal-offer strong{
+  font:800 20px/1.5 'Estedad',Manrope,sans-serif;
+  color:#252038;margin:0;overflow-wrap:anywhere
+}
+.studio-v2 #customer-stage-result .proposal-offer p{
+  font:500 13px/1.85 'Estedad',Manrope,sans-serif;
+  color:#535166;margin:0;overflow-wrap:anywhere
+}
+.studio-v2 #customer-stage-result .proposal-offer span{
+  font:750 12px/1.6 'Estedad',Manrope,sans-serif
+}
+.studio-v2 #customer-quiz-preview{
+  margin-top:6px;border-top:1px solid #e6e3ee;
+  padding-top:12px
+}
+.studio-v2 #customer-quiz-preview strong{
+  display:block;font:750 14px/1.7 'Estedad',Manrope,sans-serif;
+  margin-bottom:8px;color:#272340
+}
+.studio-v2 .customer-quiz-option{
+  padding:9px 12px;background:#faf9fe;border:1px solid #e2dfea;
+  border-radius:9px;margin:6px 0;
+  font:550 12px/1.5 'Estedad',Manrope,sans-serif;
+}
+.studio-v2 .customer-preview-note{
+  font:500 11px/1.7 'Estedad',Manrope,sans-serif;
+  color:#5c5574;margin:13px 0 0;text-align:center;
+}
+.studio-v2 .proposal-actions{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.studio-v2 .proposal-actions button{
+  min-height:53px;padding:12px 14px;font-size:13px;
+}
+.studio-v2 .proposal-trust{margin-top:11px;text-align:center;font-size:11px}
+html[lang=fa] .studio-v2 .customer-screen{text-align:right}
+html[lang=de] .studio-v2 .customer-screen{text-align:left}
+@media(max-width:640px){
+ .studio-v2 .proposal-actions{grid-template-columns:1fr}
+ .studio-v2 .proposal-flow button{min-height:64px;padding:8px 4px}
+ .studio-v2 .proposal-flow button strong{font-size:11px;line-height:1.45}
+ .studio-v2 .customer-preview{padding:11px}
+ .studio-v2 .customer-screen{padding:14px 13px 16px;min-height:220px}
+ .studio-v2 .customer-stage h4{font-size:19px}
+ .studio-v2 .customer-screen-brand{font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){.studio-v2 .proposal-flow button{transition:none}}
