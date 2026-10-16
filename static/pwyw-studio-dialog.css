@@ -173,3 +173,16 @@ html[lang=fa] .studio-v2 .studio-settings-dialog #campaign-form label{text-align
 @media(prefers-reduced-motion:reduce){
  .studio-v2 .studio-settings-trigger{transition:none}
 }
+
+.studio-v2 .studio-settings-controls{display:flex;align-items:center;gap:11px;flex:0 0 auto}
+.studio-v2 .studio-settings-langs{display:flex;align-items:center;gap:3px;padding:3px;border:1px solid #ddd9e9;border-radius:99px;background:#f4f2fb}
+.studio-v2 .studio-settings-langs button{min-width:39px;min-height:36px;padding:6px 9px;border:0;border-radius:99px;background:transparent;color:#49405e;font:750 12px/1.4 'Estedad',Manrope,sans-serif;cursor:pointer}
+.studio-v2 .studio-settings-langs button[aria-pressed=true]{background:#705ccd;color:#fff}
+.studio-v2.studio-modal-open{overflow:hidden}
+@media(max-width:520px){
+ .studio-v2 .studio-settings-heading{gap:7px}
+ .studio-v2 .studio-settings-heading h2{font-size:21px}
+ .studio-v2 .studio-settings-controls{gap:6px}
+ .studio-v2 .studio-settings-langs button{min-width:34px;padding:5px 7px}
+ .studio-v2 #close-studio-settings{width:39px;height:39px;flex-basis:39px}
+}
