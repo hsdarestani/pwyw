@@ -15,6 +15,7 @@
   const gameLabels={memory:"Memory Match",merge:"Merge Lab 2048",rush:"Quick Tap",snake:"Snake Circuit",breaker:"Block Breaker",hop:"Sky Hop",orbit:"Orbit Catch",bloom:"Bloom Pop",lane:"Neon Lane",sequence:"Sequence"};
   const gameSymbols={memory:"▦",merge:"2048",rush:"✦",snake:"〰",breaker:"▤",hop:"➚",orbit:"✷",bloom:"❀",lane:"⟋⟍",sequence:"◉"};
   const gameHints={memory:"MATCH / 1–2 MIN",merge:"THINK / 90 SEC",rush:"REFLEX / 30 SEC",snake:"CLASSIC / 54 SEC",breaker:"ARCADE / 65 SEC",hop:"FLY / 52 SEC",orbit:"CATCH / 45 SEC",bloom:"POP / 40 SEC",lane:"ACTION / 48 SEC",sequence:"RECALL / 58 SEC"};
+  const localized=(obj,key)=>(window.PWYWI18N?.locale()==='fa' && obj?.translations?.fa?.[key])||obj?.[key]||'';
   const goalNames={upsell:"Play to Upsell",return:"Play to Return",refer:"Play to Refer",learn:"Play to Learn"};
   let objective="upsell",campaigns={},campaign=null,refCode=new URLSearchParams(location.search).get("ref")||"",rewardCode="";
   let brandArt={}; let brandedToken=null;
@@ -79,7 +80,7 @@
       document.querySelector('meta[name="theme-color"]')?.setAttribute("content",b.accent);
     }
     $("game-business").textContent=b.name.toUpperCase();
-    $("game-tagline").textContent=b.tagline||"A little fun with a real purpose.";
+    $("game-tagline").textContent=(window.PWYWI18N?.locale()==='fa'&&b.tagline_fa)?b.tagline_fa:(b.tagline||"A little fun with a real purpose.");
     $("scene-emblem").textContent=({cafe:"☕",restaurant:"✳",salon:"❀",auto:"⚡",hotel:"♢",health:"✧",other:"✷"})[b.industry]||"✷";
     if(b.logo_path){
       $("game-logo").src="/brand-logo/"+encodeURIComponent(b.logo_path);
@@ -117,8 +118,8 @@
     });
     $("purpose-title").textContent=goalNames[name];
     $("purpose-overline").textContent="YOUR MOMENT / "+name.toUpperCase();
-    $("purpose-summary").textContent=campaign?.description||"This experience has not been published by the business yet.";
-    $("game-heading").textContent=campaign?.title||"A LITTLE PLAY. A LOT MORE.";
+    $("purpose-summary").textContent=localized(campaign,'description')||"This experience has not been published by the business yet.";
+    $("game-heading").textContent=localized(campaign,'title')||"A LITTLE PLAY. A LOT MORE.";
     $("game-heading").style.overflowWrap="anywhere";
     document.querySelector(".purpose-brief").style.borderLeftColor=brand?.accent||"currentColor";
     const featured=campaign?.game||"orbit";
@@ -150,11 +151,12 @@
       const data=await request("/api/public/brands/"+encodeURIComponent(slug)+"/campaigns/learn");
       if(!data.quiz)return;
       slot.hidden=false;
-      const heading=document.createElement("h4");heading.textContent=data.quiz.question;
+      const heading=document.createElement("h4");heading.textContent=window.PWYWI18N?.locale()==='fa'&&data.translations?.fa?.quiz_question?data.translations.fa.quiz_question:data.quiz.question;
       slot.append(heading);
       const note=document.createElement("p");note.textContent="Choose the best answer. The result helps you understand the service, not win a prize.";
       slot.append(note);
-      data.quiz.options.forEach((answer,i)=>{
+      const quizAnswers=(window.PWYWI18N?.locale()==='fa'&&data.translations?.fa?.quiz_options?.length===3)?data.translations.fa.quiz_options:data.quiz.options;
+       quizAnswers.forEach((answer,i)=>{
         const btn=document.createElement("button");btn.type="button";btn.textContent=(i+1)+". "+answer;
         btn.className="quiz-answer";
         btn.addEventListener("click",async()=>{
@@ -177,8 +179,8 @@
     $("quiz-slot").hidden=true;
     if(objective==="learn"){ $("claim-reward").hidden=true;renderQuiz(); }
     $("reward-kicker").textContent="PLAY TO "+objective.toUpperCase()+" / YOUR NEXT MOVE";
-    $("reward-title").textContent=campaign?.product_name||"Your next move.";
-    $("reward-copy").textContent=campaign?.offer||"Ask the team about your next step.";
+    $("reward-title").textContent=localized(campaign,'product_name')||"Your next move.";
+    $("reward-copy").textContent=localized(campaign,'offer')||"Ask the team about your next step.";
     $("claim-reward").textContent=objective==="learn"?"I UNDERSTAND ✓":
       objective==="refer"?"CREATE MY CHALLENGE ↗":"GET MY CODE ↗";
     if(!campaign){
@@ -576,6 +578,7 @@
   $("close-result").addEventListener("click",showHome);
   buildGamePicks();
   window.addEventListener("pagehide",cleanup);
+  document.addEventListener('pwyw:locale',()=>{if(brand)brandView(brand);chooseObjective(objective);if(!$("finish-modal").hidden)renderReward()});
   request("/api/public/brands/"+encodeURIComponent(slug)).then(async b=>{
     brandView(b);await fetchBrandArt();await loadCampaigns();
   }).catch(()=>{
