@@ -180,6 +180,13 @@ const {chromium}=require('playwright');
   if(await page.locator('[data-customer-stage="2"]').getAttribute('aria-pressed')!=='true')
     throw Error('Postgame customer message must be previewed by default');
   const ownerReason=await page.locator('#proposal-owner-note').innerText();
+  if(ownerReason.includes('قبل از انتشار باید مطمئن')||ownerReason.includes('solche Option')){
+    throw Error('Merchant still receives an unhelpful stock warning');
+  }
+  if(await page.locator('#proposal-cta').textContent()==='دریافت کد پیشنهاد'){
+    throw Error('Generic postgame CTA was not improved');
+  }
+
   if(ownerReason.trim().length<35)
     throw Error('Merchant cannot understand the business goal behind this campaign');
   const previewResult=await page.locator('#proposal-product').textContent();
