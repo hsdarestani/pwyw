@@ -1,0 +1,175 @@
+/* PWYW / focused studio workspace and advanced settings modal.
+   The primary journey is the only content in the main viewport:
+   goal -> generated campaign -> approve / regenerate. */
+.studio-v2 .builder-grid{display:grid;grid-template-columns:minmax(0,1fr)!important}
+.studio-v2 .builder-main,.studio-v2 .studio-intro,.studio-v2 .studio-footer{
+  width:100%;max-width:930px;margin-inline:auto;min-width:0
+}
+.studio-v2 .studio-intro{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
+.studio-v2 .studio-content{max-width:none}
+.studio-v2 .studio-top-actions{display:flex;flex-direction:column;align-items:flex-start;gap:9px;flex:0 0 auto}
+html[lang=fa] .studio-v2 .studio-top-actions{align-items:flex-start}
+.studio-v2 .studio-settings-trigger{
+  padding:11px 16px;border-radius:14px;background:#fff;
+  border:1px solid #d6d2e5;color:#4a426a;
+  font:750 13px/1.5 'Estedad',Manrope,sans-serif;cursor:pointer;
+  transition:background .15s ease
+}
+.studio-v2 .studio-settings-trigger:hover{background:#f4f0ff}
+.studio-v2 .studio-settings-trigger:focus-visible{outline:3px solid #705fc9;outline-offset:2px}
+.studio-v2 .mission-picker,.studio-v2 #campaign-section{border-radius:22px}
+.studio-v2 #campaign-section{width:100%}
+.studio-v2 .mission-picker{padding:clamp(19px,3vw,28px)}
+.studio-v2 .mission-picker>p{font-size:14px;line-height:1.8;max-width:700px}
+.studio-v2 .purpose-option{border-radius:17px;min-height:105px}
+.studio-v2 .purpose-option small{font-size:12px;line-height:1.55}
+.studio-v2 .studio-settings-overlay[hidden]{display:none!important}
+.studio-v2 .studio-settings-overlay{
+  position:fixed;inset:0;z-index:3000;display:flex;
+  justify-content:flex-end;align-items:stretch;
+}
+.studio-v2 .studio-settings-backdrop{
+  position:absolute;inset:0;background:rgba(13,17,37,.67);
+  backdrop-filter:blur(4px);
+}
+.studio-v2 .studio-settings-dialog{
+  position:relative;z-index:1;width:min(100%,780px);height:100dvh;
+  overflow-y:auto;overscroll-behavior:contain;background:#f7f7fb;
+  box-shadow:-18px 0 62px rgba(10,12,40,.24);
+  padding:24px 26px 40px;scrollbar-width:thin;min-width:0
+}
+.studio-v2 .studio-settings-heading{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:18px;position:sticky;top:-24px;margin:-24px -26px 18px;
+  padding:21px 26px;z-index:4;background:#fff;
+  border-bottom:1px solid #dedbea;
+}
+.studio-v2 .studio-settings-heading .section-index{margin-bottom:7px;color:#73699c}
+.studio-v2 .studio-settings-heading h2{
+  font:850 clamp(23px,4vw,29px)/1.4 'Estedad',Manrope,sans-serif;
+  letter-spacing:0;margin:0;color:#161729
+}
+.studio-v2 #close-studio-settings{
+  display:grid;place-items:center;flex:0 0 44px;
+  width:44px;height:44px;border-radius:14px;
+  border:1px solid #d7d4e7;background:#f7f5fd;
+  color:#2e2851;font-size:19px;cursor:pointer;
+}
+.studio-v2 #close-studio-settings:focus-visible{outline:3px solid #705fc9;outline-offset:2px}
+.studio-v2 .studio-utilities{width:100%;max-width:100%;margin:0}
+.studio-v2 #studio-extra-tools{border:0!important;background:transparent;overflow:visible}
+.studio-v2 #studio-extra-tools>summary{display:none!important}
+.studio-v2 #studio-extra-tools>.studio-extra-content{padding:0;gap:13px;display:flex}
+.studio-v2 #studio-extra-tools .studio-progressive{margin:0!important;overflow:visible;border-radius:17px}
+.studio-v2 #studio-extra-tools .studio-progressive>summary{
+  background:#fff;font-size:14px;font-weight:750;
+  min-height:57px;padding:17px 19px;
+}
+.studio-v2 #studio-extra-tools .studio-progressive[open]>summary{
+  border-bottom:1px solid #e4e1ee;border-radius:17px 17px 0 0;
+}
+.studio-v2 #studio-extra-tools #account-security{
+  border:1px solid #e1deed!important;background:#fff;
+  margin:0!important;padding:22px;border-radius:17px;
+}
+/* Original editor was moved out of .campaign-editor; restore its native styling. */
+.studio-v2 .studio-settings-dialog #campaign-form{
+  display:flex;flex-direction:column;gap:14px;
+  min-width:0;max-width:100%;
+  padding:19px 20px 22px!important;
+}
+.studio-v2 .studio-settings-dialog .campaign-copy-fields{
+  width:100%;min-width:0;display:block;
+}
+.studio-v2 .studio-settings-dialog .campaign-grid{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:15px;min-width:0
+}
+.studio-v2 .studio-settings-dialog #campaign-form label{
+  display:flex;flex-direction:column;gap:8px;margin:0;
+  font:650 13px/1.65 'Estedad',Manrope,sans-serif;
+  color:#39364e;min-width:0;
+}
+.studio-v2 .studio-settings-dialog #campaign-form :is(input,select,textarea){
+  display:block;width:100%;max-width:100%;min-width:0;
+  border:1px solid #d4d0e3;border-radius:12px;
+  min-height:49px;background:#fff;color:#191929;
+  padding:11px 13px;font:500 14px/1.65 'Estedad',Manrope,sans-serif;
+  box-shadow:none;outline-offset:2px;transition:border-color .12s;
+}
+.studio-v2 .studio-settings-dialog #campaign-form :is(input,select,textarea):focus{
+  outline:2px solid #9b91d5;outline-offset:1px;
+}
+.studio-v2 .studio-settings-dialog #campaign-form textarea{min-height:91px;resize:vertical}
+.studio-v2 .studio-settings-dialog #campaign-form .campaign-choice{padding:0}
+.studio-v2 .studio-settings-dialog .campaign-copy-fields[lang=de] :is(input,textarea){
+  direction:ltr;text-align:left;font-family:Manrope,system-ui,sans-serif
+}
+.studio-v2 .studio-settings-dialog .campaign-copy-fields[lang=fa] :is(input,textarea){
+  direction:rtl;text-align:right;font-family:'Estedad',Tahoma,sans-serif
+}
+.studio-v2 .studio-settings-dialog #campaign-form :is(input[type=number],input[type=url]){
+  direction:ltr!important;text-align:left!important;font-family:Manrope,system-ui,sans-serif
+}
+.studio-v2 .studio-settings-dialog .campaign-disclosure{
+  border:1px solid #e3dfed;border-radius:12px;background:#fcfbff
+}
+.studio-v2 .studio-settings-dialog .campaign-disclosure>summary{
+  display:flex;justify-content:space-between;gap:10px;align-items:center;
+  min-height:48px;padding:13px 15px;font-size:13px;font-weight:700;
+  list-style:none;cursor:pointer
+}
+.studio-v2 .studio-settings-dialog .campaign-disclosure>summary::-webkit-details-marker{display:none}
+.studio-v2 .studio-settings-dialog .campaign-disclosure>p{padding:0 15px;margin:0 0 9px;font-size:12px;line-height:1.8}
+.studio-v2 .studio-settings-dialog .campaign-disclosure>#campaign-copy-secondary,
+.studio-v2 .studio-settings-dialog .campaign-disclosure>.campaign-grid{
+  padding:0 15px 15px;max-width:100%;
+}
+.studio-v2 .studio-settings-dialog #campaign-form .brand-assets{
+  background:#faf8ff;border:1px solid #e3e0ec;
+  border-radius:12px;padding:15px;min-width:0
+}
+.studio-v2 .studio-settings-dialog #campaign-form #campaign-save{
+  border-radius:13px;min-height:52px;display:flex;
+  align-items:center;justify-content:center;width:100%;
+  box-shadow:none;background:#7462c8;color:white;font-size:14px
+}
+.studio-v2 .studio-settings-dialog .metrics-panel,.studio-v2 .studio-settings-dialog .redeem-widget{
+  border:1px solid #dfdbed;border-radius:15px;
+  margin:10px!important;padding:21px;min-width:0
+}
+.studio-v2 .studio-settings-dialog .metrics-panel h2{font-size:24px}
+.studio-v2 .studio-settings-dialog #account-security #password-change input{min-height:50px}
+.studio-v2 .studio-settings-dialog :is(.helper,.campaign-lead){font-size:12px;line-height:1.85;opacity:.9}
+.studio-v2 .studio-settings-dialog .studio-progressive>summary:focus-visible{outline:3px solid #8070ca}
+html[lang=fa] .studio-v2 .studio-settings-dialog :is(summary,label,p,h2,h3),
+html[lang=fa] .studio-v2 .studio-settings-trigger{
+  font-family:'Estedad',Tahoma,sans-serif;letter-spacing:0
+}
+html[lang=fa] .studio-v2 .studio-settings-dialog #campaign-form label{text-align:right}
+@media(max-width:980px){
+ .studio-v2 .studio-intro{gap:12px}
+ .studio-v2 .studio-top-actions{align-items:flex-start}
+ .studio-v2 .studio-settings-dialog{width:min(100%,710px)}
+}
+@media(max-width:720px){
+ .studio-v2 .studio-intro{display:flex;align-items:flex-start;flex-wrap:wrap}
+ .studio-v2 .studio-top-actions{width:100%;flex-direction:row;justify-content:space-between;flex-wrap:wrap}
+ .studio-v2 .studio-settings-trigger{min-height:44px}
+ .studio-v2 .studio-settings-dialog{width:100%;padding:18px 15px 32px}
+ .studio-v2 .studio-settings-heading{top:-18px;margin:-18px -15px 16px;padding:17px 15px}
+ .studio-v2 .studio-settings-dialog .campaign-grid{grid-template-columns:1fr}
+ .studio-v2 .studio-settings-dialog #campaign-form{padding:15px!important}
+ .studio-v2 .studio-settings-dialog .metrics-panel,.studio-v2 .studio-settings-dialog .redeem-widget{margin:9px!important;padding:16px}
+ .studio-v2 .studio-settings-dialog #account-security{padding:17px}
+ .studio-v2 .purpose-options{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .studio-v2 .purpose-option small{font-size:11px}
+}
+@media(max-width:390px){
+ .studio-v2 .purpose-options{gap:8px}
+ .studio-v2 .purpose-option{padding:10px;min-height:115px}
+ .studio-v2 .studio-intro h1{font-size:28px}
+}
+@media(prefers-reduced-motion:reduce){
+ .studio-v2 .studio-settings-trigger{transition:none}
+}
