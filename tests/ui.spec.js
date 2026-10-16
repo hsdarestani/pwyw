@@ -171,7 +171,7 @@ const {chromium}=require('playwright');
   if(security.length!==2||security[0].bottom>security[1].top-5)
     throw Error('Security password inputs overlap on mobile');
   const qr=await page.locator('#qr-image').evaluate(el=>{const r=el.getBoundingClientRect();return {w:r.width,left:r.left,right:r.right}});
-  if(qr.w<110||qr.right>innerWidth+2||qr.left<0)throw Error('Mobile QR sizing is broken: '+JSON.stringify(qr));
+  if(qr.w<110||qr.right>page.viewportSize().width+2||qr.left<0)throw Error('Mobile QR sizing is broken: '+JSON.stringify(qr));
 
   const url=await page.locator('#open-play').getAttribute('href');
   if(new URL(url,base).pathname!=='/play/playwright-garage')throw Error('New brand not saved');
