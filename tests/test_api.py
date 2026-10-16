@@ -107,6 +107,48 @@ class PilotTests(unittest.TestCase):
     self.assertEqual(owner.put("/api/brands/two-worlds/campaigns/return",json=bad).status_code,422)
     owner.close()
 
+  def test_campaign_proposals_require_explicit_approval(self):
+    # No AI credentials needed: safe bilingual drafts always work.
+    owner=TestClient(self.mod.app)
+    other=TestClient(self.mod.app)
+    self.assertEqual(owner.post("/api/register",json={"email":"idea-owner@test.de","password":"StrongIdeaOwner12345"}).status_code,200)
+    self.assertEqual(other.post("/api/register",json={"email":"idea-other@test.de","password":"StrongIdeaOther12345"}).status_code,200)
+    brand={"name":"Idea Cafe","slug":"idea-cafe","industry":"cafe","theme":"atelier","accent":"#AABBCC","tagline":"Welcome"}
+    self.assertEqual(owner.post("/api/brands",json=brand).status_code,200)
+    url="/api/brands/idea-cafe/campaigns/"
+    self.assertEqual(other.post(url+"propose",json={"objective":"return"}).status_code,404)
+    self.assertEqual(self.client.post(url+"propose",json={"objective":"return"}).status_code,401)
+    first=owner.post(url+"propose",json={"objective":"return"})
+    self.assertEqual(first.status_code,200,first.text)
+    a=first.json()
+    self.assertFalse(a["published"])
+    self.assertEqual(a["campaign"]["objective"],"return")
+    self.assertTrue(a["campaign"]["translations"]["fa"]["title"])
+    self.assertEqual(owner.get(url).json(),[])
+    second=owner.post(url+"propose",json={"objective":"return","reject_id":a["proposal_id"]})
+    self.assertEqual(second.status_code,200,second.text)
+    b=second.json()
+    self.assertNotEqual(a["campaign"]["title"],b["campaign"]["title"])
+    self.assertEqual(owner.get(url).json(),[])
+    self.assertEqual(owner.post(url+"approve",json={"proposal_id":a["proposal_id"]}).status_code,409)
+    self.assertEqual(other.post(url+"approve",json={"proposal_id":b["proposal_id"]}).status_code,404)
+    result=owner.post(url+"approve",json={"proposal_id":b["proposal_id"]})
+    self.assertEqual(result.status_code,200,result.text)
+    self.assertTrue(result.json()["published"])
+    self.assertEqual(owner.post(url+"approve",json={"proposal_id":b["proposal_id"]}).status_code,409)
+    live=owner.get(url).json()
+    self.assertEqual(len(live),1)
+    self.assertEqual(live[0]["title"],b["campaign"]["title"])
+    self.assertEqual(live[0]["translations"]["fa"]["title"],b["campaign"]["translations"]["fa"]["title"])
+    self.assertEqual(self.client.get("/api/public/brands/idea-cafe/campaigns").json()[0]["title"],b["campaign"]["title"])
+    learn=owner.post(url+"propose",json={"objective":"learn"}).json()
+    self.assertEqual(len(learn["campaign"]["quiz_options"]),3)
+    self.assertEqual(len(learn["campaign"]["translations"]["fa"]["quiz_options"]),3)
+    self.assertEqual(owner.post(url+"approve",json={"proposal_id":learn["proposal_id"]}).status_code,200)
+    question=self.client.get("/api/public/brands/idea-cafe/campaigns/learn").json()
+    self.assertEqual(len(question["quiz"]["options"]),3)
+    owner.close();other.close()
+
   def test_operator_secret_provision_rotation(self):
     import admin_bootstrap
     import io, sys, contextlib
