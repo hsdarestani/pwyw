@@ -9,6 +9,11 @@
     ["play with purpose","Spielen mit Wirkung","بازی با هدف"],
     ["RECOMMENDED FOR YOU","FÜR DICH EMPFOHLEN","پیشنهاد ما"],
     ["SETTINGS AND REPORTS","EINSTELLUNGEN UND BERICHTE","تنظیمات و گزارش‌ها"],
+    ["BRAND SETTINGS","MARKENDATEN","اطلاعات کسب‌وکار"],
+    ["STUDIO TOOLS","STUDIO WERKZEUGE","بخش مدیریت"],
+    ["ACCOUNT SECURITY","KONTOSICHERHEIT","امنیت حساب"],
+    ["Close settings","Einstellungen schließen","بستن تنظیمات"],
+
     ["EDIT CAMPAIGN MANUALLY (OPTIONAL)","KAMPAGNE SELBST BEARBEITEN (OPTIONAL)","ویرایش دستی کمپین (اختیاری)"],
     ["REPORTS AND QR","BERICHTE UND QR CODE","آمار و کد QR"],
     ["YOUR CAMPAIGN PROPOSAL","DEIN KAMPAGNENVORSCHLAG","پیشنهاد کمپین"],
