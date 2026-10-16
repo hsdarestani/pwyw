@@ -166,8 +166,8 @@ def install(app, db, user_from, owned_brand, public_brand, throttle):
         with db() as con:
             con.execute("""INSERT INTO campaigns(
                 brand_id,objective,title,description,cta,offer,product_name,reward_cost,
-                margin_per_sale,destination,game,is_active)
-              VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+                margin_per_sale,destination,game,is_active,translations_json)
+              VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
               ON CONFLICT(brand_id,objective) DO UPDATE SET
                 title=excluded.title,description=excluded.description,cta=excluded.cta,
                 offer=excluded.offer,product_name=excluded.product_name,
