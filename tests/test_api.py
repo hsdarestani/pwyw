@@ -85,6 +85,49 @@ class PilotTests(unittest.TestCase):
       json={"sid":"learnerunique001","event":"learn_answer","game":"sequence"}).status_code,200)
     owner.close();stranger.close()
 
+  def test_persian_brand_and_campaign_copy(self):
+    owner=TestClient(self.mod.app)
+    self.assertEqual(owner.post("/api/register",json={"email":"fa-owner@sample.de","password":"GermanPersian123456"}).status_code,200)
+    data={"name":"Two Worlds","slug":"two-worlds","industry":"cafe","theme":"atelier",
+          "accent":"#778899","tagline":"Willkommen","tagline_fa":"خوش آمدید"}
+    self.assertEqual(owner.post("/api/brands",json=data).status_code,200)
+    public=self.client.get("/api/public/brands/two-worlds").json()
+    self.assertEqual(public["tagline_fa"],"خوش آمدید")
+    body={"objective":"return","title":"Noch ein Besuch","game":"bloom",
+          "description":"Spiel mit","offer":"Komm wieder","product_name":"Kaffee","cta":"Code zeigen",
+          "translations":{"fa":{"title":"دوباره بیا","description":"بازی کن",
+             "offer":"باز هم ببینیمت","product_name":"قهوه","cta":"نمایش کد"}}}
+    self.assertEqual(owner.put("/api/brands/two-worlds/campaigns/return",json=body).status_code,200)
+    public=self.client.get("/api/public/brands/two-worlds/campaigns").json()
+    self.assertEqual(public[0]["translations"]["fa"]["title"],"دوباره بیا")
+    single=self.client.get("/api/public/brands/two-worlds/campaigns/return").json()
+    self.assertEqual(single["translations"]["fa"]["offer"],"باز هم ببینیمت")
+    bad={**body,"translations":{"fa":{"title":"x"*101}}}
+    self.assertEqual(owner.put("/api/brands/two-worlds/campaigns/return",json=bad).status_code,422)
+    owner.close()
+
+  def test_operator_secret_provision_rotation(self):
+    import admin_bootstrap
+    import io, sys, contextlib
+    def run(email,password):
+      previous=sys.stdin
+      try:
+        sys.stdin=io.StringIO(email+"\\n"+password+"\\n")
+        with contextlib.redirect_stdout(io.StringIO()):
+          admin_bootstrap.main()
+      finally: sys.stdin=previous
+    email="bootstrap-manager@sample.de"
+    run(email,"Operator-First-Password-123456789")
+    operator=TestClient(self.mod.app)
+    self.assertEqual(operator.post("/api/login",json={"email":email,"password":"Operator-First-Password-123456789"}).status_code,200)
+    self.assertEqual(operator.get("/api/admin/overview").status_code,200)
+    run(email,"Operator-Second-Password-123456789")
+    self.assertEqual(operator.get("/api/me").status_code,401)
+    self.assertEqual(operator.post("/api/login",json={"email":email,"password":"Operator-First-Password-123456789"}).status_code,401)
+    self.assertEqual(operator.post("/api/login",json={"email":email,"password":"Operator-Second-Password-123456789"}).status_code,200)
+    self.assertEqual(operator.get("/api/admin/overview").status_code,200)
+    operator.close()
+
   def test_admin_roles_and_password_rotation(self):
     c=TestClient(self.mod.app)
     created=c.post("/api/register",json={"email":"operator@pwyw.test","password":"SafeInitialOperator12345"})
