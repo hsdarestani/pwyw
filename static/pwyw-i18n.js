@@ -572,6 +572,14 @@
     ["LITTLE FOREST","LITTLE FOREST","جنگل کوچک"],
   ];
   for (const [source,de,fa] of entries) catalog.set(source.trim(),{de,fa});
+  // Native Persian editorial revisions; keep German source untouched.
+  // Only authored UI messages are covered, merchant-entered content requires an explicit translation.
+  const nativePersian=window.PWYWNATIVEFA||{};
+  for(const [source,translation] of Object.entries(nativePersian)){
+    const previous=catalog.get(source.trim());
+    if(previous && typeof translation==='string')catalog.set(source.trim(),{de:previous.de,fa:translation});
+  }
+
   const normalized = new WeakMap();
   const emitted = new WeakMap();
   const attrOriginal = new WeakMap();
