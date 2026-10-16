@@ -285,6 +285,7 @@ $('password-change').addEventListener('submit',async e=>{
 });
 // Show the active language as the main editor, with the other version optional.
 setCampaignLocale();
+document.addEventListener('DOMContentLoaded',setCampaignLocale);
 for(const x of document.querySelectorAll('#campaign-copy-fa input,#campaign-copy-fa textarea')){
  x.addEventListener('input',()=>x.setCustomValidity(''));
 }
