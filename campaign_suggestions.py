@@ -73,6 +73,40 @@ class ProposalRequest(BaseModel):
     reject_id:str=Field(default="",max_length=60)
 class ApprovalRequest(BaseModel):
     proposal_id:str=Field(min_length=12,max_length=60)
+
+# These are merchant-reviewable cross-sell IDEAS, not inventory or discounted offers.
+# No product is described as available before the owner explicitly approves it.
+CATEGORY_UPSELL={
+ "cafe":[("قهوه کنار یه شیرینی","شیرینی کنار قهوه","Kaffee mit etwas Süßem","Etwas Süßes zum Kaffee"),
+         ("یه دسر کنار نوشیدنی","دسر همراه نوشیدنی","Ein Dessert zum Getränk","Dessert zum Getränk"),
+         ("چای و یه خوراکی کوچک","خوراکی کنار چای","Tee mit einer Kleinigkeit","Kleinigkeit zum Tee"),
+         ("کنار نوشیدنی یه انتخاب تازه","خوراکی همراه نوشیدنی","Mehr zum Getränk","Etwas zum Getränk")],
+ "restaurant":[("یه دسر بعد از غذا؟","دسر بعد از غذا","Ein Dessert nach dem Essen?","Dessert nach dem Essen"),
+         ("کنار غذا یه نوشیدنی؟","نوشیدنی کنار غذا","Ein Getränk zum Essen?","Getränk zum Essen"),
+         ("برای شروع یه پیش‌غذا؟","پیش‌غذا","Eine Vorspeise zum Start?","Vorspeise"),
+         ("یه خوراکی برای بعد غذا","دسر یا نوشیدنی","Eine Kleinigkeit danach","Dessert oder Getränk")],
+ "salon":[("برای مراقبت بعد از خدمات","محصول مراقبتی مناسب","Pflege für danach","Passendes Pflegeprodukt"),
+         ("یه پیشنهاد برای مراقبت مو","محصول مراقبت مو","Eine Idee zur Haarpflege","Haarpflege"),
+         ("مراقبت رو بعد از مراجعه ادامه بده","محصول مراقبتی","Pflege auch danach","Pflegeprodukt"),
+         ("یه گزینه مکمل برای روتینت","محصول مناسب روتین","Ergänzung für deine Routine","Passendes Pflegeprodukt")],
+ "auto":[("یه مورد برای بررسی بیشتر","بررسی خدمات جانبی","Noch ein Check?","Zusätzliche Serviceprüfung"),
+         ("نگهداری خودرو، یک قدم جلوتر","بررسی گزینه‌های سرویس","Fahrzeugpflege weiterdenken","Serviceoptionen"),
+         ("موقع سرویس، سؤال‌های مهمت رو بپرس","خدمات مکمل سرویس","Ein Check beim Werkstattbesuch","Zusätzlicher Check"),
+         ("یه بررسی کوچک کنار سرویس","بررسی وضعیت خودرو","Zusatzcheck zum Termin","Fahrzeugcheck")],
+ "hotel":[("برای اقامتت یه گزینه دیگه","امکانات مکمل اقامت","Mehr aus deinem Aufenthalt","Zusatzoption für den Aufenthalt"),
+         ("وقت آزاد بین برنامه‌ها؟","پیشنهاد تفریح یا غذا","Eine Idee für zwischendurch","Freizeit oder Restaurant"),
+         ("اقامت با یه تجربه بیشتر","خدمات تکمیلی اقامت","Mehr vom Aufenthalt","Zusätzliche Angebote"),
+         ("یه پیشنهاد برای زمان استراحت","امکانات هتل","Eine Pause mit Extras","Hotelangebote")],
+ "health":[("قبل از انتخاب خدمات، سؤال بپرس","راهنمای گزینه‌های موجود","Frag vor der Auswahl nach","Serviceberatung"),
+         ("آشنایی با خدمات جانبی","راهنمای خدمات مجموعه","Mehr über Angebote erfahren","Leistungsübersicht"),
+         ("یه راهنمای کوتاه برای انتخاب","اطلاعات خدمات","Eine kurze Orientierung","Serviceinformationen"),
+         ("کدوم خدمات برات مناسبه؟","گفت‌وگو با کارکنان","Welche Leistung passt?","Beratung vor Ort")],
+ "other":[("یه گزینه مکمل برای خریدت","محصول مرتبط با سفارش","Eine passende Ergänzung","Produkt zum Einkauf"),
+         ("خریدت رو با یه مورد مرتبط کامل کن","کالای مکمل","Ein Artikel passend dazu","Ergänzungsartikel"),
+         ("یه انتخاب مرتبط با سفارش","گزینه مکمل خرید","Noch eine Ergänzung","Zusatzartikel"),
+         ("محصول مکمل چی می‌تونه باشه؟","بررسی محصول مرتبط","Was passt zum Einkauf?","Ergänzendes Produkt")]
+}
+
 def template(brand,objective,index):
     fa=PERSIAN[objective][index%len(PERSIAN[objective])]
     de=GERMAN[objective][index%len(GERMAN[objective])]
@@ -97,6 +131,24 @@ def template(brand,objective,index):
         fa=list(fa); de=list(de)
         fa[0]=fa_lead[objective][lead_idx]+" "+fa[0]
         de[0]=de_lead[objective][lead_idx]+" "+de[0]
+    if objective=="upsell":
+        # A concrete category-level IDEA that the merchant can accept or reject.
+        label_fa,product_fa,label_de,product_de=CATEGORY_UPSELL.get(
+            brand.get("industry","other"),CATEGORY_UPSELL["other"])[index%4]
+        fa=list(fa);de=list(de)
+        fa[0]=label_fa
+        fa[1]="یه دست بازی کن؛ بعدش این ایده رو برای کامل کردن سفارشت ببین."
+        fa[2]="دیدن پیشنهاد مکمل"
+        fa[3]="اگه این گزینه موجود بود، از کارکنان درباره‌ش بپرس."
+        fa[4]=product_fa
+        de[0]=label_de
+        de[1]="Spiel eine Runde und entdecke diese Idee als Ergänzung."
+        de[2]="Ergänzung ansehen"
+        de[3]="Frag das Team, ob diese Option verfügbar ist."
+        de[4]=product_de
+        if index>=4:
+            fa[0]=fa_lead["upsell"][(index//4-1)%6]+" "+fa[0]
+            de[0]=de_lead["upsell"][(index//4-1)%6]+" "+de[0]
     payload={
       "objective":objective,"title":de[0],"description":de[1],"cta":de[2],"offer":de[3],
       "product_name":de[4],"game":OBJECTIVE_GAMES[objective][index%len(OBJECTIVE_GAMES[objective])],
@@ -120,9 +172,12 @@ def cloudflare_candidate(brand,objective,index):
         " Return ONLY a JSON object with keys de and fa, each containing title, description,"
         " cta, offer, product_name, plus optional quiz_question and quiz_options."
         " All values are short strings except quiz_options which is 3 short strings."
-        " Do not invent discounts, rewards, pricing, products, policies, medical/legal claims,"
-        " or promises. Be genuinely different from previously proposed ideas."
-        " If the business has no catalog data, use only safe generic suggestions and ask staff."
+        " Never invent confirmed stock, discounts, rewards, prices, policies, medical/legal claims,"
+        " or guaranteed results. Be different from prior ideas."
+        " For upsell, suggest one concrete CATEGORY-TYPICAL pairing as an IDEA for the"
+        " merchant to approve; do not assert it exists on the menu or in stock."
+        " Never use generic product names such as offer, proposal, recommendation, or store offer."
+        " Explain customers should ask staff whether it is available."
         " Avoid English words and stiff literal Persian translation.")
     prompt=json.dumps({"brand_name":brand["name"][:65],"industry":brand["industry"],
         "objective":objective,"idea_number":index+1,"style_hint":index%7,
@@ -147,6 +202,12 @@ def cloudflare_candidate(brand,objective,index):
             for k,size in (("title",100),("description",300),("cta",90),("offer",180),("product_name",90)):
                 val=x.get(k)
                 if not isinstance(val,str) or not 3<=len(val.strip())<=size or BLOCKED_CLAIMS.search(val):return None
+        if objective=="upsell":
+            # Reject meaningless ad copy that gives no actual next-step idea.
+            generic={"پیشنهاد فروشگاه","پیشنهاد ویژه","پیشنهاد مکمل","پیشنهاد","angebot",
+                     "empfehlung","passende empfehlung","special offer","store offer"}
+            if data["fa"]["product_name"].strip().lower() in generic or data["de"]["product_name"].strip().lower() in generic:
+                return None
         p=template(brand,objective,index)
         for k in ("title","description","cta","offer","product_name"):
             p[k]=data["de"][k].strip()
