@@ -5,6 +5,8 @@
 (() => {
   "use strict";
   const TAU=Math.PI*2,W=380,H=442;
+  const tr=value=>window.PWYWI18N?.t(value)||value;
+  const canvasFont=()=>window.PWYWI18N?.locale()==="fa"?"Estedad":"Space Grotesk";
   const colors={
     atelier:["#e7ddc7","#423427","#ce6b51","#779f8a","#ffc16a"],
     neon:["#090d21","#d4ff4e","#ff47ad","#12d2d9","#f5a623"],
