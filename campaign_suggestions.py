@@ -76,6 +76,27 @@ class ApprovalRequest(BaseModel):
 def template(brand,objective,index):
     fa=PERSIAN[objective][index%len(PERSIAN[objective])]
     de=GERMAN[objective][index%len(GERMAN[objective])]
+    # A rejection must return a genuinely new proposal, even when Workers AI is unavailable.
+    # Six independent alternative lead-ins × four distinct base ideas give 24 safe drafts
+    # per objective (the per-user hourly budget is lower than this).
+    fa_lead={
+      "upsell":["اگه دوست داری،","برای تنوع،","یه پیشنهاد دیگه:","یه ایده برای خریدت:","چند دقیقه وقت داری؟","نوبت یه انتخاب تازه‌ست!"],
+      "return":["برای دفعه بعد،","یه پیشنهاد متفاوت:","دلت می‌خواد باز هم سر بزنی؟","این دفعه یه ایده تازه داریم:","برای دیدار بعدی،","یه برنامه کوچیک برای برگشتن:"],
+      "refer":["این بار با دوستت،","یه چالش دوستانه تازه:","یه ایده برای با هم بازی کردن:","دوستت رو هم وارد بازی کن؛","برای بازی دونفره،","یه رقابت تازه:"],
+      "learn":["یه نکته دیگه:","برای آشنایی بیشتر،","این بار یه سؤال کوتاه:","قبل از شروع،","یه راهنمایی تازه:","یه دقیقه وقت بذار:"]
+    }
+    de_lead={
+      "upsell":["Entdecke auch:","Zur Abwechslung:","Noch eine Idee:","Eine weitere Anregung:","Zeit für etwas Neues:","Ein anderer Vorschlag:"],
+      "return":["Fürs nächste Mal:","Eine neue Idee:","Komm gern wieder:","Ein neuer Anlass:","Bis zum nächsten Mal:","Noch ein Wiedersehen:"],
+      "refer":["Diesmal zusammen:","Noch eine Challenge:","Spielt gemeinsam:","Auch für deine Freunde:","Ein Spiel zu zweit:","Eine neue Runde:"],
+      "learn":["Noch ein Hinweis:","Zum Kennenlernen:","Eine kurze Frage:","Vor dem Start:","Ein nützlicher Hinweis:","Eine Frage für dich:"]
+    }
+    if index>=4:
+        # Index groups 1..6 are distinct and prevent repeating an earlier draft title.
+        lead_idx=(index//4-1)%6
+        fa=list(fa); de=list(de)
+        fa[0]=fa_lead[objective][lead_idx]+" "+fa[0]
+        de[0]=de_lead[objective][lead_idx]+" "+de[0]
     payload={
       "objective":objective,"title":de[0],"description":de[1],"cta":de[2],"offer":de[3],
       "product_name":de[4],"game":OBJECTIVE_GAMES[objective][index%len(OBJECTIVE_GAMES[objective])],
@@ -167,7 +188,7 @@ def install(app,db,user_from,owned_brand,throttle,save_campaign,CampaignInput):
             con.execute("UPDATE campaign_proposals SET status='superseded' WHERE brand_id=? AND objective=? AND status='pending'",
                 (brand["id"],data.objective))
             con.execute("DELETE FROM campaign_proposals WHERE created_at<datetime('now','-14 days')")
-        candidate=cloudflare_candidate(brand,data.objective,n) if n<8 else None
+        candidate=cloudflare_candidate(brand,data.objective,n)
         source="cloudflare" if candidate else "template"
         proposal=candidate or template(brand,data.objective,n)
         pid=secrets.token_urlsafe(22)
