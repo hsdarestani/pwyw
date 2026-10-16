@@ -121,6 +121,7 @@
     $("purpose-title").textContent=goalNames[name];
     $("purpose-overline").textContent="YOUR MOMENT / "+name.toUpperCase();
     $("purpose-summary").textContent=localized(campaign,'description')||"This experience has not been published by the business yet.";
+    document.querySelector(".purpose-brief").hidden=!campaign;
     $("game-heading").textContent=localized(campaign,'title')||"A LITTLE PLAY. A LOT MORE.";
     $("game-heading").style.overflowWrap="anywhere";
     document.querySelector(".purpose-brief").style.borderLeftColor=brand?.accent||"currentColor";
@@ -592,8 +593,9 @@
        $("copy-link").textContent="COPIED ✓";}catch{$("copy-link").textContent="COPY NOT AVAILABLE"}
   });
   $("merchant-link").addEventListener("click",()=>track("cta","Offer link"));
-  $("close-result").addEventListener("click",showHome);
+  $("close-result")?.addEventListener("click",showHome);
   buildGamePicks();
+  $("back-home").style.visibility="hidden";
   window.addEventListener("pagehide",cleanup);
   document.addEventListener('pwyw:language-changed',()=>{if(brand)brandView(brand);chooseObjective(objective);if(!$("finish-modal").hidden)renderReward()});
   // Business owners choose the objective in the studio. Customers see one focused campaign.
