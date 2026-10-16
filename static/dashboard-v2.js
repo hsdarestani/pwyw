@@ -39,10 +39,11 @@ $('auth-form').addEventListener('submit',async e=>{
 });
 $('logout').onclick=async()=>{await api('/api/logout','POST',{});
   $('auth-shell').hidden=false;$('app-shell').hidden=true;$('logout').hidden=true;
-  $('user-email').textContent='';state.brand=null};
+  $('user-email').textContent='';const link=$('platform-admin-link');if(link)link.hidden=true;state.brand=null};
 async function boot(){
   try{const info=await api('/api/me');$('user-email').textContent=info.email;
     $('auth-shell').hidden=true;$('app-shell').hidden=false;$('logout').hidden=false;
+    const link=$('platform-admin-link');if(link)link.hidden=info.role!=='admin';
     await fetchBrands();
   }catch{$('auth-shell').hidden=false;$('app-shell').hidden=true;$('logout').hidden=true}
 }
