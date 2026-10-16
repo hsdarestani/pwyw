@@ -174,6 +174,25 @@ const {chromium}=require('playwright');
   await page.screenshot({path:'/tmp/pwyw-studio-mobile.png',fullPage:true});
   await page.locator('#brand-save').click();
   await page.locator('#proposal-card').waitFor({state:'visible',timeout:18000});
+  // Merchant sees the customer's complete journey instead of guessing what a campaign means.
+  if(await page.locator('[data-customer-stage]').count()!==3)
+    throw Error('Customer walkthrough needs exactly three steps');
+  if(await page.locator('[data-customer-stage="2"]').getAttribute('aria-pressed')!=='true')
+    throw Error('Postgame customer message must be previewed by default');
+  const previewResult=await page.locator('#proposal-product').textContent();
+  if(!previewResult.trim())throw Error('Postgame offer preview has no content');
+  await page.locator('[data-customer-stage="0"]').click();
+  if(!await page.locator('#customer-stage-start').isVisible())
+    throw Error('Owner cannot see customer first-screen preview');
+  if((await page.locator('#customer-welcome-title').textContent())!==(await page.locator('#proposal-title').textContent()))
+    throw Error('Customer opening is not based on proposed campaign copy');
+  await page.locator('[data-customer-stage="1"]').click();
+  if(!await page.locator('#customer-stage-game').isVisible())
+    throw Error('Owner cannot inspect game stage');
+  await page.locator('[data-customer-stage="2"]').click();
+  if(!await page.locator('#customer-stage-result').isVisible()||await page.locator('#customer-stage-start').isVisible())
+    throw Error('Customer aftergame stage switching is broken');
+
   if(await page.locator('#studio-extra-tools').evaluate(x=>x.open))
     throw Error('Secondary settings must stay collapsed in the campaign flow');
   if(await page.locator('#manual-campaign-settings').evaluate(x=>x.open))
