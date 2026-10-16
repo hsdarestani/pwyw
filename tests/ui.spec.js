@@ -140,6 +140,8 @@ const {chromium}=require('playwright');
   await page.locator('input[name=password]').fill('StrongTestPassword123');
   await page.locator('#auth-submit').click();
   await page.locator('#app-shell').waitFor({state:'visible'});
+  await page.locator('#studio-settings-overlay').waitFor({state:'visible'});
+  await page.locator('#close-studio-settings').click();
   // Native form language is the primary editor. Secondary copy remains editable, but hidden.
   await page.locator('#pwyw-language-switch [data-lang=fa]').click();
   await page.locator('[data-objective="return"]').first().click();
