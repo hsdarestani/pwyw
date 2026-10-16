@@ -514,6 +514,7 @@
     try {localStorage.setItem('pwyw.locale',locale)}catch {}
     try {const u=new URL(location.href);if(locale==='fa')u.searchParams.set('lang','fa');else u.searchParams.delete('lang');history.replaceState(history.state,'',u.pathname+u.search+u.hash)} catch {}
     render();
+    document.dispatchEvent(new CustomEvent('pwyw:language-changed',{detail:locale}));
   }
   function addSwitch() {
     if(document.getElementById('pwyw-language-switch'))return;
