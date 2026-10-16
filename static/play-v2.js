@@ -16,6 +16,7 @@
   const gameSymbols={memory:"▦",merge:"2048",rush:"✦",snake:"〰",breaker:"▤",hop:"➚",orbit:"✷",bloom:"❀",lane:"⟋⟍",sequence:"◉"};
   const gameHints={memory:"MATCH / 1–2 MIN",merge:"THINK / 90 SEC",rush:"REFLEX / 30 SEC",snake:"CLASSIC / 54 SEC",breaker:"ARCADE / 65 SEC",hop:"FLY / 52 SEC",orbit:"CATCH / 45 SEC",bloom:"POP / 40 SEC",lane:"ACTION / 48 SEC",sequence:"RECALL / 58 SEC"};
   const localized=(obj,key)=>(window.PWYWI18N?.locale()==='fa' && obj?.translations?.fa?.[key])||obj?.[key]||'';
+  const tr = value => window.PWYWI18N?.t(value) || value;
   const goalNames={upsell:"Play to Upsell",return:"Play to Return",refer:"Play to Refer",learn:"Play to Learn"};
   let objective="upsell",campaigns={},campaign=null,refCode=new URLSearchParams(location.search).get("ref")||"",rewardCode="";
   let brandArt={}; let brandedToken=null;
@@ -74,7 +75,7 @@
     brand=b;
     const available=["atelier","neon","garden","pop","noir","chrome","dream","heritage"];
     const theme=available.includes(b.theme)?b.theme:"atelier";
-    document.body.className="player-v2 theme-"+theme;
+    document.body.className="player-v2 theme-"+theme+(!$("finish-modal").hidden?" is-result-open":"");
     if(/^#[0-9a-fA-F]{6}$/.test(b.accent)){
       document.body.style.setProperty("--brand-accent",b.accent);
       document.querySelector('meta[name="theme-color"]')?.setAttribute("content",b.accent);
@@ -105,7 +106,7 @@
     }catch{campaigns={}}
     const params=new URLSearchParams(location.search);
     const selected=params.get("objective");
-    chooseObjective(campaigns[selected]?selected:(Object.keys(campaigns)[0]||"upsell"));
+    chooseObjective(goalNames[selected]?selected:(Object.keys(campaigns)[0]||"upsell"));
     const direct=params.get("game");
     if(direct && gameLabels[direct])startGame(direct);
   }
@@ -151,13 +152,16 @@
       const data=await request("/api/public/brands/"+encodeURIComponent(slug)+"/campaigns/learn");
       if(!data.quiz)return;
       slot.hidden=false;
-      const heading=document.createElement("h4");heading.textContent=window.PWYWI18N?.locale()==='fa'&&data.translations?.fa?.quiz_question?data.translations.fa.quiz_question:data.quiz.question;
+      const heading=document.createElement("h4");heading.textContent=tr(window.PWYWI18N?.locale()==='fa'&&data.translations?.fa?.quiz_question?data.translations.fa.quiz_question:data.quiz.question);
       slot.append(heading);
-      const note=document.createElement("p");note.textContent="Choose the best answer. The result helps you understand the service, not win a prize.";
+      const note=document.createElement("p");note.textContent=tr("Choose the best answer. The result helps you understand the service, not win a prize.");
       slot.append(note);
       const quizAnswers=(window.PWYWI18N?.locale()==='fa'&&data.translations?.fa?.quiz_options?.length===3)?data.translations.fa.quiz_options:data.quiz.options;
        quizAnswers.forEach((answer,i)=>{
-        const btn=document.createElement("button");btn.type="button";btn.textContent=(i+1)+". "+answer;
+        const btn=document.createElement("button");btn.type="button";
+         const order=document.createElement("span");order.className="quiz-index";order.textContent=String(i+1).padStart(2,"0");
+         const wording=document.createElement("span");wording.className="quiz-wording";wording.textContent=tr(answer);
+         btn.append(order,wording);
         btn.className="quiz-answer";
         btn.addEventListener("click",async()=>{
           slot.querySelectorAll("button").forEach(x=>x.disabled=true);
@@ -229,7 +233,7 @@
   }
   function showHome(){
     cleanup();game=null;score=0;
-    $("game-home").hidden=false;$("game-active").hidden=true;$("finish-modal").hidden=true;
+    $("game-home").hidden=false;$("game-active").hidden=true;$("finish-modal").hidden=true;document.body.classList.remove("is-result-open");
     $("touch-controls").replaceChildren();$("touch-controls").hidden=true;
     $("back-home").style.visibility="hidden";
     window.scrollTo({top:0,behavior:"instant"});
@@ -292,7 +296,7 @@
     cleanup();
     if(!gameLabels[id])return;
     game=id;score=0;seconds=0;running=true;setText();mobileControls(id);
-    $("game-home").hidden=true;$("game-active").hidden=false;$("finish-modal").hidden=true;
+    $("game-home").hidden=true;$("game-active").hidden=false;$("finish-modal").hidden=true;document.body.classList.remove("is-result-open");
     $("back-home").style.visibility="visible";
     $("active-title").textContent=gameLabels[id];
     const board=$("game-board");
@@ -326,7 +330,7 @@
     if(!running)return;
     const finalGame=game;
     cleanup();
-    $("finish-modal").hidden=false;
+    $("finish-modal").hidden=false;document.body.classList.add("is-result-open");
     $("finish-score").textContent=score.toLocaleString()+" PTS";
     $("finish-message").textContent=message || (finalGame==="rush"?"Lightning quick! Go again?":finalGame==="memory"?"Beautifully remembered. Fancy another?":"You've got a way with numbers.");
     $("nickname").value="";
