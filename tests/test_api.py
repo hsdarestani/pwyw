@@ -111,6 +111,34 @@ class PilotTests(unittest.TestCase):
     self.assertEqual(owner.put("/api/brands/two-worlds/campaigns/return",json=bad).status_code,422)
     owner.close()
 
+  def test_curated_campaigns_are_relevant_and_explain_merchant_value(self):
+    import campaign_suggestions
+    from campaign_concepts import UPSELL
+    for category, options in UPSELL.items():
+      brand={"name":"Business Example","industry":category}
+      previous=set()
+      for i, idea in enumerate(options):
+        p=campaign_suggestions.template(brand,"upsell",i)
+        fa=p["translations"]["fa"]
+        self.assertEqual(p["product_name"],idea[3])
+        self.assertEqual(fa["product_name"],idea[0])
+        self.assertNotIn("برای تنوع",fa["title"])
+        self.assertNotIn("پیشنهاد فروشگاه",fa["product_name"])
+        self.assertNotIn("تخفیف",fa["offer"])
+        self.assertTrue(p["owner_explanation"]["fa"])
+        self.assertTrue(p["owner_explanation"]["de"])
+        self.assertTrue(p["review_needed"])
+        self.assertNotIn(fa["title"],previous,"Curated proposals must differ by actual concept")
+        previous.add(fa["title"])
+      for objective in ("return","refer","learn"):
+        proposal=campaign_suggestions.template(brand,objective,0)
+        self.assertIn("owner_explanation",proposal)
+        self.assertTrue(proposal["translations"]["fa"]["title"])
+        self.assertTrue(proposal["title"])
+        if objective=="learn":
+          self.assertEqual(len(proposal["quiz_options"]),3)
+          self.assertEqual(len(proposal["translations"]["fa"]["quiz_options"]),3)
+
   def test_campaign_proposals_require_explicit_approval(self):
     # No AI credentials needed: safe bilingual drafts always work.
     owner=TestClient(self.mod.app)
