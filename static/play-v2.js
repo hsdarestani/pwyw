@@ -58,6 +58,7 @@
   })();
   const safe = (n) => Math.max(0,Math.trunc(Number(n)||0));
   const pad = n => String(Math.floor(n)).padStart(2,"0");
+  const visibleDigits = value => window.PWYWI18N?.locale()==="fa" ? String(value).replace(/[0-9]/g,ch=>"۰۱۲۳۴۵۶۷۸۹"[Number(ch)]) : String(value);
   const random = max => Math.floor(Math.random()*max);
   const shuffle = a => {const b=[...a];for(let i=b.length-1;i>0;i--){const j=random(i+1);[b[i],b[j]]=[b[j],b[i]]}return b};
   async function request(path, options={}){
@@ -159,7 +160,7 @@
       const quizAnswers=(window.PWYWI18N?.locale()==='fa'&&data.translations?.fa?.quiz_options?.length===3)?data.translations.fa.quiz_options:data.quiz.options;
        quizAnswers.forEach((answer,i)=>{
         const btn=document.createElement("button");btn.type="button";
-         const order=document.createElement("span");order.className="quiz-index";order.textContent=String(i+1).padStart(2,"0");
+         const order=document.createElement("span");order.className="quiz-index";order.textContent=visibleDigits(String(i+1).padStart(2,"0"));
          const wording=document.createElement("span");wording.className="quiz-wording";wording.textContent=tr(answer);
          btn.append(order,wording);
         btn.className="quiz-answer";
@@ -207,12 +208,12 @@
     }else{card.textContent=symbol==="BRAND_ITEM"?"✳":symbol}
   }
   function setText(){
-    $("score").textContent=String(score).padStart(3,"0");
-    $("timer").textContent=pad(Math.floor(seconds/60))+":"+pad(seconds%60);
+    $("score").textContent=visibleDigits(String(score).padStart(3,"0"));
+    $("timer").textContent=visibleDigits(pad(Math.floor(seconds/60))+":"+pad(seconds%60));
   }
   function third(label,value){
     $("third-label").textContent=label.toUpperCase();
-    $("third-stat").textContent=value;
+    $("third-stat").textContent=visibleDigits(value);
   }
   function tOut(fn,delay){const id=setTimeout(fn,delay);timeoutIds.push(id);return id}
   function cleanup(){
@@ -332,7 +333,7 @@
     const finalGame=game;
     cleanup();
     $("finish-modal").hidden=false;document.body.classList.add("is-result-open");
-    $("finish-score").textContent=score.toLocaleString()+" PTS";
+    $("finish-score").textContent=window.PWYWI18N?.locale()==="fa"?score.toLocaleString("fa-IR")+" امتیاز":score.toLocaleString("de-DE")+" PTS";
     $("finish-message").textContent=message || (finalGame==="rush"?"Lightning quick! Go again?":finalGame==="memory"?"Beautifully remembered. Fancy another?":"You've got a way with numbers.");
     $("nickname").value="";
     $("post-score").disabled=false;
@@ -352,7 +353,7 @@
         const p=document.createElement("p");
         const name=document.createElement("span");
         const points=document.createElement("strong");
-        name.textContent=(i+1)+". "+item.nickname;points.textContent=item.score+" pts";
+        name.textContent=(i+1)+". "+item.nickname;points.textContent=visibleDigits(item.score)+(window.PWYWI18N?.locale()==="fa"?" امتیاز":" pts");
         p.append(name,points);box.append(p);
       });
     }catch(e){}
