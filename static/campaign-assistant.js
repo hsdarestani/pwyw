@@ -17,29 +17,89 @@ function getPreviewPayload(){
  const p=current.campaign;
  return fa()?(p.translations?.fa||{}):p;
 }
+let previewStep=2;
+const stageNames={
+ fa:["مشتری وارد صفحه بازی می‌شه","مشتری یک بازی کوتاه انجام می‌ده","بعد از بازی این پیام رو می‌بینه"],
+ de:["Kundschaft öffnet die Spielseite","Kundschaft spielt eine kurze Runde","Danach erscheint diese Nachricht"]
+};
+function setStage(index){
+ previewStep=Math.max(0,Math.min(2,Number(index)));
+ ["start","game","result"].forEach((name,i)=>{
+   $("customer-stage-"+name).hidden=i!==previewStep;
+ });
+ document.querySelectorAll("[data-customer-stage]").forEach(btn=>{
+   btn.setAttribute("aria-pressed",String(Number(btn.dataset.customerStage)===previewStep));
+ });
+ $("customer-preview-caption").textContent=stageNames[fa()?"fa":"de"][previewStep];
+}
+document.querySelectorAll("[data-customer-stage]").forEach(button=>{
+ button.addEventListener("click",()=>setStage(button.dataset.customerStage));
+});
 function render(){
+ const p=current?.campaign;
  const data=getPreviewPayload();
- // Explicit views are controlled by generation/approval, never by locale mutation.
- if(!data || $("proposal-card").hidden)return;
- const p=current.campaign;
+ const brand=studio()?.getBrand();
+ // These messages also update after a language switch, even on the published screen.
+ $("proposal-published").querySelector("strong").textContent=label("بازی مشتری‌هات منتشر شد!","Das Kundenspiel ist online!");
+ $("proposal-published").querySelector("p").textContent=label("لینک یا کد QR بازی رو برای مشتری‌ها بفرست تا وارد بازی بشن.","Teile den Link oder QR Code, damit deine Kundschaft spielen kann.");
+ $("proposal-open").textContent=label("بازی منتشرشده رو ببین ↗","Veröffentlichtes Spiel ansehen ↗");
+ $("proposal-new").textContent=label("یه پیشنهاد دیگه بساز","Einen weiteren Vorschlag erstellen");
+ if(!p||!data)return;
  $("proposal-title").textContent=data.title||p.title;
  $("proposal-description").textContent=data.description||p.description;
+ $("customer-welcome-title").textContent=data.title||p.title;
+ $("customer-welcome-desc").textContent=data.description||p.description;
+ $("customer-screen-brand").textContent=brand?.name||label("کسب‌وکار شما","Dein Unternehmen");
  $("proposal-product").textContent=data.product_name||p.product_name;
  $("proposal-offer").textContent=data.offer||p.offer;
- $("proposal-cta").textContent=data.cta||p.cta;
  $("proposal-game-icon").textContent=gameIcons[p.game]||"✳";
  $("proposal-game-name").textContent=window.PWYWI18N?.t(gameNames[p.game]||p.game)||p.game;
- $("proposal-quiz").hidden=p.objective!=="learn";
- if(p.objective==="learn")$("proposal-quiz").textContent=data.quiz_question||p.quiz_question;
- $("proposal-approve").textContent=label("تأیید و انتشار","Bestätigen und veröffentlichen");
- $("proposal-reject").textContent=label("یکی دیگه پیشنهاد بده","Anderen Vorschlag zeigen");
- $("proposal-card").querySelector(".proposal-eyebrow").textContent=label("پیشنهاد آماده‌ست","Dein neuer Kampagnenvorschlag");
- $("proposal-card").querySelector(".proposal-offer>span").textContent=label("بعد از بازی","Nach dem Spiel");
- $("proposal-card").querySelector(".proposal-trust").textContent=label("قبل از تأیید، مطمئن شو این پیشنهاد قابل ارائه‌ست. بدون تأیید تو منتشر نمی‌شه.","Prüfe bitte, ob du diese Idee anbieten kannst. Ohne deine Freigabe wird nichts veröffentlicht.");
- $("proposal-published").querySelector("strong").textContent=label("کمپینت منتشر شد!","Deine Kampagne ist online!");
- $("proposal-published").querySelector("p").textContent=label("لینک بازی رو برای مشتری‌ها بفرست.","Teile den Spiellink mit deinen Kundinnen und Kunden.");
- $("proposal-open").textContent=label("دیدن کمپین ↗","Kampagne öffnen ↗");
- $("proposal-new").textContent=label("ساخت پیشنهاد جدید","Neue Idee erhalten");
+ $("customer-game-description").textContent=label(
+  "مشتری بازی رو روی گوشی انجام می‌ده. بعد از پایان بازی، پیام زیر نمایش داده می‌شه.",
+  "Das Mini Game läuft auf dem Smartphone. Danach erscheint die folgende Nachricht.");
+ $("customer-screen-logo").textContent=gameIcons[p.game]||"✳";
+ const isLearn=p.objective==="learn";
+ $("customer-quiz-preview").hidden=!isLearn;
+ $("proposal-cta").hidden=isLearn;
+ if(isLearn){
+   $("proposal-quiz").textContent=data.quiz_question||p.quiz_question||"";
+   const options=fa()?(p.translations?.fa?.quiz_options||p.quiz_options):p.quiz_options;
+   $("customer-quiz-options").replaceChildren();
+   for(const option of (Array.isArray(options)?options:[])){
+     const text=document.createElement("div");
+     text.className="customer-quiz-option";
+     text.textContent=option;
+     $("customer-quiz-options").append(text);
+   }
+ }else{
+   // Match the actual customer game's button behavior: this issues a code or shares a challenge.
+   $("proposal-cta").textContent=p.objective==="refer"?
+     label("دعوت از دوستان ↗","Freunde herausfordern ↗"):
+     label("دریافت کد پیشنهاد ↗","Angebotscode erhalten ↗");
+ }
+ $("customer-stage-start").querySelector(".customer-screen-overline").textContent=label("به بازی خوش اومدی","Willkommen beim Spiel");
+ $("customer-stage-start").querySelector(".customer-preview-button").textContent=label("شروع بازی ↗","Spiel starten ↗");
+ $("customer-stage-game").querySelector(".customer-screen-overline").textContent=label("بازی روی گوشی","Ein Spiel fürs Smartphone");
+ $("customer-stage-game").querySelector(".customer-preview-button").textContent=label("بازی کوتاه","Kurzes Spiel");
+ $("customer-stage-result").querySelector(".customer-screen-overline").textContent=label("بعد از بازی","Nach dem Spiel");
+ $("proposal-approve").textContent=label("تأیید و انتشار بازی","Spiel bestätigen und veröffentlichen");
+ $("proposal-reject").textContent=label("این رو نمی‌پسندم؛ یه پیشنهاد دیگه","Andere Idee vorschlagen");
+ $("proposal-card").querySelector(".proposal-eyebrow").textContent=label("این تجربه رو مشتری‌های شما می‌بینن","So erleben deine Kunden das Spiel");
+ $("proposal-card").querySelector(".proposal-trust").textContent=label(
+   "پیشنهاد رو بررسی کن. فقط با تأیید شما برای مشتری‌ها منتشر می‌شه.",
+   "Prüfe den Vorschlag. Erst nach deiner Zustimmung wird er veröffentlicht.");
+ document.querySelector(".customer-preview-heading span:last-child").textContent=label("نمایش نمونه · هنوز منتشر نشده","Beispielansicht · noch nicht veröffentlicht");
+ document.querySelector(".customer-preview-note").textContent=label(
+   "این تصویر نمونه‌ای از مسیر مشتریه، نه خود بازی. متن‌های صفحه و پیام پایانی از همین پیشنهاد گرفته شدن.",
+   "Die Ansicht zeigt den Ablauf, nicht das echte Spiel. Die Texte entsprechen diesem Vorschlag.");
+ document.querySelector(".customer-journey-intro").textContent=label(
+   "مشتری لینک یا کد QR رو باز می‌کنه، یه بازی کوتاه انجام می‌ده و در پایان پیام شما رو می‌بینه. روی هر مرحله بزن تا ببینی چه اتفاقی می‌افته.",
+   "Deine Kunden öffnen den Link oder QR Code, spielen eine kurze Runde und sehen danach deine Nachricht. Tippe auf einen Schritt, um ihn anzusehen.");
+ const names=fa()?["ورود مشتری","انجام بازی","پیام بعد از بازی"]:["Spiel öffnen","Spielen","Nach dem Spiel"];
+ document.querySelectorAll("[data-customer-stage]").forEach((button,i)=>{
+   button.querySelector("strong").textContent=names[i];
+ });
+ setStage(previewStep);
 }
 function setBusy(value){
  busy=value;
@@ -67,6 +127,7 @@ async function propose(reject=false){
    const answer=await call("/api/brands/"+encodeURIComponent(b.slug)+"/campaigns/propose",{objective,reject_id:previous||""});
    if(seq!==requestSeq||ctx.getBrand()?.slug!==b.slug||ctx.getObjective()!==objective)return;
    current={...answer,brand:b.slug};
+   previewStep=2;
    $("proposal-card").hidden=false;render();
  }catch(error){
    if(seq===requestSeq)showError(label("پیشنهاد آماده نشد. دوباره تلاش کن.","Der Vorschlag konnte nicht erstellt werden. Versuche es erneut."));
