@@ -170,6 +170,17 @@ function closeStudioSettings(){
  $('studio-extra-tools').open=false;
  modalReturnFocus?.isConnected?modalReturnFocus.focus({preventScroll:true}):$('open-studio-settings').focus({preventScroll:true});
 }
+document.querySelectorAll('[data-settings-lang]').forEach(button=>{
+ button.addEventListener('click',()=>{
+   window.PWYWI18N?.setLocale(button.dataset.settingsLang);
+   document.querySelectorAll('[data-settings-lang]').forEach(b=>{
+     b.setAttribute('aria-pressed',String(b.dataset.settingsLang===window.PWYWI18N?.locale()));
+   });
+ });
+});
+document.addEventListener('pwyw:language-changed',()=>{
+ document.querySelectorAll('[data-settings-lang]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.settingsLang===window.PWYWI18N?.locale())));
+});
 $('open-studio-settings').addEventListener('click',()=>openStudioSettings());
 $('close-studio-settings').addEventListener('click',closeStudioSettings);
 document.querySelector('[data-close-studio-settings]').addEventListener('click',closeStudioSettings);
