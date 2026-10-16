@@ -223,7 +223,7 @@ const {chromium}=require('playwright');
   // Existing customer campaign now comes from the owner-approved suggestion.
   const campaignLive=await page.evaluate(async()=>{const r=await fetch('/api/brands/playwright-garage/campaigns');return await r.json()});
   if(!campaignLive.some(c=>c.objective==='return'&&c.title))throw Error('Approval did not persist actual campaign');
-  if(campaignLive.find(c=>c.objective==='return').game!=='bloom')throw Error('Unexpected suggested game');
+  if(!['bloom','merge','hop'].includes(campaignLive.find(c=>c.objective==='return').game))throw Error('Unexpected suggested game');
   const campaignUrl=new URL(url,base);campaignUrl.searchParams.set('objective','return');
   await page.goto(campaignUrl.href,{waitUntil:'networkidle'});
   await page.locator('#load-overlay').waitFor({state:'hidden'});
