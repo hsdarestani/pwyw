@@ -34,7 +34,7 @@ const {chromium}=require('playwright');
     throw Error('Upsell deep link displayed the learning quiz mission');
   // A curated default question and its unprefixed answers must be localized.
   const demoOption=await page.evaluate(()=>window.PWYWI18N?.t('Bring the requested documents'));
-  if(demoOption!=='مدارک درخواستی را همراه بیاور')
+  if(demoOption!=='مدارک لازم رو همراهت بیار')
     throw Error('Demo quiz answers are not localized before numbering');
   await page.evaluate(()=>document.getElementById('finish-modal').hidden=false);
   const resultBg=await page.locator('.result-inside').evaluate(el=>getComputedStyle(el).backgroundColor);
