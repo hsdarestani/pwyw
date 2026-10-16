@@ -8,6 +8,7 @@ on:
       - 'admin_bootstrap.py'
       - 'campaigns.py'
       - 'campaign_suggestions.py'
+      - 'campaign_concepts.py'
       - 'brandpack.py'
       - 'Dockerfile'
       - 'static/**'
