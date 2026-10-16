@@ -149,7 +149,7 @@
     $("reward-code").textContent="";$("reward-code").hidden=true;
     $("claim-reward").hidden=false;$("claim-reward").disabled=false;
     $("merchant-link").hidden=true;$("referral-share").hidden=true;
-    $("reward-note").textContent="Codes must be verified by the business. No prize is awarded for a game score.";
+    $("reward-note").textContent=tr("The code is for tracking this offer, not an automatic discount.");
   }
   async function renderQuiz(){
     const slot=$("quiz-slot");slot.replaceChildren();slot.hidden=true;
@@ -189,11 +189,11 @@
     resetReward();
     $("quiz-slot").hidden=true;
     if(objective==="learn"){ $("claim-reward").hidden=true;renderQuiz(); }
-    $("reward-kicker").textContent="PLAY TO "+objective.toUpperCase()+" / YOUR NEXT MOVE";
+    $("reward-kicker").textContent=tr("AFTER THE GAME");
     $("reward-title").textContent=localized(campaign,'product_name')||"Your next move.";
-    $("reward-copy").textContent=localized(campaign,'offer')||"Ask the team about your next step.";
-    $("claim-reward").textContent=objective==="learn"?"I UNDERSTAND ✓":
-      objective==="refer"?"CREATE MY CHALLENGE ↗":"GET MY CODE ↗";
+    $("reward-copy").textContent=localized(campaign,'offer')||tr("Ask the team about your next step.");
+    $("claim-reward").textContent=tr(objective==="learn"?"I UNDERSTAND ✓":
+      objective==="refer"?"CREATE MY CHALLENGE ↗":objective==="return"?"GET RETURN CODE ↗":"GET ORDER CODE ↗");
     if(!campaign){
       $("claim-reward").hidden=true;
       $("reward-note").textContent="No active campaign. Games remain free to play.";
@@ -562,9 +562,11 @@
       rewardCode=data.code;$("reward-code").textContent=data.demo?
         "DEMO ONLY — NO VALID REWARD":data.code;
       $("reward-code").hidden=false;btn.hidden=true;
-      $("reward-note").textContent=data.demo?
+      $("reward-note").textContent=tr(data.demo?
         "Preview campaign only. No real reward, offer or discount is issued.":
-        "Show this code to the business. Staff must verify a real action before counting it.";
+        objective==="return"?"Keep this code and show it on your next visit. It is not an automatic discount.":
+        objective==="upsell"?"Show this code when you order the suggested item. It is not an automatic discount.":
+        "Share this game with your friends.");
       if(objective==="refer"){
         $("referral-share").hidden=false;
       }
