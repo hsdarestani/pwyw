@@ -218,7 +218,7 @@ const {chromium}=require('playwright');
   await page.locator('#campaign-advanced summary').click();
   const horizontalOverflow=await page.evaluate(()=>document.querySelector('.studio-settings-dialog').scrollWidth-document.querySelector('.studio-settings-dialog').clientWidth);
   if(horizontalOverflow>4)throw Error('Studio overflows a phone screen by '+horizontalOverflow+'px');
-  await page.locator('#pwyw-language-switch [data-lang=de]').click();
+  await page.locator('[data-settings-lang=de]').click();
 
   // Phone screen layout: security fields must be separate, QR must fit on screen.
   const security=await page.locator('#password-change input').evaluateAll(xs=>xs.map(x=>{const r=x.getBoundingClientRect();return {top:r.top,bottom:r.bottom,width:r.width}}));
