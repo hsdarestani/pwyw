@@ -165,11 +165,12 @@
         btn.className="quiz-answer";
         btn.addEventListener("click",async()=>{
           slot.querySelectorAll("button").forEach(x=>x.disabled=true);
+          btn.classList.add("is-picked");
           try{
             const result=await request("/api/public/brands/"+encodeURIComponent(slug)+"/campaigns/learn/answer",{
               method:"POST",body:JSON.stringify({sid,selected_index:i})});
             const outcome=document.createElement("p");outcome.className="quiz-feedback";
-            outcome.textContent=result.correct?"Correct! You're prepared.":"Not quite. Ask the team for clarification before proceeding.";
+            outcome.textContent=tr(result.correct?"Correct! You're prepared.":"Not quite. Ask the team for clarification before proceeding.");
             slot.append(outcome);
             $("reward-note").textContent="Knowledge check complete. A correct answer does not establish staff-time savings.";
           }catch(e){slot.querySelectorAll("button").forEach(x=>x.disabled=false);$("reward-note").textContent="Quiz couldn't be recorded. Please try again."}
