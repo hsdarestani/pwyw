@@ -254,8 +254,8 @@ def add_brand(data:BrandInput,request:Request):
         if c.execute("SELECT COUNT(*) n FROM brands WHERE owner_id=?",(user["id"],)).fetchone()["n"] >= 5:
             raise HTTPException(403,"Pilot supports up to five brands per account")
         try:
-            c.execute("""INSERT INTO brands(owner_id,slug,name,industry,theme,accent,tagline)
-              VALUES(?,?,?,?,?,?,?)""",(user["id"],slug,p["name"],p["industry"],p["theme"],p["accent"],p["tagline"]))
+            c.execute("""INSERT INTO brands(owner_id,slug,name,industry,theme,accent,tagline,tagline_fa)
+              VALUES(?,?,?,?,?,?,?,?)""",(user["id"],slug,p["name"],p["industry"],p["theme"],p["accent"],p["tagline"],p["tagline_fa"]))
         except sqlite3.IntegrityError:
             raise HTTPException(409,"This URL is already taken")
     return {"ok":True,"slug":slug}
@@ -266,9 +266,9 @@ def edit_brand(slug:str,data:BrandInput,request:Request):
     owned_brand(slug,user)
     p=normalize_brand(data)
     with db() as c:
-        c.execute("""UPDATE brands SET name=?,industry=?,theme=?,accent=?,tagline=?
+        c.execute("""UPDATE brands SET name=?,industry=?,theme=?,accent=?,tagline=?,tagline_fa=?
           WHERE slug=? AND owner_id=?""",
-          (p["name"],p["industry"],p["theme"],p["accent"],p["tagline"],slug,user["id"]))
+          (p["name"],p["industry"],p["theme"],p["accent"],p["tagline"],p["tagline_fa"],slug,user["id"]))
     return {"ok":True,"slug":slug}
 
 @app.post("/api/brands/{slug}/logo")
