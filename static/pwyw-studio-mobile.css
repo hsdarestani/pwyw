@@ -1,0 +1,142 @@
+/* PWYW Studio mobile workflow · primary locale first, clear progressive disclosure */
+.studio-v2 .campaign-editor{min-width:0}
+.studio-v2 .campaign-editor #campaign-form{min-width:0;display:flex;flex-direction:column;gap:16px}
+.studio-v2 .campaign-lead{margin:0;font-size:13px;line-height:1.8;color:#616b80}
+.studio-v2 .campaign-copy-main{min-width:0}
+.studio-v2 .campaign-copy-fields{width:100%;min-width:0}
+.studio-v2 .campaign-copy-fields .campaign-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:15px;row-gap:1px}
+.studio-v2 .campaign-editor .campaign-copy-fields label,
+.studio-v2 .campaign-editor .campaign-choice label,
+.studio-v2 .campaign-editor .campaign-advanced label{
+  font-size:13px;line-height:1.65;letter-spacing:0;font-weight:650;
+}
+.studio-v2 .campaign-editor :is(input,select,textarea){
+  min-width:0;max-width:100%;min-height:51px;
+  border-radius:13px;padding:12px 14px;font-size:14px;line-height:1.65;
+}
+.studio-v2 .campaign-editor textarea{min-height:95px;resize:vertical}
+.studio-v2 .campaign-copy-fields[lang=fa],
+.studio-v2 .campaign-copy-fields[lang=fa] :is(input,textarea){
+  font-family:'Estedad',Tahoma,sans-serif!important;direction:rtl!important;text-align:right!important;
+}
+.studio-v2 .campaign-copy-fields[lang=de],
+.studio-v2 .campaign-copy-fields[lang=de] :is(input,textarea){
+  font-family:Manrope,system-ui,sans-serif!important;direction:ltr!important;text-align:left!important;
+}
+.studio-v2 .campaign-choice{padding:3px 0}
+.studio-v2 .campaign-choice label{display:flex;flex-direction:column;gap:9px;color:#353e55}
+.studio-v2 .campaign-choice select{width:100%;background-color:#f8f7fc;border-color:#cbc7e0}
+.studio-v2 .campaign-disclosure{
+  border:1px solid #dadbe7;border-radius:16px;background:#f8f8fc;
+  min-width:0;overflow:hidden;margin:0;
+}
+.studio-v2 .campaign-disclosure>summary{
+  list-style:none;cursor:pointer;display:flex;justify-content:space-between;
+  align-items:center;gap:15px;min-height:55px;padding:14px 16px;
+  font-weight:750;font-size:13px;line-height:1.55;color:#30354c;
+}
+.studio-v2 .campaign-disclosure>summary::-webkit-details-marker{display:none}
+.studio-v2 .campaign-disclosure .disclosure-icon{font-size:21px;line-height:1;transition:transform .18s;flex:none}
+.studio-v2 .campaign-disclosure[open] .disclosure-icon{transform:rotate(180deg)}
+.studio-v2 .campaign-disclosure>p{padding:0 17px;color:#606d80;font-size:12px;line-height:1.8;opacity:1;margin:0 0 12px}
+.studio-v2 .campaign-disclosure>#campaign-copy-secondary,
+.studio-v2 .campaign-disclosure>.campaign-grid{padding:0 16px 15px}
+.studio-v2 #campaign-save{
+  min-height:54px;width:100%;justify-content:center;font-size:14px;
+  margin:8px 0 0;border-radius:14px;
+}
+.studio-v2 #campaign-status{display:block;min-height:0;line-height:1.7;font-size:12px}
+.studio-v2 .campaign-editor .brand-assets{
+  border-radius:14px;padding:16px;background:#fbfaff;
+  border-color:#e2dfec;
+}
+.studio-v2 #learning-builder label{font:650 13px/1.6 var(--font)}
+.studio-v2 #learning-builder input,.studio-v2 #learning-builder select{font-size:14px}
+.studio-v2 .preview-analytics{padding:13px 0;font-size:11px;line-height:1.75}
+.studio-v2 .campaign-disclosure:focus-within{border-color:#aaa0dd}
+
+/* Analytics and QR are separate, readable zones rather than a squeezed layout. */
+.studio-v2 .metrics-panel,.studio-v2 .redeem-widget{min-width:0}
+.studio-v2 .metrics-panel h2{font-size:clamp(22px,5vw,27px)}
+.studio-v2 .metrics-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.studio-v2 .metrics-grid div{min-width:0;border-top:1px solid #b1a6d9;padding:12px 1px}
+.studio-v2 .metrics-grid b{font:850 clamp(25px,5.5vw,34px)/1.35 Manrope,sans-serif;letter-spacing:-.03em}
+.studio-v2 .metrics-grid span{display:block;font:650 12px/1.6 'Estedad',Manrope,sans-serif;color:#51496d}
+.studio-v2 .qr-metrics{
+  margin-top:17px;display:grid;grid-template-columns:130px minmax(0,1fr);gap:18px;
+  align-items:center;padding:18px;border:1px solid #c9bfe7;border-radius:17px;background:#f3efff;
+}
+.studio-v2 .qr-code-wrap{display:flex;justify-content:center;align-items:center;min-width:0}
+.studio-v2 .qr-code-wrap img{
+  display:block;width:124px;max-width:100%;height:auto;aspect-ratio:1;
+  background:#fff;border:1px solid #c8c4d2;border-radius:10px;padding:7px;
+}
+.studio-v2 .qr-actions{min-width:0;display:flex;align-items:flex-start;flex-direction:column;gap:8px}
+.studio-v2 .qr-actions .helper{margin:0;line-height:1.7;opacity:1;font-size:12px}
+.studio-v2 .qr-actions a{
+  display:inline-flex;align-items:center;justify-content:center;
+  border-radius:12px;border:1px solid #aaa1d7;background:#fff;
+  padding:10px 13px;font:750 12px/1.5 'Estedad',Manrope,sans-serif;text-align:center;
+  max-width:100%;overflow-wrap:anywhere;
+}
+.studio-v2 .report-note{margin:13px 0 0;font-size:11px;line-height:1.8;opacity:1}
+.studio-v2 .outcome-item{min-width:0;overflow-wrap:anywhere}
+.studio-v2 .outcome-item span{font-size:12px;line-height:1.8}
+
+/* Staff redemption uses explicit labels and lets numeric values be empty. */
+.studio-v2 #redeem-form{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(110px,1fr);gap:12px}
+.studio-v2 #redeem-form label{min-width:0;display:flex;flex-direction:column;gap:7px;font:650 13px/1.55 'Estedad',Manrope,sans-serif}
+.studio-v2 #redeem-form label input{width:100%;min-width:0;min-height:49px;direction:ltr;font-size:14px}
+.studio-v2 #redeem-form .solid-btn{grid-column:1/-1;width:100%;justify-content:center;min-height:49px;border-radius:13px}
+.studio-v2 #redeem-section .helper{font-size:12px;line-height:1.85;opacity:1}
+
+/* Preview and account screen made actually touch-friendly. */
+.studio-v2 #account-security{margin-top:18px;padding:22px;min-width:0}
+.studio-v2 #password-change{display:flex;flex-direction:column;gap:15px}
+.studio-v2 #password-change .security-fields{gap:15px}
+.studio-v2 #password-change label{font:650 13px/1.6 'Estedad',Manrope,sans-serif;display:flex;flex-direction:column;gap:8px;min-width:0;margin:0}
+.studio-v2 #password-change input{width:100%;min-width:0;min-height:52px;border-radius:13px;direction:ltr;text-align:left;font-size:15px}
+.studio-v2 #password-change button{align-self:flex-start;min-height:48px;border-radius:14px;min-width:150px;justify-content:center}
+.studio-v2 .studio-note{font-size:12px;line-height:1.8;opacity:1}
+
+/* In RTL, numbers and external URLs retain their native direction. */
+html[lang=fa] .studio-v2 #campaign-form .campaign-lead{font-family:'Estedad',Tahoma,sans-serif}
+html[lang=fa] .studio-v2 :is(.campaign-disclosure>summary,.qr-actions,.redeem-widget){text-align:right}
+html[lang=fa] .studio-v2 .campaign-editor :is(input[type=url],input[type=number]),
+html[lang=fa] .studio-v2 #redeem-form input{direction:ltr!important;text-align:left!important}
+html[lang=fa] .studio-v2 :is(.campaign-editor label,.campaign-editor summary,.campaign-disclosure>p){
+  font-family:'Estedad',Tahoma,sans-serif!important;letter-spacing:0!important;
+}
+@media(max-width:800px){
+ .studio-v2 .campaign-copy-fields .campaign-grid{grid-template-columns:1fr}
+ .studio-v2 .studio-aside{position:static;width:100%;max-width:100%;margin-top:22px}
+ .studio-v2 .studio-aside .phone-frame{
+   width:min(100%,390px);max-width:100%;min-height:280px;max-height:325px;
+   border:6px solid #293450;border-radius:24px;padding:20px 18px;margin:0 auto;
+   box-shadow:0 14px 32px #17203716;
+ }
+ .studio-v2 .phone-frame h3{font-size:clamp(25px,7vw,37px);margin:8px 0;line-height:1.25}
+ .studio-v2 .phone-frame .phone-symbol{font-size:31px;margin-top:11px}
+ .studio-v2 .phone-frame .phone-game span{padding:9px 0;font-size:18px}
+ .studio-v2 #account-security{padding:20px}
+ .studio-v2 #password-change .security-fields{grid-template-columns:1fr}
+}
+@media(max-width:560px){
+ .studio-v2 .campaign-editor,.studio-v2 .metrics-panel,.studio-v2 .redeem-widget{padding:19px 16px}
+ .studio-v2 .campaign-editor .section-index{font-size:11px;line-height:1.6}
+ .studio-v2 .campaign-editor h2{font-size:23px;line-height:1.4;margin:6px 0 13px}
+ .studio-v2 .metrics-grid{gap:8px}
+ .studio-v2 .metrics-grid b{font-size:26px}
+ .studio-v2 .metrics-grid span{font-size:11px;line-height:1.5}
+ .studio-v2 .qr-metrics{display:flex;flex-direction:column;align-items:stretch;padding:15px;gap:13px}
+ .studio-v2 .qr-code-wrap{order:0}
+ .studio-v2 .qr-code-wrap img{width:146px}
+ .studio-v2 .qr-actions{order:1;align-items:stretch;text-align:center}
+ .studio-v2 .qr-actions .helper{font-size:12px;text-align:center}
+ .studio-v2 .qr-actions a{width:100%}
+ .studio-v2 .outcome-list{grid-template-columns:1fr}
+ .studio-v2 #redeem-form{grid-template-columns:1fr;gap:14px}
+ .studio-v2 .studio-content{padding:18px 12px}
+ .studio-v2 .studio-note{max-width:100%;overflow-wrap:anywhere}
+}
+@media(prefers-reduced-motion:reduce){.studio-v2 .campaign-disclosure .disclosure-icon{transition:none}}
