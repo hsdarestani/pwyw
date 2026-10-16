@@ -3,10 +3,10 @@
 const $=id=>document.getElementById(id);
 const state={mode:'login',brands:[],brand:null,theme:'atelier',objective:'upsell',campaigns:{},logoPreview:null};
 const objectives={
-  upsell:{title:'Perfect pairing',description:'Play, then find the extra that makes the moment better.',cta:'Show me the pairing',offer:'Discover a complementary extra',product_name:'Signature pairing',game:'orbit'},
-  return:{title:'One more visit?',description:'A little challenge now. Something lovely on your next visit.',cta:'Save my return treat',offer:'A surprise on your next visit',product_name:'Next visit',game:'bloom'},
-  refer:{title:'More fun together',description:'Send a challenge to a friend and make a new shared memory.',cta:'Invite a friend',offer:'A special shared moment',product_name:'Friend challenge',game:'lane'},
-  learn:{title:'Know before you go',description:'Discover the essentials in a friendly, playable moment.',cta:'What should I know?',offer:'Read the important preparation steps',product_name:'Service guide',game:'sequence'}
+  upsell:{title:'Perfekte Ergänzung',description:'Spiele und entdecke danach ein passendes Extra.',cta:'Ergänzung anzeigen',offer:'Passendes Extra entdecken',product_name:'Empfohlenes Extra',game:'orbit'},
+  return:{title:'Noch ein Besuch?',description:'Ein kleines Spiel jetzt, ein Extra beim nächsten Besuch.',cta:'Belohnung für nächsten Besuch merken',offer:'Überraschung beim nächsten Besuch',product_name:'Nächster Besuch',game:'bloom'},
+  refer:{title:'Gemeinsam macht es mehr Spaß',description:'Lade Freunde zu einer Challenge ein.',cta:'Freund einladen',offer:'Ein schöner gemeinsamer Moment',product_name:'Freunde-Challenge',game:'lane'},
+  learn:{title:'Gut vorbereitet',description:'Entdecke Wichtiges spielerisch und einfach.',cta:'Was muss ich wissen?',offer:'Wichtige Hinweise lesen',product_name:'Servicehinweise',game:'sequence'}
 };
 const themes=['atelier','neon','garden','pop','noir','chrome','dream','heritage'];
 async function api(url,method='GET',body){
