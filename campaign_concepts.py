@@ -70,50 +70,104 @@ def category(brand):
     return raw if raw in UPSELL else "other"
 
 def concept(brand,objective,index):
+    """Plan around the actual game mechanic, not generic marketing slogans.
+
+    Approving a proposal is the merchant's explicit decision to show the item.
+    Never invent an amount, price cut, loyalty reward or automatic checkout.
+    """
     cat=category(brand)
-    sector_fa,sector_de=CONTEXT[cat]
     if objective=="upsell":
-        ideas=UPSELL[cat]; item=ideas[index%len(ideas)]
-        product_fa,heading_fa,offer_fa,product_de,heading_de,offer_de=item
-        # No fake discount. A generated code only records interest, not a promised benefit.
+        ideas=UPSELL[cat]
+        product_fa,title_fa,_,product_de,title_de,_=ideas[index%len(ideas)]
         return {
-          "fa":{"title":heading_fa,"description":"یه بازی کوتاه انجام بده و بعد یه پیشنهاد مرتبط ببین.",
-                "cta":"دریافت کد پیشنهاد","offer":offer_fa,"product_name":product_fa},
-          "de":{"title":heading_de,"description":"Spiel eine kurze Runde und entdecke eine passende Ergänzung.",
-                "cta":"Vorschlagscode anfordern","offer":offer_de,"product_name":product_de},
+          "fa":{
+             "title":title_fa,
+             "description":"یه دست بازی کن و بعد ببین چی می‌تونی به سفارشت اضافه کنی.",
+             "cta":"دریافت کد پیگیری",
+             "offer":f"«{product_fa}» رو هم می‌خوای؟ کدت رو موقع سفارش به کارکنان نشون بده.",
+             "product_name":product_fa
+          },
+          "de":{
+             "title":title_de,
+             "description":"Spiel eine kurze Runde und entdecke eine Ergänzung zu deiner Bestellung.",
+             "cta":"Code für die Bestellung",
+             "offer":f"Du möchtest auch „{product_de}“ bestellen? Zeig deinen Code bei der Bestellung.",
+             "product_name":product_de
+          },
           "owner":{
-            "fa":f"هدف این ایده، افزایش ارزش سفارش با پیشنهاد «{product_fa}» است. مشتری بعد از بازی یک کد دریافت می‌کند و می‌تواند درباره این گزینه از کارکنان سؤال کند. قبل از انتشار باید مطمئن شوید چنین محصول یا خدمتی در {sector_fa} شما ارائه می‌شود.",
-            "de":f"Ziel: höherer Bestellwert durch „{product_de}“. Nach dem Spiel erhält die Kundschaft einen Code und kann beim Team nachfragen. Bitte bestätige, dass diese Option im {sector_de} tatsächlich angeboten wird."
-          },"review_needed":True,"concept_id":f"upsell-{cat}-{index%len(ideas)}"
+             "fa":f"محصول پیشنهادی: «{product_fa}». مشتری بعد از بازی این گزینه رو می‌بینه و در صورت تمایل، کدش رو موقع سفارش نشون می‌ده. شما فقط خریدهای انجام‌شده رو در پنل تأیید می‌کنی.",
+             "de":f"Empfohlen wird „{product_de}“. Nach dem Spiel können Gäste einen Code bei der Bestellung vorzeigen. Im Studio bestätigst du nur tatsächlich erfolgte Käufe."
+          },
+          "review_needed":True,
+          "concept_id":f"upsell-{cat}-{index%len(ideas)}"
         }
     if objective=="return":
         variants=[
-          ("برای دفعه بعد هم یه بازی داریم","یه بازی کوتاه کن و این کد رو برای مراجعه بعدی نگه دار.","کد مراجعه بعدی","این کد رو موقع مراجعه بعدی نشون بده؛ ارائه هرگونه امتیاز با تأیید مجموعه است.",
-           "Ein Spiel fürs nächste Mal","Spiel kurz und hebe deinen Code für den nächsten Besuch auf.","Code für den nächsten Besuch","Zeige den Code beim nächsten Besuch. Ein Vorteil gilt nur nach Bestätigung des Betriebs."),
-          ("دوباره سر بزن، دوباره بازی کن","این بازی رو انجام بده و کد مخصوص مراجعه بعدی بگیر.","کد بازگشت","برای برنامه‌ریزی مراجعه بعدی از کارکنان راهنمایی بگیر.",
-           "Komm gern wieder","Spiel und erhalte einen Code für deinen nächsten Besuch.","Wiederbesuchscode","Frag beim Team nach deinem nächsten Besuch."),
-          ("دیدار بعدی رو فراموش نکن","بازی رو تموم کن و این یادآور رو برای مراجعه بعدی دریافت کن.","یادآور مراجعه بعدی","با این کد، هنگام بازگشت به مجموعه خودت رو معرفی کن.",
-           "Bis zum nächsten Besuch","Spiel und erhalte eine Erinnerung für deinen nächsten Besuch.","Besuchserinnerung","Zeige den Code, wenn du das nächste Mal da bist.")
-        ];v=variants[index%len(variants)]
-        fa,de={"title":v[0],"description":v[1],"product_name":v[2],"offer":v[3],"cta":"دریافت کد"},{"title":v[4],"description":v[5],"product_name":v[6],"offer":v[7],"cta":"Code erhalten"}
-        return {"fa":fa,"de":de,"owner":{"fa":"هدف: تشویق مشتری به مراجعه دوباره. بعد از بازی یک کد قابل پیگیری دریافت می‌کند. این کد به‌خودی‌خود تخفیف یا هدیه نیست.","de":"Ziel: Wiederbesuche fördern. Nach dem Spiel erhält die Kundschaft einen nachverfolgbaren Code. Er stellt keinen Rabatt oder Gewinn dar."},"review_needed":False,"concept_id":f"return-{index%len(variants)}"}
+          ("یه دلیل برای دوباره سر زدن","یه دست بازی کن و کد مراجعه بعدی رو نگه دار.",
+           "کد مراجعه بعدی","کد رو برای دفعه بعد نگه دار و موقع مراجعه نشون بده.",
+           "Ein Grund wiederzukommen","Spiel kurz und hebe deinen Code für den nächsten Besuch auf.",
+           "Code für deinen nächsten Besuch","Heb den Code auf und zeig ihn bei deinem nächsten Besuch."),
+          ("تا دیدار بعدی!","بازی رو تموم کن و یک یادآور برای مراجعه بعدی بگیر.",
+           "یادآور بازگشت","هر وقت دوباره سر زدی، این کد رو همراهت داشته باش.",
+           "Bis zum nächsten Mal!","Spiel und nimm einen Code für deinen nächsten Besuch mit.",
+           "Erinnerung für den nächsten Besuch","Zeig den Code, wenn du wieder vorbeikommst."),
+          ("یه بازی کوتاه تا دفعه بعد","وقت بازیه! در پایان، کد مخصوص مراجعه بعدی رو دریافت می‌کنی.",
+           "کد بازگشت","اگه دوباره اومدی، کد رو به کارکنان نشون بده.",
+           "Ein Spiel bis zum Wiedersehen","Spiele kurz und erhalte einen Code für deinen nächsten Besuch.",
+           "Wiederbesuchscode","Zeig den Code bei deinem nächsten Besuch.")
+        ]
+        v=variants[index%len(variants)]
+        return {
+          "fa":{"title":v[0],"description":v[1],"product_name":v[2],"offer":v[3],"cta":"دریافت کد بازگشت"},
+          "de":{"title":v[4],"description":v[5],"product_name":v[6],"offer":v[7],"cta":"Wiederbesuchscode erhalten"},
+          "owner":{
+            "fa":"هدف: تشویق مشتری به برگشتن. بعد از بازی یک کد مخصوص دریافت می‌کنه؛ وقتی دوباره مراجعه کرد، کارکنان کد رو ثبت می‌کنن تا تعداد بازگشت‌های واقعی مشخص بشه. این کد تخفیف نیست.",
+            "de":"Ziel: Wiederbesuche anregen. Nach dem Spiel erhält die Kundschaft einen Code. Bei der Rückkehr erfasst das Team den Code, damit echte Wiederbesuche gezählt werden. Der Code ist kein Rabatt."
+          },"review_needed":False,"concept_id":f"return-{index%len(variants)}"
+        }
     if objective=="refer":
         variants=[
-         ("دوستت رو به چالش دعوت کن","این بازی رو برای دوستت بفرست و ببین کدومتون امتیاز بیشتری می‌گیره.","چالش دو نفره","دوستت از همون لینک بازی می‌کنه و می‌تونه رکورد خودش رو ثبت کنه.",
-          "Fordere jemanden heraus","Teile das Spiel und vergleicht eure Punkte.","Spielchallenge","Dein Freund oder deine Freundin kann über den Link mitspielen."),
-         ("یه رقابت کوتاه با دوستات","یه دقیقه بازی کن؛ بعد لینک رو برای دوستات بفرست.","بازی مشترک","لینک بازی رو کپی کن و برای دوستات بفرست.",
-          "Eine Runde mit Freunden","Spiel eine Minute und schick die Challenge weiter.","Freundeschallenge","Teile den Spiellink mit Freunden."),
-         ("رکورد کی بالاتره؟","بازی رو تموم کن و دوستت رو هم به رقابت دعوت کن.","رقابت دوستانه","بازی رو برای دوستت بفرست تا رکورد خودش رو امتحان کنه.",
-          "Wer holt mehr Punkte?","Spiel und fordere Freunde heraus.","Punkte-Challenge","Teile die Herausforderung nach dem Spielen.")
-        ];v=variants[index%len(variants)]
-        fa,de={"title":v[0],"description":v[1],"product_name":v[2],"offer":v[3],"cta":"دعوت از دوستان"},{"title":v[4],"description":v[5],"product_name":v[6],"offer":v[7],"cta":"Freunde einladen"}
-        return {"fa":fa,"de":de,"owner":{"fa":"هدف: معرفی بازی توسط مشتری به دوستانش. پس از پایان بازی لینک اشتراک‌گذاری نمایش داده می‌شود؛ وعده پاداش یا تخفیف داده نمی‌شود.","de":"Ziel: Weiterempfehlung. Nach dem Spielen erscheint ein teilbarer Link; es wird kein Bonus oder Rabatt versprochen."},"review_needed":False,"concept_id":f"refer-{index%len(variants)}"}
+         ("دوستت رو به بازی دعوت کن","یک دست بازی کن و بعد لینک چالش رو برای دوستت بفرست.",
+          "چالش با دوستان","لینک رو برای دوستت بفرست تا اون هم بازی کنه.",
+          "Freunde zum Spielen einladen","Spiel eine Runde und teile anschließend den Link.",
+          "Challenge mit Freunden","Sende den Spiellink an Freunde."),
+         ("این بازی رو دوتایی امتحان کنین","بازی کن و بعد دوستت رو هم به رقابت دعوت کن.",
+          "بازی مشترک","لینک رو به اشتراک بذار؛ هر دو می‌تونین بازی کنین.",
+          "Spielt doch zu zweit","Spiel eine Runde und fordere danach Freunde heraus.",
+          "Gemeinsame Challenge","Teile den Link, damit deine Freunde mitspielen können."),
+         ("کی امتیاز بیشتری می‌گیره؟","رکوردت رو ثبت کن و بازی رو برای دوستت بفرست.",
+          "رقابت دوستانه","لینک بازی رو برای دوستت بفرست تا اون هم امتحان کنه.",
+          "Wer holt mehr Punkte?","Spiel und schick die Herausforderung an Freunde.",
+          "Freundschaftlicher Wettbewerb","Teile den Spiellink für die nächste Runde.")
+        ]
+        v=variants[index%len(variants)]
+        return {
+         "fa":{"title":v[0],"description":v[1],"product_name":v[2],"offer":v[3],"cta":"دعوت از دوست"},
+         "de":{"title":v[4],"description":v[5],"product_name":v[6],"offer":v[7],"cta":"Freunde einladen"},
+         "owner":{
+           "fa":"هدف: مشتری بازی رو برای دوستش می‌فرسته. بعد از بازی دکمهٔ اشتراک‌گذاری ظاهر می‌شه تا افراد جدید هم وارد صفحهٔ شما بشن. صرفِ ارسال لینک به معنی جذب مشتری جدید یا فروش نیست.",
+           "de":"Ziel: Mehr Menschen entdecken dein Geschäft über geteilte Spiellinks. Nach dem Spiel kann der Link weitergegeben werden. Ein geteilter Link ist noch kein neuer Kauf."
+         },"review_needed":False,"concept_id":f"refer-{index%len(variants)}"
+        }
     variants=[
-      ("قبل از مراجعه این نکته رو بدون","یک بازی کوتاه و بعد یک سؤال کاربردی درباره گرفتن اطلاعات درست.","راهنمای خدمات","اگر سؤال داری، از کارکنان مجموعه راهنمایی بگیر.","Gut vorbereitet","Ein kurzes Spiel mit einer Frage zu zuverlässigen Informationen.","Serviceinformation","Bei Fragen hilft dir das Team."),
-      ("راهنمای کوتاه مشتری","بازی کن و یاد بگیر از کجا اطلاعات دقیق خدمات رو بگیری.","اطلاعات خدمات","برای شرایط و جزئیات، از تیم مجموعه سؤال کن.","Kurz informiert","Spiel und erfahre, wo du verlässliche Informationen erhältst.","Wichtige Hinweise","Frag das Team nach Einzelheiten."),
-    ];v=variants[index%len(variants)]
-    fa,de={"title":v[0],"description":v[1],"product_name":v[2],"offer":v[3],"cta":"دیدن راهنما"},{"title":v[4],"description":v[5],"product_name":v[6],"offer":v[7],"cta":"Hinweis lesen"}
-    return {"fa":fa,"de":de,"owner":{"fa":"هدف: توضیح یک نکته قابل اتکا به مشتری. بعد از بازی یک سؤال کوتاه نمایش داده می‌شود؛ این سؤال درباره راه ارتباط با کارکنان است، نه ادعای تخصصی یا پزشکی.","de":"Ziel: Eine sichere Serviceinformation vermitteln. Nach dem Spiel erscheint eine kurze Frage zum Kontakt mit dem Team."},"review_needed":False,"concept_id":f"learn-{index%len(variants)}"}
+       ("از کجا اطلاعات دقیق بگیریم؟","یه بازی کوتاه، بعدش یک سؤال درباره راه درست دریافت اطلاعات.",
+        "راهنمای خدمات","برای اطلاع دقیق درباره خدمات، مستقیم از تیم مجموعه بپرس.",
+        "Wo bekommst du verlässliche Infos?","Ein kurzes Spiel und danach eine Frage zur richtigen Informationsquelle.",
+        "Serviceinformationen","Für genaue Informationen hilft dir das Team weiter."),
+       ("یه نکته قبل از مراجعه","بعد از بازی یک سؤال کوتاه می‌بینی که کمک می‌کنه راه درست رو بشناسی.",
+        "راهنمای مراجعه","اگه درباره شرایط مراجعه سؤالی داری، از کارکنان بپرس.",
+        "Ein Hinweis vor dem Besuch","Nach dem Spiel folgt eine kurze Frage für deinen Besuch.",
+        "Hinweise zum Besuch","Bei Fragen zum Besuch hilft dir das Team.")
+    ]
+    v=variants[index%len(variants)]
+    return {
+       "fa":{"title":v[0],"description":v[1],"product_name":v[2],"offer":v[3],"cta":"شروع سؤال"},
+       "de":{"title":v[4],"description":v[5],"product_name":v[6],"offer":v[7],"cta":"Frage starten"},
+       "owner":{
+         "fa":"هدف: مشتری بعد از بازی به یک سؤال کوتاه پاسخ می‌ده و با راه دریافت اطلاعات معتبر آشنا می‌شه. تعداد پاسخ‌ها قابل اندازه‌گیریه؛ کاهش زمان کار کارکنان صرفاً از این عدد ثابت نمی‌شه.",
+         "de":"Ziel: Nach dem Spiel beantwortet die Kundschaft eine kurze Frage und erfährt, wo es verlässliche Informationen gibt. Antworten lassen sich messen, eine Zeitersparnis wird damit nicht automatisch belegt."
+       },"review_needed":False,"concept_id":f"learn-{index%len(variants)}"
+    }
 
 def as_campaign(brand,objective,index,games,quiz_de=None,quiz_fa=None):
     idea=concept(brand,objective,index)
