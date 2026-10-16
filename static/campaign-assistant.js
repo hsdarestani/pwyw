@@ -47,6 +47,12 @@ function render(){
  if(!p||!data)return;
  $("proposal-title").textContent=data.title||p.title;
  $("proposal-description").textContent=data.description||p.description;
+ const industry=p.owner_explanation?.[fa()?"fa":"de"];
+ $("proposal-owner-note-label").textContent=label("این پیشنهاد چه کمکی به کسب‌وکار می‌کنه؟","Warum kann dieser Vorschlag sinnvoll sein?");
+ $("proposal-owner-note").textContent=industry||label(
+  "این ایده برای هدف انتخابی شما آماده شده. قبل از انتشار، از درست‌بودن اطلاعات و قابل‌ارائه‌بودن پیشنهاد مطمئن شو.",
+  "Der Vorschlag passt zum ausgewählten Ziel. Prüfe vor dem Veröffentlichen alle Angaben.");
+
  $("customer-welcome-title").textContent=data.title||p.title;
  $("customer-welcome-desc").textContent=data.description||p.description;
  $("customer-screen-brand").textContent=brand?.name||label("کسب‌وکار شما","Dein Unternehmen");
