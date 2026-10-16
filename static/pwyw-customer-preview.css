@@ -137,3 +137,20 @@ html[lang=de] .studio-v2 .customer-screen{text-align:left}
  .studio-v2 .customer-screen-brand{font-size:11px}
 }
 @media(prefers-reduced-motion:reduce){.studio-v2 .proposal-flow button{transition:none}}
+
+/* Explain the real business mechanism without cluttering the customer preview. */
+.studio-v2 .proposal-owner-note{
+  margin:15px 0 18px;padding:16px 17px;
+  border:1px solid #d9d3ee;border-radius:15px;background:#fff;
+  color:#29243d;
+}
+.studio-v2 .proposal-owner-note strong{
+  display:block;margin-bottom:7px;
+  font:800 13px/1.7 'Estedad',Manrope,sans-serif;
+}
+.studio-v2 .proposal-owner-note p{
+  font:500 13px/1.85 'Estedad',Manrope,sans-serif;
+  margin:0;color:#575068;overflow-wrap:anywhere;
+}
+html[lang=fa] .studio-v2 .proposal-owner-note{text-align:right}
+html[lang=de] .studio-v2 .proposal-owner-note{text-align:left}
