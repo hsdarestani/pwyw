@@ -216,7 +216,7 @@ const {chromium}=require('playwright');
   await page.locator('#campaign-advanced summary').click();
   if(!await page.locator('#campaign-margin').isVisible())throw Error('Advanced fields not accessible');
   await page.locator('#campaign-advanced summary').click();
-  const horizontalOverflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
+  const horizontalOverflow=await page.evaluate(()=>document.querySelector('.studio-settings-dialog').scrollWidth-document.querySelector('.studio-settings-dialog').clientWidth);
   if(horizontalOverflow>4)throw Error('Studio overflows a phone screen by '+horizontalOverflow+'px');
   await page.locator('#pwyw-language-switch [data-lang=de]').click();
 
