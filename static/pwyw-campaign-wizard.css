@@ -64,3 +64,94 @@ html[lang=de] .studio-v2 .proposal-card{text-align:left}
  .studio-v2 .studio-tools>section{margin:9px 8px 13px}
 }
 @media(prefers-reduced-motion:reduce){.studio-v2 .proposal-loading{animation:none}}
+
+/* Focused version 2 — campaign approval is the entire ordinary workflow. */
+.studio-v2 .studio-utilities{
+  width:100%;max-width:100%;margin:20px auto 0;min-width:0;
+}
+.studio-v2 #studio-extra-tools{
+  margin:0;background:transparent;border:0;box-shadow:none;border-radius:13px;
+}
+.studio-v2 #studio-extra-tools>summary{
+  width:100%;min-height:51px;padding:14px 17px;
+  border:1px solid #d9d6e5;border-radius:13px;background:#f8f7fc;
+  color:#514b69;font-size:14px;line-height:1.6;font-weight:700;
+}
+.studio-v2 #studio-extra-tools[open]>summary{border-radius:13px 13px 0 0}
+.studio-v2 #studio-extra-tools>.studio-extra-content{
+  padding:12px 0 0;display:flex;flex-direction:column;gap:10px;
+}
+.studio-v2 #studio-extra-tools .studio-progressive{margin:0 0 8px}
+.studio-v2 #studio-extra-tools #account-security{
+  margin:0 0 10px;box-shadow:none;
+}
+.studio-v2 #campaign-section>.section-index{display:none}
+.studio-v2 #campaign-section>.campaign-wizard{margin:15px 0 0}
+.studio-v2 #campaign-section #campaign-heading{
+  font-size:clamp(21px,5.4vw,27px);font-weight:850;
+  line-height:1.55;margin:0 0 11px;color:#15162a;
+}
+.studio-v2 .proposal-card{
+  background:#f7f5ff;border-color:#dad5ed;padding:21px;
+  box-shadow:none;
+}
+.studio-v2 .proposal-eyebrow{
+  display:block;font-size:13px;font-weight:750;line-height:1.6;
+  color:#5b507e;
+}
+.studio-v2 .proposal-game{
+  background:transparent;border:0;padding:0;margin:10px 0 6px;
+  gap:10px;opacity:1;color:#615479;font-size:13px;
+}
+.studio-v2 .proposal-card h3{
+  font-size:clamp(23px,6.8vw,33px);margin:12px 0 7px;
+  line-height:1.5;letter-spacing:0!important;
+}
+.studio-v2 .proposal-card>p#proposal-description{
+  font-size:14px;line-height:1.95;margin:0 0 10px;
+  color:#44475c;
+}
+.studio-v2 .proposal-offer{
+  padding:17px;margin:15px 0;background:#fff;border-radius:15px;gap:7px;
+}
+.studio-v2 .proposal-offer>span:first-child{
+  color:#54467b;font-size:12px;font-weight:750;
+}
+.studio-v2 #proposal-product{font-size:19px;line-height:1.55}
+.studio-v2 #proposal-offer{
+  font-size:13px;line-height:1.8;
+}
+.studio-v2 #proposal-cta{
+  font-size:13px;padding:10px 14px;margin-top:4px;
+}
+.studio-v2 #proposal-approve{
+  min-height:56px;background:#7661ca;color:#fff;
+  font-size:15px;box-shadow:none;
+}
+.studio-v2 #proposal-reject{
+  min-height:50px;background:#fff;
+  color:#423268;border-color:#bdb5da;font-size:14px;
+}
+.studio-v2 .proposal-trust{
+  font-size:12px!important;line-height:1.7!important;
+  color:#5c546f!important;opacity:1!important;
+}
+.studio-v2 .proposal-actions{gap:11px}
+.studio-v2 .proposal-game,
+.studio-v2 .proposal-offer,
+.studio-v2 .proposal-actions{max-width:100%;min-width:0}
+.studio-v2 #account-security .helper,
+.studio-v2 #account-security p{line-height:1.85}
+html[lang=fa] .studio-v2 .proposal-card :is(.proposal-eyebrow,#proposal-description,.proposal-trust),
+html[lang=fa] .studio-v2 #studio-extra-tools summary{
+  font-family:'Estedad',Tahoma,sans-serif!important;letter-spacing:0!important;
+}
+@media(max-width:600px){
+  .studio-v2 .studio-utilities{margin-top:14px}
+  .studio-v2 #campaign-section{padding:18px 15px}
+  .studio-v2 .proposal-card{padding:17px}
+  .studio-v2 .proposal-card h3{font-size:25px}
+  .studio-v2 .proposal-eyebrow{font-size:12px}
+  .studio-v2 #proposal-offer{font-size:13px}
+  .studio-v2 #studio-extra-tools>summary{font-size:13px}
+}
