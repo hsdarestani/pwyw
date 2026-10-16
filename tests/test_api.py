@@ -112,7 +112,7 @@ class PilotTests(unittest.TestCase):
     def run(email,password):
       previous=sys.stdin
       try:
-        sys.stdin=io.StringIO(email+"\\n"+password+"\\n")
+        sys.stdin=io.StringIO(email+"\n"+password+"\n")
         with contextlib.redirect_stdout(io.StringIO()):
           admin_bootstrap.main()
       finally: sys.stdin=previous
