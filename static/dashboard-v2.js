@@ -9,6 +9,26 @@ const objectives={
   learn:{title:'Gut vorbereitet',description:'Entdecke Wichtiges spielerisch und einfach.',cta:'Was muss ich wissen?',offer:'Wichtige Hinweise lesen',product_name:'Servicehinweise',game:'sequence'}
 };
 const themes=['atelier','neon','garden','pop','noir','chrome','dream','heritage'];
+const nativeDefaults={
+ upsell:{title:'یه پیشنهاد ویژه برات داریم',description:'یه دست بازی کن و بعد پیشنهاد مخصوص ما رو ببین.',cta:'دیدن پیشنهاد',offer:'این پیشنهاد رو به سفارشت اضافه کن.',product_name:'پیشنهاد ویژه'},
+ return:{title:'دفعه بعد هم سر بزن!',description:'یه بازی کوتاه کن و پیشنهاد مخصوص مراجعه بعدی رو بگیر.',cta:'گرفتن پیشنهاد',offer:'این پیشنهاد برای مراجعه بعدی توئه.',product_name:'پیشنهاد مراجعه بعدی'},
+ refer:{title:'با دوستات بازی کن!',description:'لینک بازی رو برای دوستت بفرست و با هم رقابت کنین.',cta:'دعوت از دوست',offer:'دوستت رو دعوت کن تا با هم بازی کنین.',product_name:'بازی با دوستان'},
+ learn:{title:'قبل از مراجعه این نکات رو بدون',description:'با یه بازی کوتاه نکات مهم رو یاد بگیر.',cta:'دیدن نکات مهم',offer:'راهنمای مراجعه رو بخون.',product_name:'راهنمای مراجعه'}
+};
+const locale=()=>window.PWYWI18N?.locale()||((new URLSearchParams(location.search).get('lang')==='fa')?'fa':'de');
+const formatCount=value=>Number(value||0).toLocaleString(locale()==='fa'?'fa-IR':'de-DE');
+function setCampaignLocale(){
+ const isFa=locale()==='fa';
+ $('campaign-copy-primary').append(isFa?$('campaign-copy-fa'):$('campaign-copy-de'));
+ $('campaign-copy-secondary').append(isFa?$('campaign-copy-de'):$('campaign-copy-fa'));
+ $('campaign-alternate').open=false;
+ for(const id of ['title','product','cta','offer','description'])$('campaign-fa-'+id).required=isFa;
+ const alt=$('campaign-alternate').querySelector('summary>span');
+ if(alt)alt.textContent=isFa?'EDIT GERMAN VERSION':'EDIT PERSIAN VERSION';
+ for(const item of $('campaign-copy-de').querySelectorAll('input,textarea')){item.dir='ltr';item.lang='de'}
+ for(const item of $('campaign-copy-fa').querySelectorAll('input,textarea')){item.dir='rtl';item.lang='fa'}
+}
+
 async function api(url,method='GET',body){
   const options={method,credentials:'same-origin'};
   if(body!==undefined){if(body instanceof FormData)options.body=body;
@@ -94,7 +114,11 @@ function objective(value){
  $('campaign-heading').textContent='BUILD PLAY TO '+value.toUpperCase();
  const c=state.campaigns[value]||objectives[value];
  const fa=c.translations?.fa||{};
- for(const [key,id] of Object.entries({title:'title',description:'description',cta:'cta',offer:'offer',product_name:'product'}))$('campaign-fa-'+id).value=fa[key]||'';
+ for(const [key,id] of Object.entries({title:'title',description:'description',cta:'cta',offer:'offer',product_name:'product'})){
+   // Translate only fixed defaults that we authored; never guess merchant-entered text.
+   const safeDefault=c[key]===objectives[value][key]?nativeDefaults[value][key]:'';
+   $('campaign-fa-'+id).value=fa[key]||safeDefault;
+ }
  $('quiz-fa-question').value=fa.quiz_question||'';
  for(let i=0;i<3;i++)$('quiz-fa-option-'+i).value=fa.quiz_options?.[i]||'';
  $('campaign-title').value=c.title||'';
@@ -186,6 +210,10 @@ $('brand-form').addEventListener('submit',async e=>{
 $('campaign-form').addEventListener('submit',async e=>{
  e.preventDefault();
  if(!state.brand){message('campaign-status','Save a brand first.',true);return}
+ if(locale()==='fa'){
+   const missing=['title','product','cta','offer','description'].map(x=>$('campaign-fa-'+x)).find(x=>!x.value.trim());
+   if(missing){missing.setCustomValidity('برای انتشار نسخه فارسی، این قسمت رو هم پر کن.');missing.reportValidity();missing.focus();return}
+ }
  const btn=$('campaign-save');btn.disabled=true;message('campaign-status','Publishing campaign...');
  const body={objective:state.objective,title:$('campaign-title').value.trim(),
    description:$('campaign-description').value.trim(),cta:$('campaign-cta').value.trim(),
@@ -207,19 +235,21 @@ async function refreshStats(){
  const slug=encodeURIComponent(state.brand.slug);
  try{const [stats,results]=await Promise.all([
    api('/api/brands/'+slug+'/stats'),api('/api/brands/'+slug+'/campaigns/outcomes')]);
-   $('stat-visits').textContent=Number(stats.totals.visit||0).toLocaleString('de-DE');
-   $('stat-starts').textContent=Number(stats.totals.start||0).toLocaleString('de-DE');
-   $('stat-finishes').textContent=Number(stats.totals.complete||0).toLocaleString('de-DE');
+   $('stat-visits').textContent=formatCount(stats.totals.visit);
+   $('stat-starts').textContent=formatCount(stats.totals.start);
+   $('stat-finishes').textContent=formatCount(stats.totals.complete);
    const list=$('outcome-list');list.replaceChildren();
    for(const c of results.campaigns){
      const card=document.createElement('div');card.className='outcome-item';
-     const title=document.createElement('b');title.textContent='PLAY TO '+c.objective.toUpperCase();
-     const count=document.createElement('strong');count.textContent=c.redeemed+' redeemed';
-     const note=document.createElement('span');note.textContent=c.issued+' issued · '+c.actions+' CTA clicks · '+Number(c.net_claimed_contribution).toFixed(2)+' € declared net contribution';
+     const title=document.createElement('b');title.textContent=window.PWYWI18N?.t('PLAY TO '+c.objective.toUpperCase())||'PLAY TO '+c.objective.toUpperCase();
+     const count=document.createElement('strong');count.textContent=formatCount(c.redeemed)+(locale()==='fa'?' استفاده‌شده':' eingelöst');
+     const note=document.createElement('span');note.textContent=locale()==='fa'?
+       formatCount(c.issued)+' کد صادرشده · '+formatCount(c.actions)+' کلیک روی پیشنهاد · '+Number(c.net_claimed_contribution).toLocaleString('fa-IR',{maximumFractionDigits:2})+' یورو مبلغ اعلام‌شده':
+       formatCount(c.issued)+' Codes · '+formatCount(c.actions)+' Klicks · '+Number(c.net_claimed_contribution).toLocaleString('de-DE',{maximumFractionDigits:2})+' € gemeldeter Nettobetrag';
      card.append(title,count,note);list.append(card);
    }
    if(!results.campaigns.length)list.textContent='Publish a campaign to begin tracking real customer actions.';
-   $('outcome-caveat').textContent=results.disclaimer;
+   $('outcome-caveat').textContent=locale()==='fa'?'این آمار فقط فعالیت ثبت‌شدهٔ مشتری‌ها رو نشون می‌ده؛ افزایش واقعی فروش باید با اطلاعات فروش بررسی بشه.':'Diese Zahlen zeigen erfasste Interaktionen. Zusätzliche Umsätze müssen mit echten Verkaufsdaten überprüft werden.';
  }catch(err){message('save-status','Reporting unavailable: '+err.message,true)}
 }
 $('redeem-form').addEventListener('submit',async e=>{
@@ -253,6 +283,13 @@ $('password-change').addEventListener('submit',async e=>{
  }catch(err){message('password-status',err.message,true)}
  finally{btn.disabled=false}
 });
+// Show the active language as the main editor, with the other version optional.
+setCampaignLocale();
+for(const x of document.querySelectorAll('#campaign-copy-fa input,#campaign-copy-fa textarea')){
+ x.addEventListener('input',()=>x.setCustomValidity(''));
+}
 objective('upsell');boot();
-document.addEventListener('pwyw:language-changed',preview);
+document.addEventListener('pwyw:language-changed',()=>{
+ setCampaignLocale();preview();if(state.brand)refreshStats();
+});
 })();
