@@ -19,6 +19,21 @@ const {chromium}=require('playwright');
   await page.locator('#pwyw-language-switch [data-lang=fa]').click();
   if(await page.locator('html').getAttribute('dir')!=='rtl')throw Error('Persian RTL mode missing');
   if(!/[\u0600-\u06FF]/.test(await page.locator('#game-heading').textContent()))throw Error('Persian game heading missing');
+  // Regression: a requested Upsell mission must never silently become Learn.
+  await page.goto(base+'/demo?objective=upsell&lang=fa',{waitUntil:'networkidle'});
+  await page.locator('#load-overlay').waitFor({state:'hidden'});
+  if(await page.locator('[data-objective=upsell]').getAttribute('aria-pressed')!=='true')
+    throw Error('Upsell deep link incorrectly switched to another business objective');
+  if(await page.locator('[data-objective=learn]').getAttribute('aria-pressed')==='true')
+    throw Error('Upsell deep link displayed the learning quiz mission');
+  // A curated default question and its unprefixed answers must be localized.
+  const demoOption=await page.evaluate(()=>window.PWYWI18N?.t('Bring the requested documents'));
+  if(demoOption!=='مدارک درخواستی را همراه بیاور')
+    throw Error('Demo quiz answers are not localized before numbering');
+  await page.evaluate(()=>document.getElementById('finish-modal').hidden=false);
+  const resultBg=await page.locator('.result-inside').evaluate(el=>getComputedStyle(el).backgroundColor);
+  if(resultBg==='rgb(216, 255, 62)')throw Error('Unbranded neon result overlay still appears for Luna Coffee');
+  await page.evaluate(()=>document.getElementById('finish-modal').hidden=true);
   const canvasCopy=await page.evaluate(()=>window.PWYWArcade?.uiText?.('TAP TO START'));
   if(canvasCopy!=='برای شروع لمس کن')throw Error('Canvas game UI did not localize to Persian: '+canvasCopy);
   await page.locator('#pwyw-language-switch [data-lang=de]').click();
