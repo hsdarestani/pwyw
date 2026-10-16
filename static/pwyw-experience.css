@@ -273,3 +273,13 @@ html[lang="fa"] .game-board,html[lang="fa"] canvas{direction:ltr}
 @media(prefers-reduced-motion:reduce){
  *,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
+
+/* Quiz answer number is a separate, bidi-safe token. */
+.quiz-answer .quiz-index{
+  width:31px;height:31px;flex:0 0 31px;display:inline-grid;place-items:center;
+  border-radius:9px;background:color-mix(in srgb,var(--pshape),transparent 68%);
+  font:750 11px/1 'Space Grotesk',sans-serif;direction:ltr;unicode-bidi:isolate;
+}
+.quiz-answer .quiz-wording{display:block;flex:1;min-width:0;line-height:1.65;font-size:13px}
+html[lang="fa"] .quiz-answer .quiz-wording{font-family:'Estedad',sans-serif}
+.quiz-answer.is-picked .quiz-index{background:var(--pfg);color:var(--pbg)}
