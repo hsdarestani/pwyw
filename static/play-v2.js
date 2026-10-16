@@ -556,6 +556,7 @@
   function sharedUrl(){
     const url=new URL(location.origin+"/play/"+encodeURIComponent(slug));
     url.searchParams.set("objective","refer");
+    url.searchParams.set("lang",window.PWYWI18N?.locale()||"de");
     if(rewardCode && rewardCode!=="DEMO-ONLY")url.searchParams.set("ref",rewardCode);
     return url.href;
   }
