@@ -8,6 +8,16 @@
   const entries = [
     ["play with purpose","Spielen mit Wirkung","بازی با هدف"],
     ["RECOMMENDED FOR YOU","FÜR DICH EMPFOHLEN","پیشنهاد ما"],
+    ["FIRST, SET UP WHAT YOUR CUSTOMER WILL SEE. OPTIONAL SETTINGS ARE BELOW.","Gib zuerst die Texte ein, die Kunden sehen. Weitere Einstellungen findest du unten.","اول متن‌هایی رو بنویس که مشتری می‌بینه. بقیه تنظیمات اختیاری‌اند."],
+    ["EDIT SECOND LANGUAGE","ZWEITE SPRACHE BEARBEITEN","ویرایش زبان دوم"],
+    ["EDIT GERMAN VERSION","DEUTSCHE VERSION BEARBEITEN","ویرایش نسخه آلمانی"],
+    ["EDIT PERSIAN VERSION","PERSISCHE VERSION BEARBEITEN","ویرایش نسخه فارسی"],
+    ["YOU CAN ALSO EDIT THE TEXT CUSTOMERS SEE IN THE OTHER LANGUAGE.","Bearbeite hier die Texte für die andere Sprachversion.","اگه بخوای، متن‌های زبان دوم رو هم می‌تونی همین‌جا تغییر بدی."],
+    ["ADVANCED SETTINGS (OPTIONAL)","WEITERE EINSTELLUNGEN (OPTIONAL)","تنظیمات بیشتر (اختیاری)"],
+    ["THESE FIELDS ARE OPTIONAL. THE CAMPAIGN WORKS WITHOUT THEM.","Diese Angaben sind freiwillig. Die Kampagne funktioniert auch ohne sie.","پر کردن این قسمت‌ها اجباری نیست. کمپین بدون اون‌ها هم کار می‌کنه."],
+    ["Claim code","Kundencode","کد مشتری"],
+    ["Verified contribution (EUR)","Bestätigter Betrag (EUR)","مبلغ تأییدشده (یورو)"],
+
     ["PLAY NOW ↗","JETZT SPIELEN ↗","شروع بازی ↗"],
     ["MORE GAMES","WEITERE SPIELE","بازی‌های بیشتر"],
     ["SAVE YOUR SCORE (OPTIONAL)","PUNKTZAHL EINTRAGEN (OPTIONAL)","ثبت امتیاز (اختیاری)"],
