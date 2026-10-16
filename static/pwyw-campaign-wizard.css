@@ -1,0 +1,66 @@
+/* PWYW / campaign studio: objective → suggestion → approve or reject.
+   The previous configurator remains an opt-in advanced section. */
+.studio-v2 .studio-progressive{display:block;min-width:0;border:1px solid #dfe0ea;border-radius:19px;background:#fff;margin:12px 0 22px;overflow:hidden}
+.studio-v2 .studio-progressive>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 20px;font:750 13px/1.6 'Estedad',Manrope,sans-serif;cursor:pointer;background:#fff;color:#36324f}
+.studio-v2 .studio-progressive>summary::-webkit-details-marker{display:none}
+.studio-v2 .studio-progressive>summary span{font-size:18px;transition:transform .2s}
+.studio-v2 .studio-progressive[open]>summary span{transform:rotate(180deg)}
+.studio-v2 .studio-progressive>form,.studio-v2 #brand-settings>.builder-form{padding:13px 19px 19px}
+.studio-v2 #brand-settings{margin:0 0 17px}
+.studio-v2 #brand-settings:not([open]){opacity:.93}
+.studio-v2 #campaign-section{padding:clamp(17px,3vw,26px);border:1px solid #dad5ec;box-shadow:0 12px 34px #291b6110}
+.studio-v2 #campaign-section>h2{font-size:clamp(22px,5vw,27px);line-height:1.45}
+.studio-v2 .campaign-wizard{min-width:0;margin:20px 0 2px}
+.studio-v2 .proposal-loading{border-radius:15px;background:#f1eefe;padding:35px 20px;line-height:1.7;text-align:center;font-size:15px;font-weight:700;color:#514289;animation:proposal-breathe 1.5s ease-in-out infinite}
+@keyframes proposal-breathe{50%{opacity:.55}}
+.studio-v2 .proposal-card{padding:clamp(17px,3vw,27px);border-radius:21px;background:#f4f2ff;color:#17182b;border:1px solid #d9d2f3;box-shadow:inset 0 1px #fff}
+.studio-v2 .proposal-eyebrow{display:block;font-size:11px;font-weight:800;color:#6857a0;line-height:1.5}
+.studio-v2 .proposal-game{display:flex;align-items:center;gap:9px;margin:14px 0;opacity:.79;font:650 12px/1.5 'Estedad',Manrope,sans-serif}
+.studio-v2 #proposal-game-icon{display:grid;place-items:center;width:37px;height:37px;border-radius:12px;background:#e6defb;font-size:23px}
+.studio-v2 .proposal-card h3{font:850 clamp(25px,6.5vw,37px)/1.48 'Estedad',Manrope,sans-serif;letter-spacing:-.035em;overflow-wrap:anywhere;margin:12px 0}
+.studio-v2 .proposal-card>p{font:500 14px/1.9 'Estedad',Manrope,sans-serif;color:#4a4c65}
+.studio-v2 .proposal-offer{background:#fff;border-radius:17px;border:1px solid #ddd8ed;padding:17px;margin:19px 0;display:flex;flex-direction:column;align-items:start;gap:9px;min-width:0}
+.studio-v2 .proposal-offer>span:first-child{color:#796c9e;font-weight:700;font-size:11px}
+.studio-v2 #proposal-product{font:800 18px/1.6 'Estedad',Manrope,sans-serif}
+.studio-v2 #proposal-offer{font:500 13px/1.9 'Estedad',Manrope,sans-serif;color:#45475e}
+.studio-v2 #proposal-cta{border-radius:99px;background:#32274d;color:white;padding:9px 14px;font:650 12px/1.6 'Estedad',Manrope,sans-serif}
+.studio-v2 #proposal-quiz{font-size:13px;line-height:1.8;background:#e5e1f9;padding:12px 14px;border-radius:12px}
+.studio-v2 .proposal-actions{display:flex;flex-direction:column;gap:10px}
+.studio-v2 .proposal-actions button{width:100%;display:flex;align-items:center;justify-content:center;min-height:53px;font:800 14px/1.5 'Estedad',Manrope,sans-serif;border-radius:14px}
+.studio-v2 #proposal-approve{background:#9381e2;color:#17142b;box-shadow:none;transform:none;border:0}
+.studio-v2 #proposal-reject{background:transparent;color:#473971;border:1px solid #aaa0d7}
+.studio-v2 .proposal-actions button:disabled{opacity:.6;cursor:wait}
+.studio-v2 .proposal-trust{font-size:11px!important;opacity:.72;text-align:center;margin-top:12px}
+.studio-v2 .proposal-published{padding:25px 17px;background:#f1edfc;border-radius:18px;text-align:center}
+.studio-v2 .proposal-published>strong{display:block;font:850 24px/1.5 'Estedad',Manrope,sans-serif}
+.studio-v2 .proposal-published>p{margin:8px 0 16px;font-size:13px;line-height:1.7}
+.studio-v2 .proposal-published a{display:flex;min-height:51px;align-items:center;justify-content:center;background:#36284f;color:white;padding:12px;border-radius:12px;font-size:13px;font-weight:800}
+.studio-v2 .proposal-published button{background:none;border:0;text-decoration:underline;color:#584b93;padding:16px 12px;font-size:12px;font-weight:700}
+.studio-v2 .manual-campaign{margin:18px 0 0;background:#faf9fe}
+.studio-v2 .manual-campaign>form{padding:5px 17px 17px}
+.studio-v2 .manual-campaign .preview-analytics{margin:13px 0}
+.studio-v2 .studio-aside{display:none}
+.studio-v2 .studio-tools{background:#faf9fe}
+.studio-v2 .studio-tools>section{margin:9px 13px 15px}
+.studio-v2 #campaign-section .preview-analytics{font-size:11px}
+.studio-v2 .mission-picker>p{font-size:13px}
+.studio-v2 .purpose-options{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.studio-v2 .purpose-option{min-height:118px}
+.studio-v2 .purpose-option strong{font:800 clamp(13px,3.5vw,17px)/1.6 'Estedad',Manrope,sans-serif}
+.studio-v2 .purpose-option small{font:500 11px/1.6 'Estedad',Manrope,sans-serif}
+html[lang=fa] .studio-v2 .proposal-card{text-align:right}
+html[lang=de] .studio-v2 .proposal-card{text-align:left}
+@media(max-width:600px){
+ .studio-v2 .studio-content{padding:16px 12px}
+ .studio-v2 .mission-picker{padding:18px 15px}
+ .studio-v2 .mission-picker h2{font-size:24px;line-height:1.35}
+ .studio-v2 .purpose-options{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .studio-v2 .purpose-option{padding:12px;min-height:111px}
+ .studio-v2 .purpose-option strong{font-size:13px;line-height:1.5}
+ .studio-v2 .purpose-option small{font-size:10px;line-height:1.6}
+ .studio-v2 #campaign-section{padding:19px 14px}
+ .studio-v2 .proposal-card{padding:16px}
+ .studio-v2 .studio-progressive>summary{padding:16px;font-size:12px}
+ .studio-v2 .studio-tools>section{margin:9px 8px 13px}
+}
+@media(prefers-reduced-motion:reduce){.studio-v2 .proposal-loading{animation:none}}
