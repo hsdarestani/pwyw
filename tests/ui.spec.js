@@ -171,6 +171,8 @@ const {chromium}=require('playwright');
   await page.screenshot({path:'/tmp/pwyw-studio-mobile.png',fullPage:true});
   await page.locator('#brand-save').click();
   await page.locator('#proposal-card').waitFor({state:'visible',timeout:18000});
+  if(await page.locator('#studio-extra-tools').evaluate(x=>x.open))
+    throw Error('Secondary settings must stay collapsed in the campaign flow');
   if(await page.locator('#manual-campaign-settings').evaluate(x=>x.open))
     throw Error('Campaign manual form must stay collapsed');
   if(await page.locator('#brand-settings').evaluate(x=>x.open))
@@ -193,6 +195,9 @@ const {chromium}=require('playwright');
   await page.locator('#proposal-published').waitFor({state:'visible',timeout:14000});
   if(!await page.locator('#proposal-open').getAttribute('href'))
     throw Error('Approved campaign has no share link');
+  await page.locator('#studio-extra-tools>summary').click();
+  if(!await page.locator('#password-change input').first().isVisible())
+    throw Error('Account security is missing from expanded optional tools');
   await page.locator('#studio-tools>summary').click();
   await page.locator('#results-section').waitFor({state:'visible'});
   await page.locator('#manual-campaign-settings>summary').click();
