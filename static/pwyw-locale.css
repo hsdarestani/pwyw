@@ -1,0 +1,51 @@
+/* PWYW bilingual art direction: unmistakable display faces, legible writing systems. */
+@import url('https://fonts.googleapis.com/css2?family=Estedad:wght@400;500;600;700;800;900&family=Lalezar&family=Space+Grotesk:wght@400;500;600;700&family=Unbounded:wght@500;600;700;800;900&display=swap');
+:root{--font:'Space Grotesk',Arial,sans-serif;--head:'Unbounded','Space Grotesk',sans-serif;--mono:'Space Grotesk',monospace}
+body{font-family:var(--font)}
+h1,h2,h3,.hero h1,.opening h1,.cr-content h1,.cr-login h2,.cr-panel h2,.goal-title h3,
+.studio-auth-art h1,.identity-word,.brand-type{font-family:var(--head)}
+.pwyw-locale-switch{display:inline-flex!important;flex:0 0 auto;align-items:center;gap:3px;padding:4px;border:1px solid currentColor;border-radius:100px;background:rgba(170,188,192,.12);color:inherit;direction:ltr;z-index:30;white-space:nowrap}
+.pwyw-locale-switch button{font:750 12px/1.2 'Space Grotesk',sans-serif;min-height:33px;min-width:37px;padding:7px 10px;display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:100px;background:transparent;color:inherit;box-shadow:none;cursor:pointer;letter-spacing:0}
+.pwyw-locale-switch button[data-lang=fa]{font-family:'Estedad',sans-serif;font-size:13px}
+.pwyw-locale-switch button.is-current{background:#d8ff3e;color:#151525}
+.site-nav .pwyw-locale-switch{color:#f1f6f2;border-color:#65718a}
+.cr-top .pwyw-locale-switch{color:white;border-color:#557d7c}
+.cr-top .pwyw-locale-switch button.is-current{background:#b0ecc3}
+.play-header .pwyw-locale-switch{color:inherit}
+html[lang=fa]{direction:rtl}
+html[lang=fa] body{font-family:'Estedad',Tahoma,sans-serif;line-height:1.75}
+html[lang=fa] :is(h1,h2,h3,h4,.hero h1,.opening h1,.cr-content h1,.cr-login h2,.cr-panel h2,.goal-title h3,.studio-auth-art h1,.identity-word,.brand-type){font-family:'Lalezar','Estedad',Tahoma,sans-serif!important;font-weight:400!important;letter-spacing:0!important;line-height:1.2!important}
+html[lang=fa] :is(button,input,textarea,select,label,p,small,span,a,.helper,.section-cap,.tiny-label,.overline,.studio-note,.cr-label,.cr-eyebrow){font-family:'Estedad',Tahoma,sans-serif;letter-spacing:0}
+html[lang=fa] :is(.hero-description,.manifesto-right p,.studio-note,.play-result p,.campaign-editor p,.studio-auth-box p){line-height:2}
+html[lang=fa] .pwyw-locale-switch button[data-lang=de]{font-family:'Space Grotesk',sans-serif}
+html[lang=fa] .pwyw-locale-switch button[data-lang=fa]{font-family:'Estedad',sans-serif}
+html[lang=fa] input[type=email],html[lang=fa] input[type=url],html[lang=fa] input[type=number],html[lang=fa] input[name=password],
+html[lang=fa] input[type=password],html[lang=fa] #brand-slug,html[lang=fa] #redeem-code,html[lang=fa] #reward-code,
+html[lang=fa] .game-stats b,html[lang=fa] .result-score,html[lang=fa] .reward-code{direction:ltr;text-align:left;unicode-bidi:isolate}
+html[lang=fa] .game-board,html[lang=fa] .touch-controls,html[lang=fa] canvas{direction:ltr}
+html[lang=fa] .cr-table table{text-align:right}
+html[lang=fa] .cr-logo-mark{margin-right:0;margin-left:12px}
+html[lang=fa] .identity-word small{letter-spacing:0}
+html[lang=fa] .hero h1{font-size:clamp(56px,7.5vw,118px);letter-spacing:0}
+html[lang=fa] .cr-content h1{font-size:clamp(50px,8vw,115px)}
+html[lang=fa] .cr-content h1 i{font-family:'Lalezar',sans-serif}
+html[lang=fa] .play-header .play-brand strong{font-family:'Estedad',sans-serif}
+html[lang=fa] .site-nav nav{font-size:13px}
+html[lang=fa] .play-game-list :is(b,small){letter-spacing:0}
+html[lang=fa] #auth-shell input{direction:ltr}
+html[lang=fa] .studio-footer{text-align:right}
+html[lang=fa] #finish-score,html[lang=fa] .game-stats{direction:ltr}
+@media(max-width:900px){
+  .site-nav,.studio-top,.cr-top,.play-header{gap:8px}
+  .pwyw-locale-switch{padding:2px;gap:1px}
+  .pwyw-locale-switch button{padding:6px;min-width:29px;min-height:31px}
+  .site-nav .pwyw-locale-switch{margin-inline-start:auto}
+  .studio-top .pilot-label{display:none}
+  html[lang=fa] .hero h1{font-size:clamp(49px,12vw,78px)}
+}
+@media(max-width:480px){
+  .cr-logo-light{display:none}
+  .pwyw-locale-switch button{font-size:11px;min-width:28px}
+  .play-header .pwyw-locale-switch{margin-inline:auto}
+  html[lang=fa] .studio-auth-art h1{font-size:clamp(48px,11vw,79px)}
+}
