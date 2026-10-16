@@ -18,7 +18,7 @@
   const localized=(obj,key)=>(window.PWYWI18N?.locale()==='fa' && obj?.translations?.fa?.[key])||obj?.[key]||'';
   const tr = value => window.PWYWI18N?.t(value) || value;
   const goalNames={upsell:"Play to Upsell",return:"Play to Return",refer:"Play to Refer",learn:"Play to Learn"};
-  let objective="upsell",campaigns={},campaign=null,refCode=new URLSearchParams(location.search).get("ref")||"",rewardCode="";
+  let objective="upsell",campaigns={},campaign=null,refCode=new URLSearchParams(location.search).get("ref")||"",rewardCode="",featuredGame="orbit";
   let brandArt={}; let brandedToken=null;
   async function fetchBrandArt(){
     try{brandArt=await request("/api/public/brands/"+encodeURIComponent(slug)+"/art");
@@ -124,7 +124,11 @@
     $("game-heading").textContent=localized(campaign,'title')||"A LITTLE PLAY. A LOT MORE.";
     $("game-heading").style.overflowWrap="anywhere";
     document.querySelector(".purpose-brief").style.borderLeftColor=brand?.accent||"currentColor";
-    const featured=campaign?.game||"orbit";
+    const featured=campaign?.game && gameLabels[campaign.game]?campaign.game:"orbit";
+    featuredGame=featured;
+    $("featured-game-name").textContent=gameLabels[featured];
+    $("featured-game-hint").textContent=gameHints[featured];
+    $("featured-game-symbol").textContent=gameSymbols[featured];
     const picks=[...document.querySelectorAll("[data-game]")];
     picks.forEach(el=>el.style.order=el.dataset.game===featured?"-1":"0");
     track("view");
@@ -338,9 +342,11 @@
     $("nickname").value="";
     $("post-score").disabled=false;
     $("leaderboard").replaceChildren();
+    $("scoreboard-details").open=false;
+    $("scoreboard-details").dataset.loaded="";
     event("complete",{score});
-    showLeaderboard(finalGame);
     renderReward();track("finish");
+    ($("claim-reward").hidden?$("play-again"):$("claim-reward")).focus({preventScroll:true});
   }
   async function showLeaderboard(g){
     try{
@@ -371,6 +377,11 @@
     }catch(e){$("post-score").disabled=false}
   });
   $("play-again").addEventListener("click",showHome);
+  $("start-featured").addEventListener("click",()=>startGame(featuredGame));
+  $("scoreboard-details").addEventListener("toggle",()=>{
+    const panel=$("scoreboard-details");
+    if(panel.open && panel.dataset.loaded!=="yes" && game){panel.dataset.loaded="yes";showLeaderboard(game)}
+  });
   $("restart-game").addEventListener("click",()=>startGame(game));
   $("back-home").addEventListener("click",e=>{e.preventDefault();showHome()});
   $("sound-btn").addEventListener("click",()=>{
@@ -585,6 +596,10 @@
   buildGamePicks();
   window.addEventListener("pagehide",cleanup);
   document.addEventListener('pwyw:language-changed',()=>{if(brand)brandView(brand);chooseObjective(objective);if(!$("finish-modal").hidden)renderReward()});
+  // Business owners choose the objective in the studio. Customers see one focused campaign.
+  const isDemo=location.pathname==="/demo";
+  document.body.classList.toggle("is-demo-lounge",isDemo);
+  if(!isDemo)$("purpose-dial").hidden=true;
   request("/api/public/brands/"+encodeURIComponent(slug)).then(async b=>{
     brandView(b);await fetchBrandArt();await loadCampaigns();
   }).catch(()=>{
