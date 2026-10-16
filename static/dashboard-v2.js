@@ -111,7 +111,7 @@ function objective(value){
  if(!objectives[value])return;
  state.objective=value;
  document.querySelectorAll('.purpose-option').forEach(b=>b.classList.toggle('active',b.dataset.objective===value));
- $('campaign-heading').textContent='BUILD PLAY TO '+value.toUpperCase();
+ $('campaign-heading').textContent=(window.PWYWI18N?.locale()==='fa'?'پیشنهاد کمپین ':'Kampagnenvorschlag: ')+(window.PWYWI18N?.locale()==='fa'?({upsell:'افزایش مبلغ خرید',return:'مراجعه دوباره',refer:'معرفی به دوستان',learn:'آشنایی با خدمات'})[value]:({upsell:'Mehrverkauf',return:'Wiederbesuch',refer:'Weiterempfehlung',learn:'Service erklären'})[value]);
  const c=state.campaigns[value]||objectives[value];
  const fa=c.translations?.fa||{};
  for(const [key,id] of Object.entries({title:'title',description:'description',cta:'cta',offer:'offer',product_name:'product'})){
@@ -149,7 +149,7 @@ function clearLogo(){
 }
 function newBrand(){
  state.brand=null;state.campaigns={};$('brand-form').reset();
- $('brand-settings').open=true;$('studio-tools').open=false;$('brand-slug').disabled=false;
+ $('brand-settings').open=true;$('studio-tools').open=false;$('studio-extra-tools').open=false;$('brand-slug').disabled=false;
  $('brand-logo').value='';$('brand-scene').value='';$('brand-token').value='';$('brand-accent').value='#d8ff3e';
  $('editor-preview').style.backgroundImage='';$('art-status').textContent='Upload a background scene and game object to make a world your own.';
  setTheme('atelier');clearLogo();
@@ -160,7 +160,7 @@ function newBrand(){
 $('new-brand').onclick=newBrand;
 async function selectBrand(b){
  state.brand=b;
- $('brand-settings').open=false;$('studio-tools').open=false;
+ $('brand-settings').open=false;$('studio-tools').open=false;$('studio-extra-tools').open=false;
  $('manual-campaign-settings').open=false;
  $('brand-name').value=b.name;$('brand-industry').value=b.industry;
  $('brand-tagline').value=b.tagline;$('brand-tagline-fa').value=b.tagline_fa||'';$('brand-accent').value=b.accent;
@@ -304,7 +304,14 @@ window.PWYWStudio={
  }
 };
 objective('upsell');boot();
+function objectiveHeadingRefresh(){
+ const value=state.objective;
+ const names=window.PWYWI18N?.locale()==='fa'?
+  {upsell:'افزایش مبلغ خرید',return:'مراجعه دوباره',refer:'معرفی به دوستان',learn:'آشنایی با خدمات'}:
+  {upsell:'Mehrverkauf',return:'Wiederbesuch',refer:'Weiterempfehlung',learn:'Service erklären'};
+ $('campaign-heading').textContent=(window.PWYWI18N?.locale()==='fa'?'پیشنهاد کمپین ':'Kampagnenvorschlag: ')+names[value];
+}
 document.addEventListener('pwyw:language-changed',()=>{
- setCampaignLocale();preview();if(state.brand)refreshStats();
+ setCampaignLocale();objectiveHeadingRefresh();preview();if(state.brand)refreshStats();
 });
 })();
