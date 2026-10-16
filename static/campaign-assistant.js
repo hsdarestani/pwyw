@@ -19,7 +19,6 @@ function getPreviewPayload(){
 }
 function render(){
  const data=getPreviewPayload();
- const showDraft=Boolean(data&&current&&!$("proposal-published").hidden===false);
  // Explicit views are controlled by generation/approval, never by locale mutation.
  if(!data || $("proposal-card").hidden)return;
  const p=current.campaign;
@@ -59,7 +58,6 @@ async function propose(reject=false){
  const ctx=studio();
  const b=ctx?.getBrand();const objective=ctx?.getObjective();
  if(!b||!objective)return;
- if(busy)return;
  const seq=++requestSeq;
  const previous=reject&&current?.campaign.objective===objective&&current?.brand===b.slug?current.proposal_id:"";
  setBusy(true);clearError();
