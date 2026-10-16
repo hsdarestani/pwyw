@@ -177,7 +177,7 @@ const {chromium}=require('playwright');
     throw Error('Existing brand editor must stay collapsed');
   if(await page.locator('#studio-tools').evaluate(x=>x.open))
     throw Error('Analytics must stay collapsed');
-  if(await page.locator('#campaign-section input').isVisible())
+  if(await page.locator('#campaign-section input:visible').count())
     throw Error('Campaign settings leaked into one-click assistant');
   // Rejecting a suggestion must generate a different draft without publishing it.
   const firstIdea=await page.locator('#proposal-title').textContent();
