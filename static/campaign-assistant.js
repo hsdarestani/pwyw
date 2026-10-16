@@ -31,11 +31,11 @@ function render(){
  $("proposal-game-name").textContent=window.PWYWI18N?.t(gameNames[p.game]||p.game)||p.game;
  $("proposal-quiz").hidden=p.objective!=="learn";
  if(p.objective==="learn")$("proposal-quiz").textContent=data.quiz_question||p.quiz_question;
- $("proposal-approve").textContent=label("تأیید و انتشار کمپین","Vorschlag bestätigen und veröffentlichen");
- $("proposal-reject").textContent=label("این رو نمی‌خوام؛ یکی دیگه پیشنهاد بده","Nein, bitte eine neue Idee");
+ $("proposal-approve").textContent=label("تأیید و انتشار","Bestätigen und veröffentlichen");
+ $("proposal-reject").textContent=label("یکی دیگه پیشنهاد بده","Anderen Vorschlag zeigen");
  $("proposal-card").querySelector(".proposal-eyebrow").textContent=label("پیشنهاد آماده‌ست","Dein neuer Kampagnenvorschlag");
  $("proposal-card").querySelector(".proposal-offer>span").textContent=label("بعد از بازی","Nach dem Spiel");
- $("proposal-card").querySelector(".proposal-trust").textContent=label("تا وقتی تأیید نکنی، چیزی منتشر نمی‌شه.","Nichts geht ohne deine Bestätigung online.");
+ $("proposal-card").querySelector(".proposal-trust").textContent=label("قبل از تأیید، مطمئن شو این پیشنهاد قابل ارائه‌ست. بدون تأیید تو منتشر نمی‌شه.","Prüfe bitte, ob du diese Idee anbieten kannst. Ohne deine Freigabe wird nichts veröffentlicht.");
  $("proposal-published").querySelector("strong").textContent=label("کمپینت منتشر شد!","Deine Kampagne ist online!");
  $("proposal-published").querySelector("p").textContent=label("لینک بازی رو برای مشتری‌ها بفرست.","Teile den Spiellink mit deinen Kundinnen und Kunden.");
  $("proposal-open").textContent=label("دیدن کمپین ↗","Kampagne öffnen ↗");
