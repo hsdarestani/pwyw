@@ -108,7 +108,11 @@ const {chromium}=require('playwright');
     await page.locator('#back-home').click();
     await page.locator('#game-home').waitFor({state:'visible'});
   }
-  await page.locator('[data-objective="learn"]').click();
+  // Customers switch campaign by a direct objective link; owner-only objective tabs stay hidden.
+  await page.goto(base+'/play/luna-cafe?objective=learn',{waitUntil:'networkidle'});
+  await page.locator('#load-overlay').waitFor({state:'hidden'});
+  if(await page.locator('#purpose-dial').isVisible())throw Error('Business configuration controls leaked into customer view');
+  await page.locator('#all-games summary').click();
   await page.locator('[data-game="rush"]').click();
   await page.waitForTimeout(150);
   await page.locator('#back-home').click();
