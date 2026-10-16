@@ -13,6 +13,12 @@ const {chromium}=require('playwright');
   await page.locator('#pwyw-language-switch [data-lang=fa]').click();
   if(await page.locator('html').getAttribute('dir')!=='rtl')throw Error('Persian landing RTL missing');
   if(!/[\u0600-\u06FF]/.test(await page.locator('.hero h1').textContent()))throw Error('Landing headline did not localize');
+
+  const nativeHome=await page.locator('.hero h1').innerText();
+  if(!nativeHome.includes('انتظار رو')||!nativeHome.includes('به یه فرصت'))
+    throw Error('Native Persian landing headline is missing: '+nativeHome);
+  if(await page.title()!=='PWYW — انتظار را به فرصت تبدیل کن.')
+    throw Error('Browser title not localized in Persian');
   await page.screenshot({path:'/tmp/pwyw-landing-fa-mobile.png',fullPage:true});
   await page.locator('#pwyw-language-switch [data-lang=de]').click();
   await page.goto(base+'/demo',{waitUntil:'networkidle'});
@@ -36,6 +42,12 @@ const {chromium}=require('playwright');
   await page.evaluate(()=>document.getElementById('finish-modal').hidden=true);
   const canvasCopy=await page.evaluate(()=>window.PWYWArcade?.uiText?.('TAP TO START'));
   if(canvasCopy!=='برای شروع لمس کن')throw Error('Canvas game UI did not localize to Persian: '+canvasCopy);
+
+  const localizedGoal=await page.locator('[data-objective=refer]').innerText();
+  if(!localizedGoal.includes('دعوت از دوستان'))throw Error('Customer-facing goal still reads as a literal business translation: '+localizedGoal);
+  const nativePicks=await page.locator('#game-choices').innerText();
+  if(!nativePicks.includes('پیدا کردن جفت‌ها')||!nativePicks.includes('ستاره‌گیر')||!nativePicks.includes('حافظه تصویری'))
+    throw Error('Game labels are not natural Persian: '+nativePicks);
   await page.locator('#pwyw-language-switch [data-lang=de]').click();
   await page.locator('#load-overlay').waitFor({state:'hidden',timeout:12000});
   if(await page.locator('[data-game]').count()!==10)throw Error('Expected 10 game launchers');
@@ -103,6 +115,10 @@ const {chromium}=require('playwright');
   await page.goto(base+'/dashboard',{waitUntil:'networkidle'});
   await page.locator('#pwyw-language-switch [data-lang=fa]').click();
   if(await page.locator('html').getAttribute('lang')!=='fa')throw Error('Persian studio locale missing');
+
+  const faStudioHero=(await page.locator('.studio-auth-art h1').innerText()).replace(/\\s+/g,' ');
+  if(!faStudioHero.includes('برای برندت') || !faStudioHero.includes('یه بازی') || !faStudioHero.includes('بساز.'))
+    throw Error('Persian studio headline is grammatically broken: '+faStudioHero);
   await page.locator('#pwyw-language-switch [data-lang=de]').click();
   await page.locator('#tab-signup').click();
   await page.locator('input[name=email]').fill('pwyw-e2e-'+Date.now()+'@example.org');
