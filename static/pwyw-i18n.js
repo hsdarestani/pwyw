@@ -8,6 +8,13 @@
   const entries = [
     ["play with purpose","Spielen mit Wirkung","بازی با هدف"],
     ["RECOMMENDED FOR YOU","FÜR DICH EMPFOHLEN","پیشنهاد ما"],
+    ["SETTINGS AND REPORTS","EINSTELLUNGEN UND BERICHTE","تنظیمات و گزارش‌ها"],
+    ["EDIT CAMPAIGN MANUALLY (OPTIONAL)","KAMPAGNE SELBST BEARBEITEN (OPTIONAL)","ویرایش دستی کمپین (اختیاری)"],
+    ["REPORTS AND QR","BERICHTE UND QR CODE","آمار و کد QR"],
+    ["YOUR CAMPAIGN PROPOSAL","DEIN KAMPAGNENVORSCHLAG","پیشنهاد کمپین"],
+    ["CHECK THE PRODUCT BEFORE APPROVAL","PRÜFE DAS ANGEBOT VOR DER FREIGABE","قبل از تأیید، از قابل‌ارائه بودن پیشنهاد مطمئن شو"],
+    ["SUGGESTED GAME","EMPFOHLENES SPIEL","بازی پیشنهادی"],
+
     ["FIRST, SET UP WHAT YOUR CUSTOMER WILL SEE. OPTIONAL SETTINGS ARE BELOW.","Gib zuerst die Texte ein, die Kunden sehen. Weitere Einstellungen findest du unten.","اول متن‌هایی رو بنویس که مشتری می‌بینه. بقیه تنظیمات اختیاری‌اند."],
     ["EDIT SECOND LANGUAGE","ZWEITE SPRACHE BEARBEITEN","ویرایش زبان دوم"],
     ["EDIT GERMAN VERSION","DEUTSCHE VERSION BEARBEITEN","ویرایش نسخه آلمانی"],
