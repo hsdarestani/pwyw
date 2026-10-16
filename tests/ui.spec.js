@@ -167,6 +167,7 @@ const {chromium}=require('playwright');
   if(await page.locator('#campaign-fa-title').inputValue()!=='پیشنهاد بازگشت مخصوص ما')
     throw Error('Language switching erased unsaved Persian edits');
   await page.locator('#pwyw-language-switch [data-lang=de]').click();
+  await page.locator('#open-studio-settings').click();
   await page.locator('#brand-name').fill('Playwright Garage');
   await page.locator('#brand-slug').fill('playwright-garage');
   await page.locator('[data-theme=neon]').click();
