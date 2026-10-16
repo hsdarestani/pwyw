@@ -1,5 +1,6 @@
 """Outcome-first game campaigns. Monetary outcomes are only merchant-verified entries."""
 import re
+import json
 import secrets
 import sqlite3
 from datetime import datetime
@@ -29,6 +30,7 @@ class CampaignInput(BaseModel):
     quiz_question: str = Field(default="",max_length=220)
     quiz_options: list[str] = Field(default_factory=list,max_length=4)
     quiz_correct_index: int = Field(default=0,ge=0,le=3)
+    translations: dict[str,dict[str,object]] = Field(default_factory=dict)
 
 class ClaimInput(BaseModel):
     sid: str = Field(min_length=12,max_length=80)
@@ -90,6 +92,9 @@ def install(app, db, user_from, owned_brand, public_brand, throttle):
           UNIQUE(campaign_id,sid)
         );
         """)
+        cols={row["name"] for row in con.execute("PRAGMA table_info(campaigns)").fetchall()}
+        if "translations_json" not in cols:
+            con.execute("ALTER TABLE campaigns ADD COLUMN translations_json TEXT NOT NULL DEFAULT '{}'")
 
     def lookup_campaign(slug, objective):
         if objective not in OBJECTIVES: raise HTTPException(404,"Unknown campaign")
@@ -151,11 +156,12 @@ def install(app, db, user_from, owned_brand, public_brand, throttle):
                 title=excluded.title,description=excluded.description,cta=excluded.cta,
                 offer=excluded.offer,product_name=excluded.product_name,
                 reward_cost=excluded.reward_cost,margin_per_sale=excluded.margin_per_sale,
-                destination=excluded.destination,game=excluded.game,is_active=excluded.is_active
+                destination=excluded.destination,game=excluded.game,is_active=excluded.is_active,
+                 translations_json=excluded.translations_json
             """,(brand["id"],objective,data.title.strip(),data.description.strip(),
                   data.cta.strip(),data.offer.strip(),data.product_name.strip(),
                   data.reward_cost,data.margin_per_sale,data.destination.strip(),
-                  data.game,int(data.is_active)))
+                  data.game,int(data.is_active),json.dumps(translations,ensure_ascii=False)))
         if objective=="learn":
             if data.quiz_question.strip():
                 options=[str(x).strip() for x in data.quiz_options]
