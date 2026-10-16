@@ -7,6 +7,12 @@
   // catalog entries are registered below, as explicit reviewed UI translations.
   const entries = [
     ["play with purpose","Spielen mit Wirkung","بازی با هدف"],
+    ["RECOMMENDED FOR YOU","FÜR DICH EMPFOHLEN","پیشنهاد ما"],
+    ["PLAY NOW ↗","JETZT SPIELEN ↗","شروع بازی ↗"],
+    ["MORE GAMES","WEITERE SPIELE","بازی‌های بیشتر"],
+    ["SAVE YOUR SCORE (OPTIONAL)","PUNKTZAHL EINTRAGEN (OPTIONAL)","ثبت امتیاز (اختیاری)"],
+    ["ONLY IF YOU WANT TO APPEAR ON THE LEADERBOARD.","NUR WENN DU AUF DER BESTENLISTE STEHEN MÖCHTEST.","فقط اگه دوست داری اسمت توی جدول امتیازها باشه."],
+
     ["Die Idee","Die Idee","ایده"],
     ["Vier Produkte","Vier Produkte","چهار محصول"],
     ["Brand Worlds","Markenwelten","دنیای برندها"],
