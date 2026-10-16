@@ -8,6 +8,13 @@
   const entries = [
     ["play with purpose","Spielen mit Wirkung","بازی با هدف"],
     ["RECOMMENDED FOR YOU","FÜR DICH EMPFOHLEN","پیشنهاد ما"],
+    ["GET ORDER CODE ↗","CODE ZUR BESTELLUNG ↗","گرفتن کد سفارش ↗"],
+    ["GET RETURN CODE ↗","CODE FÜR DEN NÄCHSTEN BESUCH ↗","گرفتن کد مراجعه بعدی ↗"],
+    ["The code is for tracking this offer, not an automatic discount.","Dieser Code dient der Nachverfolgung, nicht als automatischer Rabatt.","این کد برای پیگیری پیشنهاد استفاده می‌شه و تخفیف خودکار نیست."],
+    ["Keep this code and show it on your next visit. It is not an automatic discount.","Heb den Code auf und zeig ihn beim nächsten Besuch. Er ist kein automatischer Rabatt.","این کد رو نگه دار و دفعه بعد همراهت داشته باش. تخفیف خودکار محسوب نمی‌شه."],
+    ["Show this code when you order the suggested item. It is not an automatic discount.","Zeig den Code bei der Bestellung des vorgeschlagenen Artikels. Es ist kein automatischer Rabatt.","موقع سفارش این محصول، کد رو نشون بده. این کد تخفیف خودکار نیست."],
+    ["Share this game with your friends.","Teile das Spiel mit deinen Freunden.","این بازی رو برای دوستات بفرست."],
+
     ["SETTINGS AND REPORTS","EINSTELLUNGEN UND BERICHTE","تنظیمات و گزارش‌ها"],
     ["BRAND SETTINGS","MARKENDATEN","اطلاعات کسب‌وکار"],
     ["STUDIO TOOLS","STUDIO WERKZEUGE","بخش مدیریت"],
