@@ -19,7 +19,7 @@ UPSELL = {
  ("دسر بعد از غذا","بعد از غذا، یه دسر هم می‌چسبه","از دسرهای موجود امروز بپرس.","Dessert nach dem Essen","Wie wär's mit einem Dessert?","Frag nach den heutigen Desserts."),
  ("نوشیدنی کنار غذا","یه نوشیدنی مناسب کنار غذات","از کارکنان درباره نوشیدنی‌های موجود بپرس.","Getränk zum Essen","Welches Getränk passt dazu?","Frag nach der Getränkeauswahl."),
  ("پیش‌غذا","قبل از غذای اصلی، یه پیش‌غذا؟","ببین چه پیش‌غذاهایی در منو هست.","Vorspeise","Lust auf eine Vorspeise?","Frag nach den verfügbaren Vorspeisen."),
- ("دورچین غذا","کنار غذات یه دورچین هم می‌خوای؟","گزینه‌های دورچین رو از کارکنان بپرس.","Beilage zum Gericht","Noch eine Beilage dazu?","Frag nach den passenden Beilagen."),
+ ("سیب‌زمینی کنار غذا","کنار غذات سیب‌زمینی هم می‌چسبه","برای سفارش سیب‌زمینی، کد رو به کارکنان نشون بده.","Pommes zum Gericht","Pommes zum Hauptgericht?","Zeig den Code bei der Bestellung von Pommes."),
  ("چای یا قهوه بعد از غذا","غذا تموم شد؛ یه نوشیدنی گرم؟","درباره چای یا قهوه بعد از غذا بپرس.","Kaffee oder Tee danach","Zum Abschluss Kaffee oder Tee?","Frag nach heißen Getränken."),
  ("سالاد کنار غذا","یه سالاد کنار غذات چطوره؟","سالادهای موجود رو از کارکنان بپرس.","Salat zum Hauptgericht","Ein Salat zum Hauptgericht?","Frag nach der Salatauswahl."),
  ],
@@ -95,8 +95,8 @@ def concept(brand,objective,index):
              "product_name":product_de
           },
           "owner":{
-             "fa":f"محصول پیشنهادی: «{product_fa}». مشتری بعد از بازی این گزینه رو می‌بینه و در صورت تمایل، کدش رو موقع سفارش نشون می‌ده. شما فقط خریدهای انجام‌شده رو در پنل تأیید می‌کنی.",
-             "de":f"Empfohlen wird „{product_de}“. Nach dem Spiel können Gäste einen Code bei der Bestellung vorzeigen. Im Studio bestätigst du nur tatsächlich erfolgte Käufe."
+             "fa":f"هدف: افزایش مبلغ سفارش با معرفی «{product_fa}». مشتری بعد از بازی کد مربوط به همین پیشنهاد رو می‌بینه و می‌تونه موقع سفارش نشون بده. فقط خریدهای واقعی رو در پنل تأیید کن.",
+             "de":f"Ziel: höherer Bestellwert mit „{product_de}“. Nach dem Spiel können Gäste den Code bei der Bestellung vorzeigen. Im Studio bestätigst du nur tatsächliche Käufe."
           },
           "review_needed":True,
           "concept_id":f"upsell-{cat}-{index%len(ideas)}"
