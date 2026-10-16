@@ -80,6 +80,9 @@ def init_db():
         columns=[row["name"] for row in c.execute("PRAGMA table_info(users)").fetchall()]
         if "role" not in columns:
             c.execute("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'merchant'")
+        brand_columns={r["name"] for r in c.execute("PRAGMA table_info(brands)").fetchall()}
+        if "tagline_fa" not in brand_columns:
+            c.execute("ALTER TABLE brands ADD COLUMN tagline_fa TEXT NOT NULL DEFAULT ''")
         c.execute("DELETE FROM sessions WHERE expires_at < ?", (int(time.time()),))
         # Demo tenants are public read-only, not assigned to any sign-in.
         for slug, name, industry, theme, accent, tagline in [
@@ -143,7 +146,7 @@ def public_brand(slug):
     with db() as c:
         row = c.execute("SELECT * FROM brands WHERE slug=?", (slug,)).fetchone()
     if not row: raise HTTPException(404, "Brand not found")
-    return {k:row[k] for k in ("slug","name","industry","theme","accent","tagline","logo_path")}
+    return {k:row[k] for k in ("slug","name","industry","theme","accent","tagline","tagline_fa","logo_path")}
 
 def password_hash(value, salt=None):
     salt = salt or secrets.token_hex(16)
@@ -216,6 +219,7 @@ class BrandInput(BaseModel):
     theme: str = "atelier"
     accent: str = "#CBA66C"
     tagline: str = Field(default="",max_length=140)
+    tagline_fa: str = Field(default="",max_length=140)
 
 def normalize_brand(data):
     p=data.model_dump()
@@ -225,6 +229,7 @@ def normalize_brand(data):
         raise HTTPException(422,"Color must be a six-digit hex code")
     p["name"]=p["name"].strip()
     p["tagline"]=p["tagline"].strip()
+    p["tagline_fa"]=p["tagline_fa"].strip()
     return p
 
 def slugify(name):
