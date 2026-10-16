@@ -48,10 +48,10 @@ function render(){
  $("proposal-title").textContent=data.title||p.title;
  $("proposal-description").textContent=data.description||p.description;
  const industry=p.owner_explanation?.[fa()?"fa":"de"];
- $("proposal-owner-note-label").textContent=label("این پیشنهاد چه کمکی به کسب‌وکار می‌کنه؟","Warum kann dieser Vorschlag sinnvoll sein?");
+ $("proposal-owner-note-label").textContent=label("این پیشنهاد چطور کار می‌کنه؟","So funktioniert dieser Vorschlag");
  $("proposal-owner-note").textContent=industry||label(
-  "این ایده برای هدف انتخابی شما آماده شده. قبل از انتشار، از درست‌بودن اطلاعات و قابل‌ارائه‌بودن پیشنهاد مطمئن شو.",
-  "Der Vorschlag passt zum ausgewählten Ziel. Prüfe vor dem Veröffentlichen alle Angaben.");
+  "مشتری بعد از بازی، پیام پیشنهادی شما رو می‌بینه. اقدامات تأییدشده رو می‌تونی از پنل دنبال کنی.",
+  "Nach dem Spiel sieht die Kundschaft deinen Vorschlag. Bestätigte Aktionen kannst du im Studio nachverfolgen.");
 
  $("customer-welcome-title").textContent=data.title||p.title;
  $("customer-welcome-desc").textContent=data.description||p.description;
@@ -61,8 +61,8 @@ function render(){
  $("proposal-game-icon").textContent=gameIcons[p.game]||"✳";
  $("proposal-game-name").textContent=window.PWYWI18N?.t(gameNames[p.game]||p.game)||p.game;
  $("customer-game-description").textContent=label(
-  "مشتری بازی رو روی گوشی انجام می‌ده. بعد از پایان بازی، پیام زیر نمایش داده می‌شه.",
-  "Das Mini Game läuft auf dem Smartphone. Danach erscheint die folgende Nachricht.");
+  "بازی مستقیم توی مرورگر اجرا می‌شه؛ نیازی به نصب اپ نیست.",
+  "Das Spiel läuft direkt im Browser. Keine App nötig.");
  $("customer-screen-logo").textContent=gameIcons[p.game]||"✳";
  const isLearn=p.objective==="learn";
  $("customer-quiz-preview").hidden=!isLearn;
@@ -80,28 +80,32 @@ function render(){
  }else{
    // Match the actual customer game's button behavior: this issues a code or shares a challenge.
    $("proposal-cta").textContent=p.objective==="refer"?
-     label("دعوت از دوستان ↗","Freunde herausfordern ↗"):
-     label("دریافت کد پیشنهاد ↗","Angebotscode erhalten ↗");
+     label("دعوت از دوستان ↗","Freunde einladen ↗"):
+     p.objective==="return"?
+     label("دریافت کد مراجعه بعدی ↗","Code für den nächsten Besuch ↗"):
+     label("گرفتن کد سفارش ↗","Code zur Bestellung ↗");
  }
  $("customer-stage-start").querySelector(".customer-screen-overline").textContent=label("به بازی خوش اومدی","Willkommen beim Spiel");
  $("customer-stage-start").querySelector(".customer-preview-button").textContent=label("شروع بازی ↗","Spiel starten ↗");
  $("customer-stage-game").querySelector(".customer-screen-overline").textContent=label("بازی روی گوشی","Ein Spiel fürs Smartphone");
  $("customer-stage-game").querySelector(".customer-preview-button").textContent=label("بازی کوتاه","Kurzes Spiel");
- $("customer-stage-result").querySelector(".customer-screen-overline").textContent=label("بعد از بازی","Nach dem Spiel");
- $("proposal-approve").textContent=label("تأیید و انتشار بازی","Spiel bestätigen und veröffentlichen");
- $("proposal-reject").textContent=label("این رو نمی‌پسندم؛ یه پیشنهاد دیگه","Andere Idee vorschlagen");
- $("proposal-card").querySelector(".proposal-eyebrow").textContent=label("این تجربه رو مشتری‌های شما می‌بینن","So erleben deine Kunden das Spiel");
- $("proposal-card").querySelector(".proposal-trust").textContent=label(
-   "پیشنهاد رو بررسی کن. فقط با تأیید شما برای مشتری‌ها منتشر می‌شه.",
-   "Prüfe den Vorschlag. Erst nach deiner Zustimmung wird er veröffentlicht.");
+ $("customer-stage-result").querySelector(".customer-screen-overline").textContent=label("پیشنهاد بعد از بازی","Dein Angebot nach dem Spiel");
+ $("proposal-approve").textContent=label("تأیید و انتشار پیشنهاد","Vorschlag bestätigen und veröffentlichen");
+ $("proposal-reject").textContent=label("یه پیشنهاد متفاوت نشون بده","Einen anderen Vorschlag zeigen");
+ $("proposal-card").querySelector(".proposal-eyebrow").textContent=label("پیشنهاد آماده برای بررسی","Vorschlag zur Prüfung");
+ $("proposal-card").querySelector(".proposal-trust").textContent=p.objective==="upsell"?
+   label("با تأیید، «"+(data.product_name||p.product_name)+"» بعد از بازی به مشتری نمایش داده می‌شه. هیچ تخفیفی خودکار اعمال نمی‌شه.",
+     "Mit deiner Freigabe wird „"+p.product_name+"“ nach dem Spiel gezeigt. Es wird kein Rabatt automatisch gewährt."):
+   label("این پیشنهاد فقط بعد از تأیید تو برای مشتری‌ها فعال می‌شه.",
+     "Der Vorschlag wird erst mit deiner Freigabe für Kunden sichtbar.");
  document.querySelector(".customer-preview-heading span:last-child").textContent=label("نمایش نمونه · هنوز منتشر نشده","Beispielansicht · noch nicht veröffentlicht");
  document.querySelector(".customer-preview-note").textContent=label(
-   "این تصویر نمونه‌ای از مسیر مشتریه، نه خود بازی. متن‌های صفحه و پیام پایانی از همین پیشنهاد گرفته شدن.",
-   "Die Ansicht zeigt den Ablauf, nicht das echte Spiel. Die Texte entsprechen diesem Vorschlag.");
+   "این پیش‌نمایش متن‌هاست؛ بازی واقعی بعد از انتشار اجرا می‌شه.",
+   "Dies ist eine Textvorschau. Das echte Spiel läuft nach der Veröffentlichung.");
  document.querySelector(".customer-journey-intro").textContent=label(
-   "مشتری لینک یا کد QR رو باز می‌کنه، یه بازی کوتاه انجام می‌ده و در پایان پیام شما رو می‌بینه. روی هر مرحله بزن تا ببینی چه اتفاقی می‌افته.",
-   "Deine Kunden öffnen den Link oder QR Code, spielen eine kurze Runde und sehen danach deine Nachricht. Tippe auf einen Schritt, um ihn anzusehen.");
- const names=fa()?["ورود مشتری","انجام بازی","پیام بعد از بازی"]:["Spiel öffnen","Spielen","Nach dem Spiel"];
+   "این سه مرحله رو ببین تا بدونی مشتری بعد از باز کردن لینک، انجام بازی و گرفتن پیشنهاد چه تجربه‌ای داره.",
+   "Sieh dir die drei Schritte an: Spiellink öffnen, spielen und anschließend das Angebot sehen.");
+ const names=fa()?["ورود به بازی","انجام بازی","پیشنهاد پایانی"]:["Spiel öffnen","Spielen","Angebot ansehen"];
  document.querySelectorAll("[data-customer-stage]").forEach((button,i)=>{
    button.querySelector("strong").textContent=names[i];
  });
