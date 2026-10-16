@@ -147,20 +147,61 @@ function clearLogo(){
  if(pendingLogo)URL.revokeObjectURL(pendingLogo);pendingLogo=null;
  $('preview-logo').textContent='✳';
 }
+let modalReturnFocus=null;
+function openStudioSettings(section=''){
+ const overlay=$('studio-settings-overlay');
+ if(!overlay.hidden)return;
+ modalReturnFocus=document.activeElement;
+ overlay.hidden=false;
+ $('studio-extra-tools').open=true;
+ document.body.classList.add('studio-modal-open');
+ if(section){
+   const target=$(section);
+   if(target)target.open=true;
+ }
+ const focus=(section==='brand-settings')?$('brand-name'):$('close-studio-settings');
+ focus?.focus({preventScroll:true});
+}
+function closeStudioSettings(){
+ const overlay=$('studio-settings-overlay');
+ if(overlay.hidden)return;
+ overlay.hidden=true;
+ document.body.classList.remove('studio-modal-open');
+ $('studio-extra-tools').open=false;
+ modalReturnFocus?.isConnected?modalReturnFocus.focus({preventScroll:true}):$('open-studio-settings').focus({preventScroll:true});
+}
+$('open-studio-settings').addEventListener('click',()=>openStudioSettings());
+$('close-studio-settings').addEventListener('click',closeStudioSettings);
+document.querySelector('[data-close-studio-settings]').addEventListener('click',closeStudioSettings);
+document.addEventListener('keydown',e=>{
+ if($('studio-settings-overlay').hidden)return;
+ if(e.key==='Escape'){e.preventDefault();closeStudioSettings();return;}
+ if(e.key!=='Tab')return;
+ const dlg=document.querySelector('.studio-settings-dialog');
+ const nodes=Array.from(dlg.querySelectorAll('button,input,select,textarea,a[href],summary,[tabindex]'))
+   .filter(el=>!el.disabled&&el.getClientRects().length>0&&el.tabIndex!==-1);
+ if(!nodes.length)return;
+ const first=nodes[0],last=nodes[nodes.length-1];
+ if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
+ else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
+});
 function newBrand(){
  state.brand=null;state.campaigns={};$('brand-form').reset();
- $('brand-settings').open=true;$('studio-tools').open=false;$('studio-extra-tools').open=false;$('brand-slug').disabled=false;
+ $('brand-settings').open=true;$('studio-tools').open=false;
+ $('manual-campaign-settings').open=false;$('security-settings').open=false;$('brand-slug').disabled=false;
  $('brand-logo').value='';$('brand-scene').value='';$('brand-token').value='';$('brand-accent').value='#d8ff3e';
  $('editor-preview').style.backgroundImage='';$('art-status').textContent='Upload a background scene and game object to make a world your own.';
  setTheme('atelier');clearLogo();
  $('open-play').hidden=true;$('results-section').hidden=true;$('campaign-section').hidden=true;$('redeem-section').hidden=true;
  $('workspace-subtitle').textContent='Not the game. The action you want your customers to take.';
  renderBrandList();preview();objective(state.objective);message('save-status','');
+ openStudioSettings('brand-settings');
 }
 $('new-brand').onclick=newBrand;
 async function selectBrand(b){
  state.brand=b;
- $('brand-settings').open=false;$('studio-tools').open=false;$('studio-extra-tools').open=false;
+ $('brand-settings').open=false;$('studio-tools').open=false;
+ $('security-settings').open=false;closeStudioSettings();
  $('manual-campaign-settings').open=false;
  $('brand-name').value=b.name;$('brand-industry').value=b.industry;
  $('brand-tagline').value=b.tagline;$('brand-tagline-fa').value=b.tagline_fa||'';$('brand-accent').value=b.accent;
