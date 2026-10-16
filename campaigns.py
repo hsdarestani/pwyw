@@ -344,3 +344,7 @@ def install(app, db, user_from, owned_brand, public_brand, throttle):
             result.append(x)
         return {"campaigns":result,"disclaimer":
             "Only manually merchant-verified redemptions and merchant-declared values. No POS confirmation, A/B incrementality or causality; do not call these incremental profits."}
+
+    # UI-only campaign proposals are kept separate from live campaigns until approval.
+    import campaign_suggestions
+    campaign_suggestions.install(app,db,user_from,owned_brand,throttle,save_campaign,CampaignInput)
