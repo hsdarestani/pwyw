@@ -111,7 +111,7 @@ function objective(value){
  if(!objectives[value])return;
  state.objective=value;
  document.querySelectorAll('.purpose-option').forEach(b=>b.classList.toggle('active',b.dataset.objective===value));
- $('campaign-heading').textContent=(window.PWYWI18N?.locale()==='fa'?'پیشنهاد کمپین ':'Kampagnenvorschlag: ')+(window.PWYWI18N?.locale()==='fa'?({upsell:'افزایش مبلغ خرید',return:'مراجعه دوباره',refer:'معرفی به دوستان',learn:'آشنایی با خدمات'})[value]:({upsell:'Mehrverkauf',return:'Wiederbesuch',refer:'Weiterempfehlung',learn:'Service erklären'})[value]);
+ $('campaign-heading').textContent=(window.PWYWI18N?.locale()==='fa'?'بازی پیشنهادی برای ':'Spielvorschlag für ')+(window.PWYWI18N?.locale()==='fa'?({upsell:'افزایش مبلغ خرید',return:'مراجعه دوباره',refer:'معرفی به دوستان',learn:'آشنایی با خدمات'})[value]:({upsell:'Mehrverkauf',return:'Wiederbesuch',refer:'Weiterempfehlung',learn:'Service erklären'})[value]);
  const c=state.campaigns[value]||objectives[value];
  const fa=c.translations?.fa||{};
  for(const [key,id] of Object.entries({title:'title',description:'description',cta:'cta',offer:'offer',product_name:'product'})){
@@ -236,7 +236,7 @@ async function selectBrand(b){
    $('preview-logo').replaceChildren(img);
  }
  $('open-play').hidden=false;$('open-play').href='/play/'+encodeURIComponent(b.slug);
- $('workspace-subtitle').textContent='Build an action-first campaign and share a world that feels like you.';
+ $('workspace-subtitle').textContent=(window.PWYWI18N?.locale()==='fa'?'هدفت رو مشخص کن؛ ما بازی و پیام مناسب برای مشتری‌هات پیشنهاد می‌دیم.':'Wähle dein Ziel. Wir schlagen dir das Spiel und die passende Kundenansprache vor.');
  $('results-section').hidden=false;$('campaign-section').hidden=false;$('redeem-section').hidden=state.objective==='learn';
  $('qr-image').src='/qr/'+encodeURIComponent(b.slug)+'.svg';
  $('qr-download').href=$('qr-image').src;
@@ -361,9 +361,15 @@ function objectiveHeadingRefresh(){
  const names=window.PWYWI18N?.locale()==='fa'?
   {upsell:'افزایش مبلغ خرید',return:'مراجعه دوباره',refer:'معرفی به دوستان',learn:'آشنایی با خدمات'}:
   {upsell:'Mehrverkauf',return:'Wiederbesuch',refer:'Weiterempfehlung',learn:'Service erklären'};
- $('campaign-heading').textContent=(window.PWYWI18N?.locale()==='fa'?'پیشنهاد کمپین ':'Kampagnenvorschlag: ')+names[value];
+ $('campaign-heading').textContent=(window.PWYWI18N?.locale()==='fa'?'بازی پیشنهادی برای ':'Spielvorschlag für ')+names[value];
 }
 document.addEventListener('pwyw:language-changed',()=>{
- setCampaignLocale();objectiveHeadingRefresh();preview();if(state.brand)refreshStats();
+ setCampaignLocale();objectiveHeadingRefresh();preview();
+ if(state.brand){
+  $('workspace-subtitle').textContent=window.PWYWI18N?.locale()==='fa'?
+   'هدفت رو مشخص کن؛ ما بازی و پیام مناسب برای مشتری‌هات پیشنهاد می‌دیم.':
+   'Wähle dein Ziel. Wir schlagen dir das Spiel und die passende Kundenansprache vor.';
+  refreshStats();
+ }
 });
 })();
