@@ -152,7 +152,12 @@ const {chromium}=require('playwright');
   const faDefault=await page.locator('#campaign-fa-title').inputValue();
   if(!faDefault.includes('دفعه بعد'))throw Error('Persian campaign still displays German default instead of native text: '+faDefault);
   if(!await page.locator('#campaign-title').inputValue())throw Error('German campaign data was lost');
-  await page.locator('#campaign-copy-primary #campaign-fa-title').fill('پیشنهاد بازگشت مخصوص ما');
+  // On a new account the campaign step stays hidden until the brand has been saved.
+  // Check that rearranging its inputs does not erase a draft before that step opens.
+  await page.locator('#campaign-fa-title').evaluate(el=>{
+    el.value='پیشنهاد بازگشت مخصوص ما';
+    el.dispatchEvent(new Event('input',{bubbles:true}));
+  });
   await page.locator('#pwyw-language-switch [data-lang=de]').click();
   if(await page.locator('#campaign-copy-primary #campaign-copy-de').count()!==1)
     throw Error('German editor was not restored');
