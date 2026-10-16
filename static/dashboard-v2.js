@@ -73,11 +73,11 @@ document.querySelectorAll('.theme-tile').forEach(b=>b.onclick=()=>{setTheme(b.da
 function preview(){
  const name=$('brand-name').value.trim()||'YOUR BRAND.';
  $('preview-name').textContent=name;
- $('preview-tagline').textContent=$('brand-tagline').value.trim()||'A little fun while you wait.';
+ $('preview-tagline').textContent=(window.PWYWI18N?.locale()==='fa' && $('brand-tagline-fa').value.trim())?$('brand-tagline-fa').value.trim():$('brand-tagline').value.trim()||'A little fun while you wait.';
  $('editor-preview').style.borderColor=$('brand-accent').value;
  $('workspace-title').textContent=state.brand?name:'First, pick an outcome.';
 }
-['brand-name','brand-tagline','brand-accent','brand-industry'].forEach(id=>$(id).addEventListener('input',preview));
+['brand-name','brand-tagline','brand-tagline-fa','brand-accent','brand-industry'].forEach(id=>$(id).addEventListener('input',preview));
 let pendingLogo=null;
 $('brand-logo').addEventListener('change',e=>{
  const f=e.currentTarget.files[0];if(!f)return;
@@ -93,6 +93,10 @@ function objective(value){
  document.querySelectorAll('.purpose-option').forEach(b=>b.classList.toggle('active',b.dataset.objective===value));
  $('campaign-heading').textContent='BUILD PLAY TO '+value.toUpperCase();
  const c=state.campaigns[value]||objectives[value];
+ const fa=c.translations?.fa||{};
+ for(const [key,id] of Object.entries({title:'title',description:'description',cta:'cta',offer:'offer',product_name:'product'}))$('campaign-fa-'+id).value=fa[key]||'';
+ $('quiz-fa-question').value=fa.quiz_question||'';
+ for(let i=0;i<3;i++)$('quiz-fa-option-'+i).value=fa.quiz_options?.[i]||'';
  $('campaign-title').value=c.title||'';
  $('campaign-description').value=c.description||'';
  $('campaign-cta').value=c.cta||'';
@@ -131,7 +135,7 @@ $('new-brand').onclick=newBrand;
 async function selectBrand(b){
  state.brand=b;
  $('brand-name').value=b.name;$('brand-industry').value=b.industry;
- $('brand-tagline').value=b.tagline;$('brand-accent').value=b.accent;
+ $('brand-tagline').value=b.tagline;$('brand-tagline-fa').value=b.tagline_fa||'';$('brand-accent').value=b.accent;
  $('brand-slug').value=b.slug;$('brand-slug').disabled=true;
  $('brand-logo').value='';$('brand-scene').value='';$('brand-token').value='';
  setTheme(b.theme);clearLogo();
@@ -164,7 +168,7 @@ async function selectBrand(b){
 $('brand-form').addEventListener('submit',async e=>{
  e.preventDefault();const btn=$('brand-save');btn.disabled=true;message('save-status','Saving...');
  const body={name:$('brand-name').value.trim(),slug:state.brand?.slug||$('brand-slug').value.trim(),
-  industry:$('brand-industry').value,theme:state.theme,accent:$('brand-accent').value,tagline:$('brand-tagline').value.trim()};
+  industry:$('brand-industry').value,theme:state.theme,accent:$('brand-accent').value,tagline:$('brand-tagline').value.trim(),tagline_fa:$('brand-tagline-fa').value.trim()};
  try{const result=await api(state.brand?'/api/brands/'+encodeURIComponent(state.brand.slug):'/api/brands',
    state.brand?'PUT':'POST',body);
    if($('brand-logo').files.length){const form=new FormData();form.append('file',$('brand-logo').files[0]);
@@ -190,7 +194,8 @@ $('campaign-form').addEventListener('submit',async e=>{
    margin_per_sale:Number($('campaign-margin').value||0),reward_cost:Number($('campaign-reward').value||0),is_active:true,
    quiz_question:state.objective==='learn'?$('quiz-question').value.trim():'',
    quiz_options:state.objective==='learn'?[0,1,2].map(i=>$('quiz-option-'+i).value.trim()).filter(Boolean):[],
-   quiz_correct_index:Number($('quiz-correct').value||0)};
+   quiz_correct_index:Number($('quiz-correct').value||0),
+   translations:{fa:{title:$('campaign-fa-title').value.trim(),description:$('campaign-fa-description').value.trim(),cta:$('campaign-fa-cta').value.trim(),offer:$('campaign-fa-offer').value.trim(),product_name:$('campaign-fa-product').value.trim(),quiz_question:state.objective==='learn'?$('quiz-fa-question').value.trim():'',quiz_options:state.objective==='learn'?[0,1,2].map(i=>$('quiz-fa-option-'+i).value.trim()).filter(Boolean):[]}}};
  try{await api('/api/brands/'+encodeURIComponent(state.brand.slug)+'/campaigns/'+state.objective,'PUT',body);
    state.campaigns[state.objective]=body;message('campaign-status','Live. Your campaign is ready to share.');
    $('campaign-share-link').href='/play/'+encodeURIComponent(state.brand.slug)+'?objective='+state.objective;
@@ -249,4 +254,5 @@ $('password-change').addEventListener('submit',async e=>{
  finally{btn.disabled=false}
 });
 objective('upsell');boot();
+document.addEventListener('pwyw:locale',preview);
 })();
