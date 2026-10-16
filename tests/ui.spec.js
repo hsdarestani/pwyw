@@ -170,7 +170,32 @@ const {chromium}=require('playwright');
   await page.locator('[data-theme=neon]').click();
   await page.screenshot({path:'/tmp/pwyw-studio-mobile.png',fullPage:true});
   await page.locator('#brand-save').click();
+  await page.locator('#proposal-card').waitFor({state:'visible',timeout:18000});
+  if(await page.locator('#manual-campaign-settings').evaluate(x=>x.open))
+    throw Error('Campaign manual form must stay collapsed');
+  if(await page.locator('#brand-settings').evaluate(x=>x.open))
+    throw Error('Existing brand editor must stay collapsed');
+  if(await page.locator('#studio-tools').evaluate(x=>x.open))
+    throw Error('Analytics must stay collapsed');
+  if(await page.locator('#campaign-section input').isVisible())
+    throw Error('Campaign settings leaked into one-click assistant');
+  // Rejecting a suggestion must generate a different draft without publishing it.
+  const firstIdea=await page.locator('#proposal-title').textContent();
+  await page.locator('#proposal-reject').click();
+  await page.locator('#proposal-card').waitFor({state:'visible',timeout:18000});
+  const secondIdea=await page.locator('#proposal-title').textContent();
+  if(firstIdea===secondIdea)throw Error('Rejected suggestion was repeated');
+  const beforeApprove=await page.evaluate(async()=>{
+    const x=await fetch('/api/brands/playwright-garage/campaigns');return await x.json();
+  });
+  if(beforeApprove.length)throw Error('Draft campaign was published without confirmation');
+  await page.locator('#proposal-approve').click();
+  await page.locator('#proposal-published').waitFor({state:'visible',timeout:14000});
+  if(!await page.locator('#proposal-open').getAttribute('href'))
+    throw Error('Approved campaign has no share link');
+  await page.locator('#studio-tools>summary').click();
   await page.locator('#results-section').waitFor({state:'visible'});
+  await page.locator('#manual-campaign-settings>summary').click();
   // Once a brand is saved, the editor must really work on a 390px touchscreen.
   await page.locator('#pwyw-language-switch [data-lang=fa]').click();
   await page.locator('#campaign-copy-primary #campaign-fa-title').fill('باز هم به ما سر بزن');
@@ -195,12 +220,10 @@ const {chromium}=require('playwright');
 
   const url=await page.locator('#open-play').getAttribute('href');
   if(new URL(url,base).pathname!=='/play/playwright-garage')throw Error('New brand not saved');
-  await page.locator('#campaign-title').fill('Your next visit starts here');
-  await page.locator('#campaign-game').selectOption('bloom');
-  await page.locator('#campaign-product').fill('Next visit');
-  await page.locator('#campaign-offer').fill('Return with this staff-verified code');
-  await page.locator('#campaign-save').click();
-  await page.waitForFunction(()=>/Live|veröffentlicht|منتشر/.test(document.querySelector('#campaign-status')?.textContent||''),null,{timeout:8000});
+  // Existing customer campaign now comes from the owner-approved suggestion.
+  const campaignLive=await page.evaluate(async()=>{const r=await fetch('/api/brands/playwright-garage/campaigns');return await r.json()});
+  if(!campaignLive.some(c=>c.objective==='return'&&c.title))throw Error('Approval did not persist actual campaign');
+  if(campaignLive.find(c=>c.objective==='return').game!=='bloom')throw Error('Unexpected suggested game');
   const campaignUrl=new URL(url,base);campaignUrl.searchParams.set('objective','return');
   await page.goto(campaignUrl.href,{waitUntil:'networkidle'});
   await page.locator('#load-overlay').waitFor({state:'hidden'});
