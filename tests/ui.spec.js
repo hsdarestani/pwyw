@@ -206,7 +206,7 @@ const {chromium}=require('playwright');
   await page.locator('#results-section').waitFor({state:'visible'});
   await page.locator('#manual-campaign-settings>summary').click();
   // Once a brand is saved, the editor must really work on a 390px touchscreen.
-  await page.locator('#pwyw-language-switch [data-lang=fa]').click();
+  await page.locator('[data-settings-lang=fa]').click();
   await page.locator('#campaign-copy-primary #campaign-fa-title').fill('باز هم به ما سر بزن');
   if(await page.locator('#campaign-copy-secondary #campaign-title').isVisible())
     throw Error('German inputs should be behind a disclosure in Persian mode');
