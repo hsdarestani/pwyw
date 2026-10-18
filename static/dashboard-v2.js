@@ -82,11 +82,12 @@ function customerLink(){
 }
 function updateQuick(){
  const quick=$('studio-quick');
- quick.hidden=!state.brand;
- if(!state.brand)return;
+ if(!state.brand){quick.hidden=true;return;}
  const f=locale()==='fa';
  const selectedCampaign=state.campaigns[state.objective];
  const live=Boolean(selectedCampaign && selectedCampaign.is_active!==false && selectedCampaign.is_active!==0);
+ quick.hidden=!live;
+ if(!live)$('quick-more').open=false;
  const url=customerLink(), relative=url.replace(location.origin,'');
  $('quick-open').href=url;
  $('open-play').href=relative;
@@ -95,10 +96,10 @@ function updateQuick(){
  $('quick-copy').disabled=!live;
  $('quick-qr').disabled=!live;
  $('quick-verify').disabled=!live;
- $('quick-open').textContent=live?(f?'دیدن بازی ↗':'Spiel ansehen ↗'):(f?'دیدن پیش‌نمایش ↗':'Vorschau ansehen ↗');
- $('quick-status').textContent=live?
-   (f?'این پیشنهاد فعاله. می‌تونی بازیش رو ببینی یا لینکش رو برای مشتری بفرستی.':'Dieses Angebot ist online. Spiel ansehen oder Link teilen.'):
-   (f?'پیشنهادت هنوز منتشر نشده. یکی از ایده‌های پایین رو تأیید کن.':'Noch nicht veröffentlicht. Wähle unten einen Vorschlag aus.');
+ $('quick-open').textContent=f?'دیدن بازی ↗':'Spiel ansehen ↗';
+ $('quick-copy').textContent=f?'کپی لینک':'Link kopieren';
+ $('quick-more').querySelector('summary').textContent=f?'کارهای بیشتر':'Weitere Aktionen';
+ $('quick-status').textContent=f?'● بازی فعاله':'● Spiel aktiv';
  const img='/qr/'+encodeURIComponent(state.brand.slug)+'.svg?objective='+encodeURIComponent(state.objective)+(f?'&lang=fa':'');
  $('qr-image').src=img;$('qr-download').href=img;
  $('quick-copy-help').hidden=true;
