@@ -84,12 +84,18 @@ function updateQuick(){
  const quick=$('studio-quick');
  quick.hidden=!state.brand;
  if(!state.brand)return;
- const f=locale()==='fa',live=Boolean(state.campaigns[state.objective]);
+ const f=locale()==='fa';
+ const selectedCampaign=state.campaigns[state.objective];
+ const live=Boolean(selectedCampaign && selectedCampaign.is_active!==false && selectedCampaign.is_active!==0);
  const url=customerLink(), relative=url.replace(location.origin,'');
  $('quick-open').href=url;
  $('open-play').href=relative;
  $('campaign-share-link').href=relative;
  $('quick-verify').hidden=state.objective==='learn';
+ $('quick-copy').disabled=!live;
+ $('quick-qr').disabled=!live;
+ $('quick-verify').disabled=!live;
+ $('quick-open').textContent=live?(f?'دیدن بازی ↗':'Spiel ansehen ↗'):(f?'دیدن پیش‌نمایش ↗':'Vorschau ansehen ↗');
  $('quick-status').textContent=live?
    (f?'این پیشنهاد فعاله. می‌تونی بازیش رو ببینی یا لینکش رو برای مشتری بفرستی.':'Dieses Angebot ist online. Spiel ansehen oder Link teilen.'):
    (f?'پیشنهادت هنوز منتشر نشده. یکی از ایده‌های پایین رو تأیید کن.':'Noch nicht veröffentlicht. Wähle unten einen Vorschlag aus.');
@@ -109,7 +115,7 @@ $('quick-qr').addEventListener('click',()=>openTool('studio-tools','qr-image'));
 $('quick-verify').addEventListener('click',()=>openTool('studio-tools','redeem-code'));
 $('quick-edit').addEventListener('click',()=>openStudioSettings('brand-settings'));
 $('quick-copy').addEventListener('click',async()=>{
- const url=customerLink();if(!url)return;
+ const url=customerLink();if(!url||$('quick-copy').disabled)return;
  const button=$('quick-copy');
  try{
   if(!navigator.clipboard?.writeText)throw Error('Clipboard unavailable');
