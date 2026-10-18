@@ -6,6 +6,20 @@
   const catalog = new Map();
   // catalog entries are registered below, as explicit reviewed UI translations.
   const entries = [
+    ["Was möchtest du erreichen?","Was möchtest du erreichen?","می‌خوای چه نتیجه‌ای بگیری؟"],
+    ["1 / DEIN ZIEL","1 / DEIN ZIEL","۱ / انتخاب هدف"],
+    ["2 / DEIN VORSCHLAG","2 / DEIN VORSCHLAG","۲ / پیشنهاد آماده"],
+    ["Mehr zum Vorschlag","Mehr zum Vorschlag","جزئیات پیشنهاد"],
+    ["Dein Vorschlag","Dein Vorschlag","پیشنهادت"],
+    ["Jetzt veröffentlichen ↗","Jetzt veröffentlichen ↗","انتشار بازی ↗"],
+    ["Andere Idee","Andere Idee","یه ایده دیگه"],
+    ["Spiel ist aktiv","Spiel ist aktiv","بازی فعاله"],
+    ["Spiel veröffentlichen ↗","Spiel veröffentlichen ↗","انتشار بازی ↗"],
+    ["Details zum Vorschlag","Details zum Vorschlag","جزئیات پیشنهاد"],
+    ["Weitere Aktionen","Weitere Aktionen","کارهای بیشتر"],
+    ["Dein Spiel ist online!","Dein Spiel ist online!","بازی منتشر شد!"],
+    ["Teile den Link mit deinen Kunden.","Teile den Link mit deinen Kunden.","لینک رو برای مشتری‌هات بفرست."],
+    ["Andere Idee erstellen","Andere Idee erstellen","یه پیشنهاد دیگه"],
     ["So funktioniert es","So funktioniert es","چطور کار می‌کنه"],
     ["Demo testen","Demo testen","امتحان بازی"],
     ["Deine Gäste spielen kurz auf dem Handy. Danach sehen sie deine Einladung, ein Angebot oder einen Hinweis.","Deine Gäste spielen kurz auf dem Handy. Danach sehen sie deine Einladung, ein Angebot oder einen Hinweis.","مشتری‌ها یه بازی کوتاه روی گوشی انجام می‌دن و بعد پیشنهاد یا پیام تو رو می‌بینن."],

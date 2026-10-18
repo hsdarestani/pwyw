@@ -234,17 +234,20 @@ const {chromium}=require('playwright');
   // A simple result preview is shown by default; the full journey stays available on demand.
   if(await page.locator('#preview-steps').evaluate(x=>x.open))
     throw Error('Full journey should be collapsed for a first-time merchant');
-  if(await page.locator('#studio-quick').isHidden())throw Error('Missing quick action panel');
-  if(!await page.locator('#quick-open').isVisible())throw Error('Direct customer game link is missing');
+  if(await page.locator('#studio-quick').isVisible())throw Error('Unpublished campaign must not show sharing actions');
+  if(!await page.locator('#proposal-simple-offer').isVisible())throw Error('The concise offer is missing');
+  await page.screenshot({path:'/tmp/pwyw-merchant-compact-mobile.png',fullPage:true});
+  if(await page.locator('#proposal-details').evaluate(x=>x.open))throw Error('Details must start collapsed');
+  if(await page.locator('#customer-preview').isVisible().catch(()=>false))throw Error('Nested preview should be hidden by default');
   const qrLink=await page.locator('#qr-image').getAttribute('src');
   if(!qrLink.includes('objective=return'))throw Error('QR link does not preserve campaign goal: '+qrLink);
-  if(await page.locator('#quick-verify').isHidden())throw Error('Merchant code verification is not discoverable');
-  if(await page.locator('#quick-copy').isEnabled())throw Error('Unpublished campaign must not be shared as a live offer');
+  if(!await page.locator('#proposal-approve').isVisible())throw Error('Publish action must be immediately visible');
+  if(!await page.locator('#proposal-reject').isVisible())throw Error('Alternative idea action must be visible');
   if(await page.locator('[data-customer-stage]').count()!==3)
     throw Error('Customer walkthrough needs exactly three steps');
   if(await page.locator('[data-customer-stage="2"]').getAttribute('aria-pressed')!=='true')
     throw Error('Postgame customer message must be previewed by default');
-  const ownerReason=await page.locator('#proposal-owner-note').innerText();
+  const ownerReason=await page.locator('#proposal-owner-note').textContent();
   if(ownerReason.includes('قبل از انتشار باید مطمئن')||ownerReason.includes('solche Option')){
     throw Error('Merchant still receives an unhelpful stock warning');
   }
@@ -256,6 +259,8 @@ const {chromium}=require('playwright');
     throw Error('Merchant cannot understand the business goal behind this campaign');
   const previewResult=await page.locator('#proposal-product').textContent();
   if(!previewResult.trim())throw Error('Postgame offer preview has no content');
+  await page.locator('#proposal-details > summary').click();
+  if(!await page.locator('#customer-preview-caption').isVisible())throw Error('Expandable customer explanation did not open');
   await page.locator('#preview-steps summary').click();
   await page.locator('[data-customer-stage="0"]').click();
   if(!await page.locator('#customer-stage-start').isVisible())
@@ -293,8 +298,12 @@ const {chromium}=require('playwright');
   await page.locator('#proposal-published').waitFor({state:'visible',timeout:14000});
   const currentQuick=await page.locator('#quick-open').getAttribute('href');
   if(!currentQuick.includes('objective=return'))throw Error('Quick play link points to wrong campaign');
+  if(!await page.locator('#studio-quick').isVisible())throw Error('Share controls missing after publish');
+  if(await page.locator('#quick-more').evaluate(x=>x.open))throw Error('Extra actions must start collapsed');
+  await page.locator('#quick-more summary').click();
+  if(!await page.locator('#quick-verify').isVisible())throw Error('Merchant code verification is inaccessible');
   if(!await page.locator('#quick-copy').isEnabled())throw Error('Publishing did not enable sharing');
-  if(!/online|فعاله/.test(await page.locator('#quick-status').textContent()))
+  if(!/aktiv|فعاله/.test(await page.locator('#quick-status').textContent()))
     throw Error('Merchant cannot see that the campaign is published');
   if(!await page.locator('#proposal-open').getAttribute('href'))
     throw Error('Approved campaign has no share link');
