@@ -164,6 +164,26 @@ const {chromium}=require('playwright');
   await page.locator('#pwyw-language-switch [data-lang=fa]').click();
   if(await page.locator('html').getAttribute('dir')!=='rtl')throw Error('Persian admin RTL missing');
   await page.locator('#pwyw-language-switch [data-lang=de]').click();
+  // Admin information architecture is tested with isolated read-only API fixtures.
+  const adminFixtures=[
+    ['**/api/me',{role:'admin',email:'admin@example.org'}],
+    ['**/api/admin/overview',{users:2,brands:2,active_campaigns:1,events_30d:{starts:12},claims:{total:5,redeemed:2}}],
+    ['**/api/admin/users',[{email:'alpha@example.org',role:'merchant',brands:1},{email:'beta@example.org',role:'merchant',brands:1}]],
+    ['**/api/admin/brands',[{name:'Luna Coffee',owner:'alpha@example.org',game_starts:4,redemptions:1},{name:'Garage',owner:'beta@example.org',game_starts:8,redemptions:1}]]
+  ];
+  for(const [pattern,payload] of adminFixtures){
+    await page.route(pattern,route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(payload)}));
+  }
+  await page.reload({waitUntil:'networkidle'});
+  await page.locator('#cr-app').waitFor({state:'visible'});
+  if(!await page.locator('#cr-brands-panel').evaluate(e=>e.open))throw Error('Admin business overview is not available by default');
+  if(await page.locator('#cr-users-panel').evaluate(e=>e.open))throw Error('Admin account directory is too prominent');
+  if(await page.locator('#cr-stats>div').count()!==3)throw Error('Admin needs three clear top level KPIs');
+  await page.locator('#cr-brand-search').fill('Garage');
+  if(await page.locator('#cr-brands tbody tr:visible').count()!==1)throw Error('Admin business search not working');
+  await page.locator('#cr-more-stats summary').click();
+  if(!await page.locator('#cr-more-stats-content>div').first().isVisible())throw Error('Admin advanced metrics unavailable');
+  for(const [pattern] of adminFixtures)await page.unroute(pattern);
   await page.goto(base+'/dashboard',{waitUntil:'networkidle'});
   await page.locator('#pwyw-language-switch [data-lang=fa]').click();
   if(await page.locator('html').getAttribute('lang')!=='fa')throw Error('Persian studio locale missing');
