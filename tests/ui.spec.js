@@ -211,7 +211,14 @@ const {chromium}=require('playwright');
   await page.screenshot({path:'/tmp/pwyw-studio-mobile.png',fullPage:true});
   await page.locator('#brand-save').click();
   await page.locator('#proposal-card').waitFor({state:'visible',timeout:18000});
-  // Merchant sees the customer's complete journey instead of guessing what a campaign means.
+  // A simple result preview is shown by default; the full journey stays available on demand.
+  if(await page.locator('#preview-steps').evaluate(x=>x.open))
+    throw Error('Full journey should be collapsed for a first-time merchant');
+  if(await page.locator('#studio-quick').isHidden())throw Error('Missing quick action panel');
+  if(!await page.locator('#quick-open').isVisible())throw Error('Direct customer game link is missing');
+  const qrLink=await page.locator('#qr-image').getAttribute('src');
+  if(!qrLink.includes('objective=return'))throw Error('QR link does not preserve campaign goal: '+qrLink);
+  if(await page.locator('#quick-verify').isHidden())throw Error('Merchant code verification is not discoverable');
   if(await page.locator('[data-customer-stage]').count()!==3)
     throw Error('Customer walkthrough needs exactly three steps');
   if(await page.locator('[data-customer-stage="2"]').getAttribute('aria-pressed')!=='true')
@@ -228,6 +235,7 @@ const {chromium}=require('playwright');
     throw Error('Merchant cannot understand the business goal behind this campaign');
   const previewResult=await page.locator('#proposal-product').textContent();
   if(!previewResult.trim())throw Error('Postgame offer preview has no content');
+  await page.locator('#preview-steps summary').click();
   await page.locator('[data-customer-stage="0"]').click();
   if(!await page.locator('#customer-stage-start').isVisible())
     throw Error('Owner cannot see customer first-screen preview');
@@ -262,6 +270,10 @@ const {chromium}=require('playwright');
   if(beforeApprove.length)throw Error('Draft campaign was published without confirmation');
   await page.locator('#proposal-approve').click();
   await page.locator('#proposal-published').waitFor({state:'visible',timeout:14000});
+  const currentQuick=await page.locator('#quick-open').getAttribute('href');
+  if(!currentQuick.includes('objective=return'))throw Error('Quick play link points to wrong campaign');
+  if(!/online|فعاله/.test(await page.locator('#quick-status').textContent()))
+    throw Error('Merchant cannot see that the campaign is published');
   if(!await page.locator('#proposal-open').getAttribute('href'))
     throw Error('Approved campaign has no share link');
   await page.locator('#open-studio-settings').click();
