@@ -423,7 +423,8 @@
       await showLeaderboard(game);
     }catch(e){$("post-score").disabled=false}
   });
-  $("play-again").addEventListener("click",showHome);
+  $("play-again").addEventListener("click",()=>startGame(game||featuredGame));
+  $("result-other-game").addEventListener("click",showHome);
   $("start-featured").addEventListener("click",()=>startGame(featuredGame));
   $("scoreboard-details").addEventListener("toggle",()=>{
     const panel=$("scoreboard-details");
