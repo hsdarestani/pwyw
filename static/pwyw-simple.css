@@ -167,3 +167,69 @@ button,a,input,select,textarea{touch-action:manipulation}
  border:0;background:transparent;color:var(--pfg);
  font:600 12px/1.5 var(--font);opacity:.78;text-decoration:underline;text-underline-offset:4px
 }
+
+
+/* Merchant-first focus: a goal, an offer, and a decision. */
+.studio-v2 .studio-shell{grid-template-columns:210px minmax(0,1fr)}
+.studio-v2 .studio-menu{padding:24px 14px}
+.studio-v2 .studio-content{max-width:1090px;margin-inline:auto;padding:clamp(18px,3vw,40px)}
+.studio-v2 .studio-intro{margin-bottom:16px}
+.studio-v2 .studio-intro .overline,.studio-v2 #workspace-subtitle,
+.studio-v2 .studio-intro #open-play,.studio-v2 .studio-footer{display:none!important}
+.studio-v2 .studio-intro h1{font-size:clamp(24px,2.9vw,34px);letter-spacing:0;line-height:1.3;margin:0}
+.studio-v2 .builder-grid{display:block;max-width:900px}
+.studio-v2 .builder-main{max-width:none;width:100%}
+.studio-v2 .mission-picker{padding:18px 18px 14px;background:transparent;border:0;box-shadow:none}
+.studio-v2 .mission-picker h2{font-size:clamp(20px,2.5vw,25px);letter-spacing:0;line-height:1.4;margin:0 0 18px}
+.studio-v2 .mission-picker>.section-index{display:none}
+.studio-v2 .purpose-options{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.studio-v2 .purpose-option{min-height:106px;padding:12px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;background:#fff!important;border:1px solid #d8dce7;border-radius:16px;box-shadow:none}
+.studio-v2 .purpose-option:before{display:block;color:#7561b4;font-size:27px;line-height:1}
+.studio-v2 .purpose-option[data-objective=upsell]:before{content:"↗"}
+.studio-v2 .purpose-option[data-objective=return]:before{content:"↺"}
+.studio-v2 .purpose-option[data-objective=refer]:before{content:"♧"}
+.studio-v2 .purpose-option[data-objective=learn]:before{content:"✦"}
+.studio-v2 .purpose-option>span,.studio-v2 .purpose-option small{display:none!important}
+.studio-v2 .purpose-option strong{font:750 clamp(13px,1.3vw,16px)/1.45 'Estedad',Manrope,sans-serif;text-align:center}
+.studio-v2 .purpose-option.active{background:#f2effe!important;border:2px solid #7867cc}
+.studio-v2 #campaign-section{padding:6px 18px 25px!important;margin:0!important;background:transparent;border:0!important;box-shadow:none!important}
+.studio-v2 #campaign-section #campaign-heading,.studio-v2 .customer-journey-intro{display:none!important}
+.studio-v2 #campaign-section .campaign-wizard{margin:0!important}
+.studio-v2 .proposal-card{background:#fff!important;padding:clamp(20px,3vw,30px)!important;border:1px solid #dadfe9!important;border-radius:20px;box-shadow:0 8px 28px #18233708!important}
+.studio-v2 .proposal-card .proposal-eyebrow{font-size:12px;color:#735db1;font-weight:800}
+.studio-v2 .proposal-card h3{font:850 clamp(22px,3.5vw,29px)/1.5 'Estedad',Manrope,sans-serif!important;letter-spacing:0!important;color:#20263a;margin:12px 0 8px!important}
+.studio-v2 #proposal-description[hidden],.studio-v2 .proposal-trust{display:none!important}
+.studio-v2 .proposal-simple-offer{font:500 clamp(14px,1.6vw,16px)/1.75 'Estedad',Manrope,sans-serif!important;color:#556077;margin:0 0 21px!important;max-width:690px;overflow-wrap:anywhere}
+.studio-v2 .proposal-actions{display:flex!important;flex-direction:row!important;gap:10px}
+.studio-v2 .proposal-actions button{width:auto!important;min-height:52px;flex:1;padding:11px 16px;border-radius:12px;font:800 14px/1.4 'Estedad',Manrope,sans-serif!important}
+.studio-v2 #proposal-approve{flex:1.6;background:#7059c9;color:#fff}
+.studio-v2 #proposal-reject{flex:.8;background:#fff;border:1px solid #d6dce8;color:#374456}
+.studio-v2 .proposal-details{margin-top:15px}
+.studio-v2 .proposal-details>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;color:#636e83;font:650 12px/1.6 'Estedad',Manrope,sans-serif;padding:10px 0 4px}
+.studio-v2 .proposal-details>summary::-webkit-details-marker{display:none}
+.studio-v2 .proposal-details[open]>summary span{transform:rotate(180deg)}
+.studio-v2 .proposal-details[open] .customer-preview{margin-top:12px}
+.studio-v2 .proposal-details .customer-preview-note{display:none}
+.studio-v2 .proposal-published{padding:18px;background:#f2f0fa}
+.studio-v2 .proposal-published>p{display:none}
+.studio-v2 #studio-quick{max-width:900px;padding:15px 20px;margin-bottom:14px;box-shadow:none}
+.studio-v2 .studio-quick-heading{margin-bottom:8px}
+.studio-v2 .studio-quick-heading p{margin:0;font-size:13px;font-weight:800;color:#365d4d}
+.studio-v2 .studio-quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.studio-v2 .studio-quick-actions>*{min-height:46px;font:750 13px/1.4 'Estedad',Manrope,sans-serif;border-radius:11px}
+.studio-v2 .quick-more{margin-top:8px}
+.studio-v2 .quick-more>summary{display:inline-flex;align-items:center;cursor:pointer;padding:5px 1px;color:#5c677c;font:600 12px/1.5 'Estedad',Manrope,sans-serif}
+.studio-v2 .quick-more-actions{display:flex;gap:8px;flex-wrap:wrap;padding-top:4px}
+.studio-v2 .quick-more-actions button{min-height:43px;background:#f8f9fc;border:1px solid #d5dce6;border-radius:9px;padding:8px 13px;color:#313d50;font:650 12px 'Estedad',Manrope,sans-serif}
+@media(max-width:950px){
+ .studio-v2 .studio-shell{display:block}
+ .studio-v2 .studio-menu{padding:12px;border-bottom:1px solid #d9dce6}
+ .studio-v2 .studio-content{padding:15px 12px}
+ .studio-v2 .mission-picker{padding:14px 4px}
+ .studio-v2 #campaign-section{padding:6px 4px 22px!important}
+ .studio-v2 .purpose-options{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .studio-v2 .purpose-option{min-height:85px;gap:5px}
+ .studio-v2 .purpose-option:before{font-size:22px}
+ .studio-v2 .proposal-actions{flex-direction:column!important}
+ .studio-v2 .proposal-actions button{width:100%!important}
+}
