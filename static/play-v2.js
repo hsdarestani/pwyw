@@ -90,7 +90,6 @@
       $("game-symbol").hidden=true;
     }
     document.title=b.name+" / PWYW";
-    $("load-overlay").hidden=true;
     if(!visitSent){event("visit");visitSent=true}
   }
   async function track(kind,detail=""){
@@ -629,7 +628,9 @@
   document.body.classList.toggle("is-demo-lounge",isDemo);
   if(!isDemo)$("purpose-dial").hidden=true;
   request("/api/public/brands/"+encodeURIComponent(slug)).then(async b=>{
-    brandView(b);await fetchBrandArt();await loadCampaigns();
+    brandView(b);
+    await Promise.all([fetchBrandArt(),loadCampaigns()]);
+    $("load-overlay").hidden=true;
   }).catch(()=>{
     $("load-overlay").textContent="This game lounge is not available.";
     $("load-overlay").style.fontSize="1rem";
