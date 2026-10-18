@@ -131,8 +131,18 @@ const {chromium}=require('playwright');
       });
       if(!await page.locator('#reward-code').isVisible())
         throw Error('Campaign '+objective+' did not reveal its code automatically');
-      if(await page.locator('#referral-share').isVisible() !== (objective==='refer'))
-        throw Error('Incorrect sharing controls for '+objective);
+      const sharingVisible=await page.locator('#referral-share').isVisible();
+      if(sharingVisible !== (objective==='refer')){
+        const debug=await page.evaluate(()=>({
+          code:document.getElementById('reward-code').textContent,
+          codePending:document.getElementById('reward-code').classList.contains('is-pending'),
+          note:document.getElementById('reward-note').textContent,
+          shareHidden:document.getElementById('referral-share').hidden,
+          computed: getComputedStyle(document.getElementById('referral-share')).display,
+          objective:document.querySelector('[data-objective][aria-pressed=true]')?.dataset.objective
+        }));
+        throw Error('Incorrect sharing controls for '+objective+': '+JSON.stringify(debug));
+      }
     }
   }
   // Customers switch campaign by a direct objective link; owner-only objective tabs stay hidden.
