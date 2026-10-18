@@ -187,11 +187,16 @@ const {chromium}=require('playwright');
   await page.goto(base+'/dashboard',{waitUntil:'networkidle'});
   await page.locator('#pwyw-language-switch [data-lang=fa]').click();
   if(await page.locator('html').getAttribute('lang')!=='fa')throw Error('Persian studio locale missing');
+  const initialFaHeading=await page.locator('#merchant-goal-title').textContent();
+  if(!initialFaHeading.includes('چه نتیجه‌ای')||/[A-Za-z]/.test(initialFaHeading))
+    throw Error('Persian goal heading contains untranslated German copy: '+initialFaHeading);
 
   const faStudioHero=(await page.locator('.studio-auth-art h1').innerText()).replace(/\\s+/g,' ');
   if(!faStudioHero.includes('برای برندت') || !faStudioHero.includes('یه بازی') || !faStudioHero.includes('بساز.'))
     throw Error('Persian studio headline is grammatically broken: '+faStudioHero);
   await page.locator('#pwyw-language-switch [data-lang=de]').click();
+  if((await page.locator('#merchant-goal-title').textContent())!=='Was möchtest du erreichen?')
+    throw Error('German goal heading does not return after locale switch');
   await page.locator('#tab-signup').click();
   await page.locator('input[name=email]').fill('pwyw-e2e-'+Date.now()+'@example.org');
   await page.locator('input[name=password]').fill('StrongTestPassword123');
@@ -201,6 +206,8 @@ const {chromium}=require('playwright');
   await page.locator('#close-studio-settings').click();
   // Native form language is the primary editor. Secondary copy remains editable, but hidden.
   await page.locator('#pwyw-language-switch [data-lang=fa]').click();
+  if((await page.locator('#merchant-goal-title').textContent())!=='می‌خوای چه نتیجه‌ای بگیری؟')
+    throw Error('Goal heading switched back to German in merchant view');
   await page.locator('[data-objective="return"]').first().click();
   if(await page.locator('#campaign-copy-primary #campaign-copy-fa').count()!==1)
     throw Error('Persian editor is not the primary campaign form');
@@ -303,7 +310,7 @@ const {chromium}=require('playwright');
   await page.locator('#quick-more summary').click();
   if(!await page.locator('#quick-verify').isVisible())throw Error('Merchant code verification is inaccessible');
   if(!await page.locator('#quick-copy').isEnabled())throw Error('Publishing did not enable sharing');
-  if(!/aktiv|فعاله/.test(await page.locator('#quick-status').textContent()))
+  if(!/veröffentlicht|منتشر شده/.test(await page.locator('#quick-status').textContent()))
     throw Error('Merchant cannot see that the campaign is published');
   if(!await page.locator('#proposal-open').getAttribute('href'))
     throw Error('Approved campaign has no share link');
