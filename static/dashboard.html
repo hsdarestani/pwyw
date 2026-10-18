@@ -1,31 +1,33 @@
-<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#11111b"><title>PWYW® Brand Lab — Build games with a purpose</title><link rel="stylesheet" href="/static/pwyw-v2.css"><link rel="stylesheet" href="/static/pwyw-studio-brand.css?v=1"><link rel="stylesheet" href="/static/pwyw-locale.css?v=20261016"><link rel="stylesheet" href="/static/pwyw-experience.css?v=20261016-02"><link rel="stylesheet" href="/static/pwyw-studio-mobile.css?v=20261016-v1"><link rel="stylesheet" href="/static/pwyw-campaign-wizard.css?v=20261016-u3"><link rel="stylesheet" href="/static/pwyw-studio-dialog.css?v=20261016-u3"><link rel="stylesheet" href="/static/pwyw-customer-preview.css?v=20261016-02"><link rel="stylesheet" href="/static/pwyw-simple.css?v=ux20261018"></head>
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#11111b"><title>PWYW® Brand Lab — Build games with a purpose</title><link rel="stylesheet" href="/static/pwyw-v2.css"><link rel="stylesheet" href="/static/pwyw-studio-brand.css?v=1"><link rel="stylesheet" href="/static/pwyw-locale.css?v=20261016"><link rel="stylesheet" href="/static/pwyw-experience.css?v=20261016-02"><link rel="stylesheet" href="/static/pwyw-studio-mobile.css?v=20261016-v1"><link rel="stylesheet" href="/static/pwyw-campaign-wizard.css?v=20261016-u3"><link rel="stylesheet" href="/static/pwyw-studio-dialog.css?v=20261016-u3"><link rel="stylesheet" href="/static/pwyw-customer-preview.css?v=20261016-02"><link rel="stylesheet" href="/static/pwyw-simple.css?v=merchant-compact-20261018"></head>
 <body class="studio-v2"><header class="studio-top"><a class="identity" href="/"><span class="identity-symbol"><svg viewBox="0 0 50 50" fill="none" aria-hidden="true"><circle cx="25" cy="25" r="22" stroke="currentColor" stroke-width="2"/><path d="M13 20L19 33L25 23L31 33L38 17" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="37.8" cy="17" r="4.5" fill="#ff8c6c"/></svg></span><span class="identity-word">PWYW<small>BRAND LAB / 01</small></span></a><div class="studio-top-right"><span class="pilot-label">● PRIVATE PILOT / NO BILLING</span><span id="user-email"></span><a href="/admin" id="platform-admin-link" hidden>CONTROL ROOM ↗</a><button id="logout" hidden>LOG OUT ↗</button></div></header>
 <main id="auth-shell" class="studio-auth"><section class="studio-auth-art"><span>YOUR CAMPAIGN STUDIO / PWYW®</span><h1>MAKE<br>YOUR BRAND<br><em>PLAY.</em></h1><p>Don’t start with a game. Start with what you want customers to do.</p></section><section class="studio-auth-box"><div class="mode-toggle"><button id="tab-login" class="active" type="button">SIGN IN</button><button id="tab-signup" type="button">CREATE AN ACCOUNT</button></div><h2 id="auth-title">Welcome back.</h2><p>One studio. Four business goals. Ten games.</p><form id="auth-form"><label>YOUR EMAIL<input type="email" name="email" autocomplete="email" placeholder="you@yourbusiness.de" required></label><label>PASSWORD<input type="password" name="password" autocomplete="current-password" minlength="10" placeholder="At least 10 characters" required></label><button class="solid-btn" id="auth-submit" type="submit">SIGN IN <span>↗</span></button><div id="auth-error" class="notice error" role="alert" hidden></div></form><p class="helper">Pilot studio. No credit card, no promises of incremental revenue.</p></section></main>
 <main id="app-shell" class="studio-shell" hidden><aside class="studio-menu"><div class="menu-title"><span>MY BRAND WORLDS</span><button id="new-brand" type="button" aria-label="Create a new brand">+</button></div><div id="brand-list" class="brand-list"></div><div class="menu-end">✳ PWYW BRAND LAB / BETA<a href="/" target="_blank" rel="noopener">EXPLORE THE WEBSITE ↗</a></div></aside>
 <section class="studio-content"><div class="studio-intro"><div><span class="overline">THE EXPERIENCE BUILDER / GOAL FIRST</span><h1 id="workspace-title">First, pick an outcome.</h1><p id="workspace-subtitle">Not the game. The action you want your customers to take.</p></div><div class="studio-top-actions"><a class="mini-link" id="open-play" href="/demo" target="_blank" rel="noopener" hidden>OPEN LIVE LOUNGE ↗</a><button type="button" id="open-studio-settings" class="studio-settings-trigger" aria-haspopup="dialog" aria-controls="studio-settings-overlay">Weitere Einstellungen</button></div></div>
-<section id="studio-quick" class="studio-quick" aria-label="Schnellzugriff" hidden>
- <div class="studio-quick-heading"><span class="section-index">DEIN SPIEL</span><p id="quick-status" role="status">Wähle unten das Ziel für dein Spiel.</p></div>
+<section id="studio-quick" class="studio-quick" aria-label="Dein aktives Spiel" hidden>
+ <div class="studio-quick-heading"><p id="quick-status" role="status">Spiel ist aktiv</p></div>
  <div class="studio-quick-actions">
-  <a id="quick-open" class="quick-primary" href="#" target="_blank" rel="noopener">Spiel ansehen ↗</a>
-  <button id="quick-copy" type="button">Link kopieren</button>
+  <button id="quick-copy" class="quick-primary" type="button">Link kopieren</button>
+  <a id="quick-open" href="#" target="_blank" rel="noopener">Spiel ansehen ↗</a>
+ </div>
+ <details id="quick-more" class="quick-more"><summary>Weitere Aktionen</summary><div class="quick-more-actions">
   <button id="quick-verify" type="button">Kundencode prüfen</button>
   <button id="quick-qr" type="button">QR und Zahlen</button>
   <button id="quick-edit" type="button">Geschäft bearbeiten</button>
- </div>
+ </div></details>
  <div id="quick-copy-help" class="quick-copy-help" hidden><label for="quick-copy-url">Dein Spiellink</label><input id="quick-copy-url" readonly aria-label="Dein Spiellink"></div>
 </section><div class="builder-grid"><div class="builder-main">
-<section class="mission-picker"><span class="section-index">DEIN ZIEL</span><h2>Was soll nach dem Spiel passieren?</h2><p>Wähle ein Ziel. Wir schlagen dir den passenden Inhalt vor.</p><div class="purpose-options" id="purpose-options"><button type="button" class="purpose-option active" data-objective="upsell"><span>01 / GROW THE ORDER</span><strong>Mehr verkaufen</strong><small>Passendes Extra empfehlen</small></button><button type="button" class="purpose-option" data-objective="return"><span>02 / KEEP THEM COMING</span><strong>Wiederkehr fördern</strong><small>Für den nächsten Besuch einladen</small></button><button type="button" class="purpose-option" data-objective="refer"><span>03 / BRING A FRIEND</span><strong>Freunde einladen</strong><small>Spiel mit anderen teilen</small></button><button type="button" class="purpose-option" data-objective="learn"><span>04 / TELL IT BETTER</span><strong>Infos vermitteln</strong><small>Wichtiges einfach erklären</small></button></div></section>
+<section class="mission-picker"><span class="section-index">1 / DEIN ZIEL</span><h2>Was möchtest du erreichen?</h2><div class="purpose-options" id="purpose-options"><button type="button" class="purpose-option active" data-objective="upsell"><span>01 / GROW THE ORDER</span><strong>Mehr verkaufen</strong><small>Passendes Extra empfehlen</small></button><button type="button" class="purpose-option" data-objective="return"><span>02 / KEEP THEM COMING</span><strong>Wiederkehr fördern</strong><small>Für den nächsten Besuch einladen</small></button><button type="button" class="purpose-option" data-objective="refer"><span>03 / BRING A FRIEND</span><strong>Freunde einladen</strong><small>Spiel mit anderen teilen</small></button><button type="button" class="purpose-option" data-objective="learn"><span>04 / TELL IT BETTER</span><strong>Infos vermitteln</strong><small>Wichtiges einfach erklären</small></button></div></section>
 
 <section id="campaign-section" class="campaign-editor" hidden>
- <h2 id="campaign-heading">YOUR CUSTOMERS' GAME</h2>
- <p class="customer-journey-intro">So sieht das Angebot nach dem Spiel für deine Kunden aus.</p>
+ <h2 id="campaign-heading">Dein Vorschlag</h2>
+ 
  <div id="campaign-wizard" class="campaign-wizard">
   <div id="proposal-loading" class="proposal-loading" role="status" hidden>GENERATING A NEW CAMPAIGN…</div>
   <div id="proposal-card" class="proposal-card" hidden>
-   <span class="proposal-eyebrow">CUSTOMER EXPERIENCE PREVIEW</span>
-   <h3 id="proposal-title"></h3>
-   <p id="proposal-description" class="proposal-owner-excerpt"></p>
-   <details id="preview-steps" class="preview-steps"><summary>Alle Schritte der Kundenansicht ansehen <span aria-hidden="true">⌄</span></summary><div class="proposal-flow" role="group" aria-label="Customer journey preview">
+   <span class="proposal-eyebrow">2 / DEIN VORSCHLAG</span>
+   <h3 id="proposal-title"></h3><p id="proposal-simple-offer" class="proposal-simple-offer"></p>
+   <p id="proposal-description" class="proposal-owner-excerpt" hidden></p>
+   <details id="proposal-details" class="proposal-details"><summary>Mehr zum Vorschlag <span aria-hidden="true">⌄</span></summary><details id="preview-steps" class="preview-steps"><summary>Alle Schritte der Kundenansicht ansehen <span aria-hidden="true">⌄</span></summary><div class="proposal-flow" role="group" aria-label="Customer journey preview">
     <button type="button" data-customer-stage="0" aria-pressed="false"><span>01</span><strong>OPENS THE LINK</strong></button>
     <button type="button" data-customer-stage="1" aria-pressed="false"><span>02</span><strong>PLAYS A GAME</strong></button>
     <button type="button" data-customer-stage="2" aria-pressed="true"><span>03</span><strong>SEES YOUR MESSAGE</strong></button>
@@ -55,11 +57,10 @@
     </div>
     <p class="customer-preview-note">THIS IS A REPRESENTATIVE PREVIEW, NOT A PLAYABLE GAME. THE CUSTOMER WILL SEE YOUR APPROVED CONTENT INSIDE THE REAL GAME.</p>
     <div class="proposal-owner-note"><strong id="proposal-owner-note-label">WHY THIS IDEA?</strong><p id="proposal-owner-note"></p></div>
-   </div>
-   <div class="proposal-actions"><button id="proposal-approve" class="solid-btn" type="button">Vorschlag verwenden ↗</button><button id="proposal-reject" type="button">Anderen Vorschlag zeigen</button></div>
-   <p class="proposal-trust">NOTHING IS PUBLISHED UNTIL YOU APPROVE.</p>
+   </div></details>
+   <div class="proposal-actions"><button id="proposal-approve" class="solid-btn" type="button">Jetzt veröffentlichen ↗</button><button id="proposal-reject" type="button">Andere Idee</button></div>
   </div>
-  <div id="proposal-published" class="proposal-published" hidden><strong>YOUR CAMPAIGN IS LIVE!</strong><p>SHARE THE GAME WITH YOUR CUSTOMERS.</p><a id="proposal-open" href="#" target="_blank" rel="noopener">OPEN CAMPAIGN ↗</a><button id="proposal-new" type="button">MAKE ANOTHER SUGGESTION</button></div>
+  <div id="proposal-published" class="proposal-published" hidden><strong>Dein Spiel ist online!</strong><p>Teile den Link mit deinen Kunden.</p><a id="proposal-open" href="#" target="_blank" rel="noopener">OPEN CAMPAIGN ↗</a><button id="proposal-new" type="button">Andere Idee erstellen</button></div>
   <div id="proposal-error" class="notice error" role="alert" hidden></div>
  </div>
 </section>
@@ -106,4 +107,4 @@
  </section>
 </div>
 <footer class="studio-footer">PWYW® BY A+SOLUTION · PURPOSE FIRST · THE ARCADE FOLLOWS.</footer></section></main>
-<script defer src="/static/dashboard-v2.js?v=ux20261018"></script><script defer src="/static/campaign-assistant.js?v=ux20261018"></script><script defer src="/static/pwyw-native-fa.js?v=20261016-u3"></script><script defer src="/static/pwyw-i18n.js?v=ux20261018"></script></body></html>
+<script defer src="/static/dashboard-v2.js?v=merchant-compact-20261018"></script><script defer src="/static/campaign-assistant.js?v=merchant-compact-20261018"></script><script defer src="/static/pwyw-native-fa.js?v=20261016-u3"></script><script defer src="/static/pwyw-i18n.js?v=ux20261018"></script></body></html>
