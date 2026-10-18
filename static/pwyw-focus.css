@@ -165,3 +165,16 @@ html[lang="fa"] .player-v2 .campaign-intro h1{
 @media(prefers-reduced-motion:reduce){
   .player-v2 .featured-start,.player-v2 .game-library>summary span{transition:none}
 }
+
+/* End-of-game offers are shown in one step. Only failed requests show a retry. */
+.player-v2 .reward-box :is(#claim-reward,#reward-code,#referral-share)[hidden]{display:none!important}
+.player-v2 .reward-box #reward-code{
+  display:block;width:100%;margin:12px 0 7px;padding:12px 10px;
+  border:1px solid color-mix(in srgb,var(--pfg),transparent 72%);
+  border-radius:12px;background:color-mix(in srgb,var(--pfg),transparent 93%);
+  color:var(--pfg);text-align:center;direction:ltr;unicode-bidi:isolate;
+  font:800 clamp(15px,4.6vw,22px)/1.6 var(--font);letter-spacing:.015em;
+  overflow-wrap:anywhere;
+}
+.player-v2 .reward-box #reward-code.is-pending{font-size:13px;letter-spacing:0;direction:inherit}
+.player-v2 .reward-box #claim-reward:not([hidden]){margin-top:12px}

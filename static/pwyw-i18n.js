@@ -15,6 +15,8 @@
     ["Show this code when you order the suggested item. It is not an automatic discount.","Zeig den Code bei der Bestellung des vorgeschlagenen Artikels. Es ist kein automatischer Rabatt.","موقع سفارش این محصول، کد رو نشون بده. این کد تخفیف خودکار نیست."],
     ["Share this game with your friends.","Teile das Spiel mit deinen Freunden.","این بازی رو برای دوستات بفرست."],
 
+    ["Preparing your code…","Dein Code wird vorbereitet…","کدت داره آماده می‌شه…"],
+    ["Try again ↻","Erneut versuchen ↻","تلاش دوباره ↻"],
     ["SETTINGS AND REPORTS","EINSTELLUNGEN UND BERICHTE","تنظیمات و گزارش‌ها"],
     ["BRAND SETTINGS","MARKENDATEN","اطلاعات کسب‌وکار"],
     ["STUDIO TOOLS","STUDIO WERKZEUGE","بخش مدیریت"],

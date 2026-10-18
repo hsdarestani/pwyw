@@ -18,7 +18,7 @@
   const localized=(obj,key)=>(window.PWYWI18N?.locale()==='fa' && obj?.translations?.fa?.[key])||obj?.[key]||'';
   const tr = value => window.PWYWI18N?.t(value) || value;
   const goalNames={upsell:"Play to Upsell",return:"Play to Return",refer:"Play to Refer",learn:"Play to Learn"};
-  let objective="upsell",campaigns={},campaign=null,refCode=new URLSearchParams(location.search).get("ref")||"",rewardCode="",featuredGame="orbit";
+  let objective="upsell",campaigns={},campaign=null,refCode=new URLSearchParams(location.search).get("ref")||"",rewardCode="",rewardIsDemo=false,claimStatus="idle",rewardRequestId=0,featuredGame="orbit";
   let brandArt={}; let brandedToken=null;
   async function fetchBrandArt(){
     try{brandArt=await request("/api/public/brands/"+encodeURIComponent(slug)+"/art");
@@ -145,10 +145,12 @@
     }
   }
   function resetReward(){
-    rewardCode="";
+    rewardCode="";rewardIsDemo=false;claimStatus="idle";
     $("reward-code").textContent="";$("reward-code").hidden=true;
-    $("claim-reward").hidden=false;$("claim-reward").disabled=false;
+    $("claim-reward").hidden=true;$("claim-reward").disabled=false;
     $("merchant-link").hidden=true;$("referral-share").hidden=true;
+    $("share-link").disabled=true;$("copy-link").disabled=true;
+    $("copy-link").textContent=tr("COPY LINK");
     $("reward-note").textContent=tr("The code is for tracking this offer, not an automatic discount.");
   }
   async function renderQuiz(){
@@ -185,24 +187,66 @@
       });
     }catch{}
   }
-  function renderReward(){
-    resetReward();
-    $("quiz-slot").hidden=true;
-    if(objective==="learn"){ $("claim-reward").hidden=true;renderQuiz(); }
-    $("reward-kicker").textContent=tr("AFTER THE GAME");
-    $("reward-title").textContent=localized(campaign,'product_name')||"Your next move.";
-    $("reward-copy").textContent=localized(campaign,'offer')||tr("Ask the team about your next step.");
-    $("claim-reward").textContent=tr(objective==="learn"?"I UNDERSTAND ✓":
-      objective==="refer"?"CREATE MY CHALLENGE ↗":objective==="return"?"GET RETURN CODE ↗":"GET ORDER CODE ↗");
-    if(!campaign){
-      $("claim-reward").hidden=true;
-      $("reward-note").textContent="No active campaign. Games remain free to play.";
+  function showClaimState(){
+    const code=$("reward-code"),retry=$("claim-reward");
+    retry.hidden=true;retry.disabled=false;
+    if(!campaign || objective==="learn"){
+      code.hidden=true;$("referral-share").hidden=true;
+      return;
     }
-    if(objective==="learn"){
-      $("reward-note").textContent="Completion means this instruction was viewed. It does not prove fewer staff questions.";
+    const ready=claimStatus==="ready";
+    code.hidden=false;
+    code.setAttribute("aria-busy",String(claimStatus==="loading"));
+    code.classList.toggle("is-pending",!ready);
+    code.textContent=ready?(rewardIsDemo?tr("DEMO ONLY — NO VALID REWARD"):rewardCode):
+      tr(claimStatus==="error"?"Could not create a code. Please try again.":"Preparing your code…");
+    $("referral-share").hidden=objective!=="refer"||!ready;
+    $("share-link").disabled=!ready;$("copy-link").disabled=!ready;
+    if(claimStatus==="error"){
+      retry.textContent=tr("Try again ↻");
+      retry.hidden=false;
+    }
+    $("reward-note").textContent=tr(claimStatus==="error"?
+      "Could not create a code. Please try again.":
+      !ready?"Preparing your code…":
+      rewardIsDemo?"Preview campaign only. No real reward, offer or discount is issued.":
+      objective==="return"?"Keep this code and show it on your next visit. It is not an automatic discount.":
+      objective==="upsell"?"Show this code when you order the suggested item. It is not an automatic discount.":
+      "Share this game with your friends.");
+  }
+  function renderReward({retainClaim=false}={}){
+    if(!retainClaim)resetReward();
+    $("quiz-slot").hidden=true;
+    $("reward-kicker").textContent=tr("AFTER THE GAME");
+    $("reward-title").textContent=localized(campaign,'product_name')||tr("Your next move.");
+    $("reward-copy").textContent=localized(campaign,'offer')||tr("Ask the team about your next step.");
+    if(!campaign){
+      $("claim-reward").hidden=true;$("reward-code").hidden=true;
+      $("reward-note").textContent=tr("No active campaign. Games remain free to play.");
+    }else if(objective==="learn"){
+      $("claim-reward").hidden=true;$("reward-code").hidden=true;
+      $("reward-note").textContent=tr("Completion means this instruction was viewed. It does not prove fewer staff questions.");
+      renderQuiz();
+    }else{
+      showClaimState();
     }
     if(campaign?.destination && /^https:\/\//.test(campaign.destination)){
       const link=$("merchant-link");link.href=campaign.destination;link.hidden=false;
+    }
+  }
+  async function issueReward(){
+    if(!campaign||objective==="learn")return;
+    const id=++rewardRequestId,chosenObjective=objective;
+    claimStatus="loading";showClaimState();
+    try{
+      const data=await request("/api/public/brands/"+encodeURIComponent(slug)+"/campaigns/"+chosenObjective+"/claim",{
+        method:"POST",body:JSON.stringify({sid,ref_code:refCode||""})});
+      if(id!==rewardRequestId || $("finish-modal").hidden || objective!==chosenObjective)return;
+      rewardCode=data.code;rewardIsDemo=Boolean(data.demo);
+      claimStatus="ready";showClaimState();
+    }catch(e){
+      if(id!==rewardRequestId || $("finish-modal").hidden || objective!==chosenObjective)return;
+      claimStatus="error";showClaimState();
     }
   }
   function brandedCard(card, symbol){
@@ -239,6 +283,7 @@
     },1000);
   }
   function showHome(){
+    rewardRequestId++;
     cleanup();game=null;score=0;
     $("game-home").hidden=false;$("game-active").hidden=true;$("finish-modal").hidden=true;document.body.classList.remove("is-result-open");
     $("touch-controls").replaceChildren();$("touch-controls").hidden=true;
@@ -300,6 +345,7 @@
     }
   }
   function startGame(id){
+    rewardRequestId++;
     cleanup();
     if(!gameLabels[id])return;
     game=id;score=0;seconds=0;running=true;setText();mobileControls(id);
@@ -347,7 +393,8 @@
     $("scoreboard-details").dataset.loaded="";
     event("complete",{score});
     renderReward();track("finish");
-    ($("claim-reward").hidden?$("play-again"):$("claim-reward")).focus({preventScroll:true});
+    issueReward();
+    (campaign && objective!=="learn"?$("reward-code"):$("play-again")).focus({preventScroll:true});
   }
   async function showLeaderboard(g){
     try{
@@ -548,32 +595,9 @@
   }
   document.querySelectorAll("[data-objective]").forEach(btn=>
     btn.addEventListener("click",()=>chooseObjective(btn.dataset.objective)));
-  $("claim-reward").addEventListener("click",async()=>{
-    if(!campaign)return;
-    const btn=$("claim-reward");btn.disabled=true;track("cta");
-    if(objective==="learn"){
-      track("learn_answer","Guest confirmed reading instructions");
-      $("reward-code").hidden=false;$("reward-code").textContent="THANK YOU FOR READING";
-      btn.hidden=true;return;
-    }
-    try{
-      const data=await request("/api/public/brands/"+encodeURIComponent(slug)+"/campaigns/"+objective+"/claim",{
-        method:"POST",body:JSON.stringify({sid,ref_code:refCode||""})});
-      rewardCode=data.code;$("reward-code").textContent=data.demo?
-        "DEMO ONLY — NO VALID REWARD":data.code;
-      $("reward-code").hidden=false;btn.hidden=true;
-      $("reward-note").textContent=tr(data.demo?
-        "Preview campaign only. No real reward, offer or discount is issued.":
-        objective==="return"?"Keep this code and show it on your next visit. It is not an automatic discount.":
-        objective==="upsell"?"Show this code when you order the suggested item. It is not an automatic discount.":
-        "Share this game with your friends.");
-      if(objective==="refer"){
-        $("referral-share").hidden=false;
-      }
-    }catch(e){
-      $("reward-note").textContent="Could not create a code. Please try again.";
-      btn.disabled=false;
-    }
+  // Codes are issued automatically when play ends. The button is only a retry on failure.
+  $("claim-reward").addEventListener("click",()=>{
+    if(claimStatus==="error")issueReward();
   });
   function sharedUrl(){
     const url=new URL(location.origin+"/play/"+encodeURIComponent(slug));
@@ -599,7 +623,7 @@
   buildGamePicks();
   $("back-home").style.visibility="hidden";
   window.addEventListener("pagehide",cleanup);
-  document.addEventListener('pwyw:language-changed',()=>{if(brand)brandView(brand);chooseObjective(objective);if(!$("finish-modal").hidden)renderReward()});
+  document.addEventListener('pwyw:language-changed',()=>{if(brand)brandView(brand);chooseObjective(objective);if(!$("finish-modal").hidden)renderReward({retainClaim:true})});
   // Business owners choose the objective in the studio. Customers see one focused campaign.
   const isDemo=location.pathname==="/demo";
   document.body.classList.toggle("is-demo-lounge",isDemo);

@@ -108,6 +108,33 @@ const {chromium}=require('playwright');
     await page.locator('#back-home').click();
     await page.locator('#game-home').waitFor({state:'visible'});
   }
+  // Every campaign outcome is available on the first results screen, without a claim click.
+  for(const objective of ['upsell','return','refer','learn']){
+    await page.goto(base+'/demo?objective='+objective+'&lang=fa',{waitUntil:'networkidle'});
+    await page.locator('#load-overlay').waitFor({state:'hidden'});
+    await page.evaluate(()=>{
+      const start=window.PWYWArcade.start;
+      window.PWYWArcade.start=(mode,host)=>{start(mode,host);host.onFinish('Finished');};
+    });
+    await page.locator('#start-featured').click();
+    await page.locator('#finish-modal').waitFor({state:'visible'});
+    if(await page.locator('#claim-reward').isVisible())
+      throw Error('Campaign '+objective+' requires a second click to claim an offer');
+    if(objective==='learn'){
+      await page.locator('#quiz-slot .quiz-answer').first().waitFor({state:'visible'});
+      if(await page.locator('#reward-code').isVisible())
+        throw Error('Learning experience should not issue a claim code');
+    }else{
+      await page.waitForFunction(()=>{
+        const code=document.querySelector('#reward-code');
+        return code && !code.hidden && code.getAttribute('aria-busy')==='false' && code.textContent.trim();
+      });
+      if(!await page.locator('#reward-code').isVisible())
+        throw Error('Campaign '+objective+' did not reveal its code automatically');
+      if(await page.locator('#referral-share').isVisible() !== (objective==='refer'))
+        throw Error('Incorrect sharing controls for '+objective);
+    }
+  }
   // Customers switch campaign by a direct objective link; owner-only objective tabs stay hidden.
   await page.goto(base+'/play/luna-cafe?objective=learn',{waitUntil:'networkidle'});
   await page.locator('#load-overlay').waitFor({state:'hidden'});
