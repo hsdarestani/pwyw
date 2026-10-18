@@ -99,7 +99,7 @@ function updateQuick(){
  $('quick-open').textContent=f?'دیدن بازی ↗':'Spiel ansehen ↗';
  $('quick-copy').textContent=f?'کپی لینک':'Link kopieren';
  $('quick-more').querySelector('summary').textContent=f?'کارهای بیشتر':'Weitere Aktionen';
- $('quick-status').textContent=f?'● بازی فعاله':'● Spiel aktiv';
+ $('quick-status').textContent=f?'● پیشنهاد فعلی منتشر شده':'● Aktuelles Angebot veröffentlicht';
  const img='/qr/'+encodeURIComponent(state.brand.slug)+'.svg?objective='+encodeURIComponent(state.objective)+(f?'&lang=fa':'');
  $('qr-image').src=img;$('qr-download').href=img;
  $('quick-copy-help').hidden=true;
@@ -412,8 +412,15 @@ window.PWYWStudio={
   updateQuick();refreshStats();
  }
 };
-objective('upsell');boot();
+objective('upsell');objectiveHeadingRefresh();document.addEventListener('DOMContentLoaded',objectiveHeadingRefresh);boot();
 function objectiveHeadingRefresh(){
+ const isFa=locale()==='fa';
+ const goal=$('merchant-goal-title');
+ if(goal){
+  goal.textContent=isFa?'می‌خوای چه نتیجه‌ای بگیری؟':'Was möchtest du erreichen?';
+  goal.lang=isFa?'fa':'de';
+  goal.dir=isFa?'rtl':'ltr';
+ }
  const value=state.objective;
  const names=window.PWYWI18N?.locale()==='fa'?
   {upsell:'افزایش مبلغ خرید',return:'مراجعه دوباره',refer:'معرفی به دوستان',learn:'آشنایی با خدمات'}:
