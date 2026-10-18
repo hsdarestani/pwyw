@@ -49,6 +49,19 @@ class PilotTests(unittest.TestCase):
     self.assertEqual(self.client.get("/api/public/brands/luna-cafe/leaderboard/memory").json()[0]["score"],80)
     self.assertEqual(self.client.post("/api/register",json={"email":"x@sample.de","password":"anylongpassword"},headers={"Origin":"https://bad.invalid"}).status_code,403)
     self.assertEqual(self.client.get("/api/brands").status_code,401)
+  def test_qr_campaign_targets(self):
+    normal=self.client.get("/qr/luna-cafe.svg")
+    comeback=self.client.get("/qr/luna-cafe.svg?objective=return&lang=fa")
+    invite=self.client.get("/qr/luna-cafe.svg?objective=refer&lang=fa")
+    self.assertEqual(normal.status_code,200)
+    self.assertEqual(comeback.status_code,200)
+    self.assertEqual(invite.status_code,200)
+    self.assertIn("svg",invite.headers["content-type"])
+    self.assertNotEqual(normal.content,comeback.content)
+    self.assertNotEqual(comeback.content,invite.content)
+    self.assertEqual(self.client.get("/qr/luna-cafe.svg?objective=unknown").status_code,422)
+    self.assertEqual(self.client.get("/qr/luna-cafe.svg?lang=unknown").status_code,422)
+
   def test_four_business_objectives_and_verified_claims(self):
     owner=TestClient(self.mod.app)
     stranger=TestClient(self.mod.app)

@@ -73,6 +73,61 @@ async function fetchBrands(prefer=''){
  const target=state.brands.find(b=>b.slug===(prefer||previous))||state.brands[0];
  if(target)await selectBrand(target);else newBrand();
 }
+function customerLink(){
+ if(!state.brand)return '';
+ const link=new URL('/play/'+encodeURIComponent(state.brand.slug),location.origin);
+ link.searchParams.set('objective',state.objective);
+ if(locale()==='fa')link.searchParams.set('lang','fa');
+ return link.href;
+}
+function updateQuick(){
+ const quick=$('studio-quick');
+ quick.hidden=!state.brand;
+ if(!state.brand)return;
+ const f=locale()==='fa';
+ const selectedCampaign=state.campaigns[state.objective];
+ const live=Boolean(selectedCampaign && selectedCampaign.is_active!==false && selectedCampaign.is_active!==0);
+ const url=customerLink(), relative=url.replace(location.origin,'');
+ $('quick-open').href=url;
+ $('open-play').href=relative;
+ $('campaign-share-link').href=relative;
+ $('quick-verify').hidden=state.objective==='learn';
+ $('quick-copy').disabled=!live;
+ $('quick-qr').disabled=!live;
+ $('quick-verify').disabled=!live;
+ $('quick-open').textContent=live?(f?'دیدن بازی ↗':'Spiel ansehen ↗'):(f?'دیدن پیش‌نمایش ↗':'Vorschau ansehen ↗');
+ $('quick-status').textContent=live?
+   (f?'این پیشنهاد فعاله. می‌تونی بازیش رو ببینی یا لینکش رو برای مشتری بفرستی.':'Dieses Angebot ist online. Spiel ansehen oder Link teilen.'):
+   (f?'پیشنهادت هنوز منتشر نشده. یکی از ایده‌های پایین رو تأیید کن.':'Noch nicht veröffentlicht. Wähle unten einen Vorschlag aus.');
+ const img='/qr/'+encodeURIComponent(state.brand.slug)+'.svg?objective='+encodeURIComponent(state.objective)+(f?'&lang=fa':'');
+ $('qr-image').src=img;$('qr-download').href=img;
+ $('quick-copy-help').hidden=true;
+}
+function openTool(section,focusId){
+ openStudioSettings('studio-tools');
+ if(focusId)requestAnimationFrame(()=>{
+  const el=$(focusId);if(!el||el.closest('[hidden]'))return;
+  el.scrollIntoView({block:'nearest',behavior:'smooth'});
+  if(el.matches('input,button'))el.focus({preventScroll:true});
+ });
+}
+$('quick-qr').addEventListener('click',()=>openTool('studio-tools','qr-image'));
+$('quick-verify').addEventListener('click',()=>openTool('studio-tools','redeem-code'));
+$('quick-edit').addEventListener('click',()=>openStudioSettings('brand-settings'));
+$('quick-copy').addEventListener('click',async()=>{
+ const url=customerLink();if(!url||$('quick-copy').disabled)return;
+ const button=$('quick-copy');
+ try{
+  if(!navigator.clipboard?.writeText)throw Error('Clipboard unavailable');
+  await navigator.clipboard.writeText(url);
+  button.textContent=locale()==='fa'?'لینک کپی شد ✓':'Link kopiert ✓';
+  $('quick-copy-help').hidden=true;
+ }catch{
+  $('quick-copy-url').value=url;$('quick-copy-help').hidden=false;
+  $('quick-copy-url').select();
+  button.textContent=locale()==='fa'?'لینک رو از کادر کپی کن':'Link unten kopieren';
+ }
+});
 function renderBrandList(){
  const node=$('brand-list');node.replaceChildren();
  for(const b of state.brands){
@@ -140,6 +195,7 @@ function objective(value){
    $('redeem-section').hidden=value==='learn';
  }
  message('campaign-status','');
+ updateQuick();
  document.dispatchEvent(new CustomEvent('pwyw:objective-selected',{detail:{slug:state.brand?.slug||'',objective:value}}));
 }
 document.querySelectorAll('.purpose-option').forEach(b=>b.onclick=()=>objective(b.dataset.objective));
@@ -205,7 +261,7 @@ function newBrand(){
  setTheme('atelier');clearLogo();
  $('open-play').hidden=true;$('results-section').hidden=true;$('campaign-section').hidden=true;$('redeem-section').hidden=true;
  $('workspace-subtitle').textContent='Not the game. The action you want your customers to take.';
- renderBrandList();preview();objective(state.objective);message('save-status','');
+ renderBrandList();preview();objective(state.objective);updateQuick();message('save-status','');
  openStudioSettings('brand-settings');
 }
 $('new-brand').onclick=newBrand;
@@ -281,7 +337,7 @@ $('campaign-form').addEventListener('submit',async e=>{
    quiz_correct_index:Number($('quiz-correct').value||0),
    translations:{fa:{title:$('campaign-fa-title').value.trim(),description:$('campaign-fa-description').value.trim(),cta:$('campaign-fa-cta').value.trim(),offer:$('campaign-fa-offer').value.trim(),product_name:$('campaign-fa-product').value.trim(),quiz_question:state.objective==='learn'?$('quiz-fa-question').value.trim():'',quiz_options:state.objective==='learn'?[0,1,2].map(i=>$('quiz-fa-option-'+i).value.trim()).filter(Boolean):[]}}};
  try{await api('/api/brands/'+encodeURIComponent(state.brand.slug)+'/campaigns/'+state.objective,'PUT',body);
-   state.campaigns[state.objective]=body;message('campaign-status','Live. Your campaign is ready to share.');
+   state.campaigns[state.objective]=body;updateQuick();message('campaign-status','Live. Your campaign is ready to share.');
    $('campaign-share-link').href='/play/'+encodeURIComponent(state.brand.slug)+'?objective='+state.objective;
    await refreshStats();
  }catch(err){message('campaign-status',err.message,true)}finally{btn.disabled=false}
@@ -352,7 +408,7 @@ window.PWYWStudio={
   state.campaigns[campaign.objective]=campaign;
   if(!state.brand)return;
   $('campaign-share-link').href='/play/'+encodeURIComponent(state.brand.slug)+'?objective='+campaign.objective;
-  refreshStats();
+  updateQuick();refreshStats();
  }
 };
 objective('upsell');boot();
@@ -364,7 +420,7 @@ function objectiveHeadingRefresh(){
  $('campaign-heading').textContent=(window.PWYWI18N?.locale()==='fa'?'بازی پیشنهادی برای ':'Spielvorschlag für ')+names[value];
 }
 document.addEventListener('pwyw:language-changed',()=>{
- setCampaignLocale();objectiveHeadingRefresh();preview();
+ setCampaignLocale();objectiveHeadingRefresh();preview();updateQuick();
  if(state.brand){
   $('workspace-subtitle').textContent=window.PWYWI18N?.locale()==='fa'?
    'هدفت رو مشخص کن؛ ما بازی و پیام مناسب برای مشتری‌هات پیشنهاد می‌دیم.':

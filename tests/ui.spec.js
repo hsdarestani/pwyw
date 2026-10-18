@@ -164,6 +164,26 @@ const {chromium}=require('playwright');
   await page.locator('#pwyw-language-switch [data-lang=fa]').click();
   if(await page.locator('html').getAttribute('dir')!=='rtl')throw Error('Persian admin RTL missing');
   await page.locator('#pwyw-language-switch [data-lang=de]').click();
+  // Admin information architecture is tested with isolated read-only API fixtures.
+  const adminFixtures=[
+    ['**/api/me',{role:'admin',email:'admin@example.org'}],
+    ['**/api/admin/overview',{users:2,brands:2,active_campaigns:1,events_30d:{starts:12},claims:{total:5,redeemed:2}}],
+    ['**/api/admin/users',[{email:'alpha@example.org',role:'merchant',brands:1},{email:'beta@example.org',role:'merchant',brands:1}]],
+    ['**/api/admin/brands',[{name:'Luna Coffee',owner:'alpha@example.org',game_starts:4,redemptions:1},{name:'Garage',owner:'beta@example.org',game_starts:8,redemptions:1}]]
+  ];
+  for(const [pattern,payload] of adminFixtures){
+    await page.route(pattern,route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(payload)}));
+  }
+  await page.reload({waitUntil:'networkidle'});
+  await page.locator('#cr-app').waitFor({state:'visible'});
+  if(!await page.locator('#cr-brands-panel').evaluate(e=>e.open))throw Error('Admin business overview is not available by default');
+  if(await page.locator('#cr-users-panel').evaluate(e=>e.open))throw Error('Admin account directory is too prominent');
+  if(await page.locator('#cr-stats>div').count()!==3)throw Error('Admin needs three clear top level KPIs');
+  await page.locator('#cr-brand-search').fill('Garage');
+  if(await page.locator('#cr-brands tbody tr:visible').count()!==1)throw Error('Admin business search not working');
+  await page.locator('#cr-more-stats summary').click();
+  if(!await page.locator('#cr-more-stats-content>div').first().isVisible())throw Error('Admin advanced metrics unavailable');
+  for(const [pattern] of adminFixtures)await page.unroute(pattern);
   await page.goto(base+'/dashboard',{waitUntil:'networkidle'});
   await page.locator('#pwyw-language-switch [data-lang=fa]').click();
   if(await page.locator('html').getAttribute('lang')!=='fa')throw Error('Persian studio locale missing');
@@ -211,7 +231,15 @@ const {chromium}=require('playwright');
   await page.screenshot({path:'/tmp/pwyw-studio-mobile.png',fullPage:true});
   await page.locator('#brand-save').click();
   await page.locator('#proposal-card').waitFor({state:'visible',timeout:18000});
-  // Merchant sees the customer's complete journey instead of guessing what a campaign means.
+  // A simple result preview is shown by default; the full journey stays available on demand.
+  if(await page.locator('#preview-steps').evaluate(x=>x.open))
+    throw Error('Full journey should be collapsed for a first-time merchant');
+  if(await page.locator('#studio-quick').isHidden())throw Error('Missing quick action panel');
+  if(!await page.locator('#quick-open').isVisible())throw Error('Direct customer game link is missing');
+  const qrLink=await page.locator('#qr-image').getAttribute('src');
+  if(!qrLink.includes('objective=return'))throw Error('QR link does not preserve campaign goal: '+qrLink);
+  if(await page.locator('#quick-verify').isHidden())throw Error('Merchant code verification is not discoverable');
+  if(await page.locator('#quick-copy').isEnabled())throw Error('Unpublished campaign must not be shared as a live offer');
   if(await page.locator('[data-customer-stage]').count()!==3)
     throw Error('Customer walkthrough needs exactly three steps');
   if(await page.locator('[data-customer-stage="2"]').getAttribute('aria-pressed')!=='true')
@@ -228,6 +256,7 @@ const {chromium}=require('playwright');
     throw Error('Merchant cannot understand the business goal behind this campaign');
   const previewResult=await page.locator('#proposal-product').textContent();
   if(!previewResult.trim())throw Error('Postgame offer preview has no content');
+  await page.locator('#preview-steps summary').click();
   await page.locator('[data-customer-stage="0"]').click();
   if(!await page.locator('#customer-stage-start').isVisible())
     throw Error('Owner cannot see customer first-screen preview');
@@ -262,6 +291,11 @@ const {chromium}=require('playwright');
   if(beforeApprove.length)throw Error('Draft campaign was published without confirmation');
   await page.locator('#proposal-approve').click();
   await page.locator('#proposal-published').waitFor({state:'visible',timeout:14000});
+  const currentQuick=await page.locator('#quick-open').getAttribute('href');
+  if(!currentQuick.includes('objective=return'))throw Error('Quick play link points to wrong campaign');
+  if(!await page.locator('#quick-copy').isEnabled())throw Error('Publishing did not enable sharing');
+  if(!/online|فعاله/.test(await page.locator('#quick-status').textContent()))
+    throw Error('Merchant cannot see that the campaign is published');
   if(!await page.locator('#proposal-open').getAttribute('href'))
     throw Error('Approved campaign has no share link');
   await page.locator('#open-studio-settings').click();

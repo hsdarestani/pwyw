@@ -410,7 +410,19 @@ def ai_suggest(slug:str,data:AIInput,request:Request):
 def qr_svg(slug:str,request:Request):
     public_brand(slug)
     from qrcode.image.svg import SvgPathImage
-    url=(PUBLIC_URL or str(request.base_url).rstrip("/"))+"/play/"+slug+"?src=qr"
+    from urllib.parse import urlencode
+    # A QR on an objective-specific campaign must open that exact campaign.
+    # Reject unknown values rather than embedding arbitrary untrusted query content.
+    objective=request.query_params.get("objective","")
+    language=request.query_params.get("lang","")
+    if objective and objective not in {"upsell","return","refer","learn"}:
+        raise HTTPException(422,"Invalid campaign objective")
+    if language and language not in {"de","fa"}:
+        raise HTTPException(422,"Invalid language")
+    params={"src":"qr"}
+    if objective:params["objective"]=objective
+    if language:params["lang"]=language
+    url=(PUBLIC_URL or str(request.base_url).rstrip("/"))+"/play/"+slug+"?"+urlencode(params)
     img=qrcode.make(url, image_factory=SvgPathImage, box_size=12,border=3)
     out=io.BytesIO()
     img.save(out)
