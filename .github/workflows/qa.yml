@@ -1,7 +1,7 @@
 name: PWYW pilot browser E2E
 on:
   push:
-    branches: [main, fix/merchant-fa-heading-cache-20261018]
+    branches: [main]
     paths:
       - 'app.py'
       - 'admin_api.py'
