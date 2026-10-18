@@ -26,7 +26,7 @@ const {chromium}=require('playwright');
   if(await page.locator('html').getAttribute('dir')!=='rtl')throw Error('Persian RTL mode missing');
   if(!/[\u0600-\u06FF]/.test(await page.locator('#game-heading').textContent()))throw Error('Persian game heading missing');
   // Regression: a requested Upsell mission must never silently become Learn.
-  await page.goto(base+'/demo?objective=upsell&lang=fa',{waitUntil:'networkidle'});
+  await page.goto(base+'/play/luna-cafe?objective=upsell&lang=fa',{waitUntil:'networkidle'});
   await page.locator('#load-overlay').waitFor({state:'hidden'});
   if(await page.locator('[data-objective=upsell]').getAttribute('aria-pressed')!=='true')
     throw Error('Upsell deep link incorrectly switched to another business objective');
@@ -110,7 +110,7 @@ const {chromium}=require('playwright');
   }
   // Every campaign outcome is available on the first results screen, without a claim click.
   for(const objective of ['upsell','return','refer','learn']){
-    await page.goto(base+'/demo?objective='+objective+'&lang=fa',{waitUntil:'networkidle'});
+    await page.goto(base+'/play/luna-cafe?objective='+objective+'&lang=fa',{waitUntil:'networkidle'});
     await page.locator('#load-overlay').waitFor({state:'hidden'});
     await page.evaluate(()=>{
       const start=window.PWYWArcade.start;
