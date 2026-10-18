@@ -78,18 +78,18 @@ function render(){
      $("customer-quiz-options").append(text);
    }
  }else{
-   // Match the actual customer game's button behavior: this issues a code or shares a challenge.
+   // A code appears automatically on the actual result screen; this preview is not an extra click.
    $("proposal-cta").textContent=p.objective==="refer"?
-     label("دعوت از دوستان ↗","Freunde einladen ↗"):
+     label("کد دعوت و دکمه ارسال لینک، مستقیم نمایش داده می‌شه","Einladungscode und Link direkt sichtbar"):
      p.objective==="return"?
-     label("دریافت کد مراجعه بعدی ↗","Code für den nächsten Besuch ↗"):
-     label("گرفتن کد سفارش ↗","Code zur Bestellung ↗");
+     label("کد مراجعه بعدی به‌صورت خودکار نمایش داده می‌شه","Code für den nächsten Besuch direkt sichtbar"):
+     label("کد پیشنهاد به‌صورت خودکار نمایش داده می‌شه","Angebotscode direkt sichtbar");
  }
  $("customer-stage-start").querySelector(".customer-screen-overline").textContent=label("به بازی خوش اومدی","Willkommen beim Spiel");
  $("customer-stage-start").querySelector(".customer-preview-button").textContent=label("شروع بازی ↗","Spiel starten ↗");
  $("customer-stage-game").querySelector(".customer-screen-overline").textContent=label("بازی روی گوشی","Ein Spiel fürs Smartphone");
  $("customer-stage-game").querySelector(".customer-preview-button").textContent=label("بازی کوتاه","Kurzes Spiel");
- $("customer-stage-result").querySelector(".customer-screen-overline").textContent=label("پیشنهاد بعد از بازی","Dein Angebot nach dem Spiel");
+ $("customer-stage-result").querySelector(".customer-screen-overline").textContent=label("بعد از بازی، مشتری این رو می‌بینه","Das sieht dein Kunde nach dem Spiel");
  $("proposal-approve").textContent=label("تأیید و انتشار پیشنهاد","Vorschlag bestätigen und veröffentlichen");
  $("proposal-reject").textContent=label("یه پیشنهاد متفاوت نشون بده","Einen anderen Vorschlag zeigen");
  $("proposal-card").querySelector(".proposal-eyebrow").textContent=label("پیشنهاد آماده برای بررسی","Vorschlag zur Prüfung");
@@ -103,12 +103,13 @@ function render(){
    "این پیش‌نمایش متن‌هاست؛ بازی واقعی بعد از انتشار اجرا می‌شه.",
    "Dies ist eine Textvorschau. Das echte Spiel läuft nach der Veröffentlichung.");
  document.querySelector(".customer-journey-intro").textContent=label(
-   "این سه مرحله رو ببین تا بدونی مشتری بعد از باز کردن لینک، انجام بازی و گرفتن پیشنهاد چه تجربه‌ای داره.",
-   "Sieh dir die drei Schritte an: Spiellink öffnen, spielen und anschließend das Angebot sehen.");
+   "این همون پیشنهادی است که مشتری بعد از بازی می‌بینه.",
+   "Das sehen deine Kunden direkt nach dem Spiel.");
  const names=fa()?["ورود به بازی","انجام بازی","پیشنهاد پایانی"]:["Spiel öffnen","Spielen","Angebot ansehen"];
  document.querySelectorAll("[data-customer-stage]").forEach((button,i)=>{
    button.querySelector("strong").textContent=names[i];
  });
+ $("preview-steps").querySelector("summary").firstChild.textContent=label("دیدن همه مراحل بازی ","Alle Schritte ansehen ");
  setStage(previewStep);
 }
 function setBusy(value){
@@ -137,7 +138,7 @@ async function propose(reject=false){
    const answer=await call("/api/brands/"+encodeURIComponent(b.slug)+"/campaigns/propose",{objective,reject_id:previous||""});
    if(seq!==requestSeq||ctx.getBrand()?.slug!==b.slug||ctx.getObjective()!==objective)return;
    current={...answer,brand:b.slug};
-   previewStep=2;
+   previewStep=2;$("preview-steps").open=false;
    $("proposal-card").hidden=false;render();
  }catch(error){
    if(seq===requestSeq)showError(label("پیشنهاد آماده نشد. دوباره تلاش کن.","Der Vorschlag konnte nicht erstellt werden. Versuche es erneut."));
