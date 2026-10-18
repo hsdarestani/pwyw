@@ -219,6 +219,7 @@ const {chromium}=require('playwright');
   const qrLink=await page.locator('#qr-image').getAttribute('src');
   if(!qrLink.includes('objective=return'))throw Error('QR link does not preserve campaign goal: '+qrLink);
   if(await page.locator('#quick-verify').isHidden())throw Error('Merchant code verification is not discoverable');
+  if(await page.locator('#quick-copy').isEnabled())throw Error('Unpublished campaign must not be shared as a live offer');
   if(await page.locator('[data-customer-stage]').count()!==3)
     throw Error('Customer walkthrough needs exactly three steps');
   if(await page.locator('[data-customer-stage="2"]').getAttribute('aria-pressed')!=='true')
@@ -272,6 +273,7 @@ const {chromium}=require('playwright');
   await page.locator('#proposal-published').waitFor({state:'visible',timeout:14000});
   const currentQuick=await page.locator('#quick-open').getAttribute('href');
   if(!currentQuick.includes('objective=return'))throw Error('Quick play link points to wrong campaign');
+  if(!await page.locator('#quick-copy').isEnabled())throw Error('Publishing did not enable sharing');
   if(!/online|فعاله/.test(await page.locator('#quick-status').textContent()))
     throw Error('Merchant cannot see that the campaign is published');
   if(!await page.locator('#proposal-open').getAttribute('href'))
