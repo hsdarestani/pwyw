@@ -47,6 +47,7 @@ function render(){
  if(!p||!data)return;
  $("proposal-title").textContent=data.title||p.title;
  $("proposal-description").textContent=data.description||p.description;
+ $("proposal-simple-offer").textContent=data.offer||p.offer||data.description||p.description;
  const industry=p.owner_explanation?.[fa()?"fa":"de"];
  $("proposal-owner-note-label").textContent=label("این پیشنهاد چطور کار می‌کنه؟","So funktioniert dieser Vorschlag");
  $("proposal-owner-note").textContent=industry||label(
@@ -90,8 +91,9 @@ function render(){
  $("customer-stage-game").querySelector(".customer-screen-overline").textContent=label("بازی روی گوشی","Ein Spiel fürs Smartphone");
  $("customer-stage-game").querySelector(".customer-preview-button").textContent=label("بازی کوتاه","Kurzes Spiel");
  $("customer-stage-result").querySelector(".customer-screen-overline").textContent=label("بعد از بازی، مشتری این رو می‌بینه","Das sieht dein Kunde nach dem Spiel");
- $("proposal-approve").textContent=label("تأیید و انتشار پیشنهاد","Vorschlag bestätigen und veröffentlichen");
- $("proposal-reject").textContent=label("یه پیشنهاد متفاوت نشون بده","Einen anderen Vorschlag zeigen");
+ $("proposal-approve").textContent=label("انتشار بازی ↗","Spiel veröffentlichen ↗");
+ $("proposal-reject").textContent=label("یه ایده دیگه","Andere Idee");
+ $("proposal-details").querySelector("summary").firstChild.textContent=label("جزئیات پیشنهاد ","Details zum Vorschlag ");
  $("proposal-card").querySelector(".proposal-eyebrow").textContent=label("پیشنهاد آماده برای بررسی","Vorschlag zur Prüfung");
  $("proposal-card").querySelector(".proposal-trust").textContent=p.objective==="upsell"?
    label("با تأیید، «"+(data.product_name||p.product_name)+"» بعد از بازی به مشتری نمایش داده می‌شه. هیچ تخفیفی خودکار اعمال نمی‌شه.",
@@ -138,7 +140,7 @@ async function propose(reject=false){
    const answer=await call("/api/brands/"+encodeURIComponent(b.slug)+"/campaigns/propose",{objective,reject_id:previous||""});
    if(seq!==requestSeq||ctx.getBrand()?.slug!==b.slug||ctx.getObjective()!==objective)return;
    current={...answer,brand:b.slug};
-   previewStep=2;$("preview-steps").open=false;
+   previewStep=2;$("preview-steps").open=false;$("proposal-details").open=false;
    $("proposal-card").hidden=false;render();
  }catch(error){
    if(seq===requestSeq)showError(label("پیشنهاد آماده نشد. دوباره تلاش کن.","Der Vorschlag konnte nicht erstellt werden. Versuche es erneut."));
