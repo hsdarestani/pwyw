@@ -7,6 +7,7 @@
   // catalog entries are registered below, as explicit reviewed UI translations.
   const entries = [
     ["Was möchtest du erreichen?","Was möchtest du erreichen?","می‌خوای چه نتیجه‌ای بگیری؟"],
+    ["Aktuelles Angebot veröffentlicht","Aktuelles Angebot veröffentlicht","پیشنهاد فعلی منتشر شده"],
     ["1 / DEIN ZIEL","1 / DEIN ZIEL","۱ / انتخاب هدف"],
     ["2 / DEIN VORSCHLAG","2 / DEIN VORSCHLAG","۲ / پیشنهاد آماده"],
     ["Mehr zum Vorschlag","Mehr zum Vorschlag","جزئیات پیشنهاد"],
