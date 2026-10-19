@@ -17,16 +17,16 @@
 .player-v2.theme-chrome{--world-bg:#071d27;--world-card:#15343d;--world-ink:#f0feff;--world-muted:#b9dce1;--world-edge:#3c6e78;--world-flare:#77ebfa;--world-sky:#81c7e6}
 .player-v2.theme-dream{--world-bg:#282042;--world-card:#3c315b;--world-ink:#fff9ff;--world-muted:#d9c9ed;--world-edge:#776a9a;--world-flare:#ffc2e1;--world-sky:#c3a0fd}
 .player-v2.theme-heritage{--world-bg:#35241e;--world-card:#50372b;--world-ink:#fff6de;--world-muted:#e9d7b5;--world-edge:#7f6753;--world-flare:#ffd38a;--world-sky:#c5967d}
-.player-v2[data-game="breaker"]{--g-primary:#ff74b4;--g-secondary:#ffc080}
-.player-v2[data-game="memory"]{--g-primary:#78e7fd;--g-secondary:#ba9bff}
-.player-v2[data-game="merge"]{--g-primary:#ffc37e;--g-secondary:#fc8688}
-.player-v2[data-game="rush"]{--g-primary:#bdff81;--g-secondary:#7befe8}
-.player-v2[data-game="snake"]{--g-primary:#8dffc0;--g-secondary:#ffdf90}
-.player-v2[data-game="hop"]{--g-primary:#afb1ff;--g-secondary:#f9ce94}
-.player-v2[data-game="orbit"]{--g-primary:#9bffd4;--g-secondary:#afa6ff}
-.player-v2[data-game="bloom"]{--g-primary:#ffa8db;--g-secondary:#ffe18f}
-.player-v2[data-game="lane"]{--g-primary:#73eaff;--g-secondary:#f584d6}
-.player-v2[data-game="sequence"]{--g-primary:#fbe194;--g-secondary:#aeb4ff}
+.player-v2[data-world-game="breaker"]{--g-primary:#ff74b4;--g-secondary:#ffc080}
+.player-v2[data-world-game="memory"]{--g-primary:#78e7fd;--g-secondary:#ba9bff}
+.player-v2[data-world-game="merge"]{--g-primary:#ffc37e;--g-secondary:#fc8688}
+.player-v2[data-world-game="rush"]{--g-primary:#bdff81;--g-secondary:#7befe8}
+.player-v2[data-world-game="snake"]{--g-primary:#8dffc0;--g-secondary:#ffdf90}
+.player-v2[data-world-game="hop"]{--g-primary:#afb1ff;--g-secondary:#f9ce94}
+.player-v2[data-world-game="orbit"]{--g-primary:#9bffd4;--g-secondary:#afa6ff}
+.player-v2[data-world-game="bloom"]{--g-primary:#ffa8db;--g-secondary:#ffe18f}
+.player-v2[data-world-game="lane"]{--g-primary:#73eaff;--g-secondary:#f584d6}
+.player-v2[data-world-game="sequence"]{--g-primary:#fbe194;--g-secondary:#aeb4ff}
 .player-v2::before,.player-v2::after{content:"";position:fixed;pointer-events:none;z-index:0}
 .player-v2::before{width:35vw;height:35vw;border:1px solid color-mix(in srgb,var(--world-sky),transparent 93%);border-radius:50%;top:10%;left:-14vw;box-shadow:0 0 0 65px color-mix(in srgb,var(--world-sky),transparent 97%),0 0 0 150px color-mix(in srgb,var(--world-sky),transparent 98%)}
 .player-v2::after{width:25vw;height:25vw;border:1px solid color-mix(in srgb,var(--world-flare),transparent 92%);border-radius:50%;bottom:-10vw;right:-9vw}
