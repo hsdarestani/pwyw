@@ -70,9 +70,11 @@ const {chromium}=require('playwright');
   if(await page.locator('#game-choices [data-game=memory]').isVisible())throw Error('Other games should not compete with the featured game at first glance');
   await page.locator('#all-games summary').click();
   if(!await page.locator('#game-choices [data-game=memory]').isVisible())throw Error('Expanded game library is inaccessible');
-  const thumbs=await page.locator('#game-choices .game-pick-poster img').evaluateAll(
-    images=>images.map(img=>({src:img.getAttribute('src'),loaded:img.complete&&img.naturalWidth>0}))
-  );
+  const thumbs=await page.locator('#game-choices .game-pick-poster img').evaluateAll(async images=>{
+    // Lazy thumbnails below the fold should be tested after explicit image decoding.
+    for(const img of images){img.loading='eager';await img.decode().catch(()=>{});}
+    return images.map(img=>({src:img.getAttribute('src'),loaded:img.complete&&img.naturalWidth>0}));
+  });
   if(thumbs.length!==10||thumbs.some(image=>!image.loaded)||new Set(thumbs.map(x=>x.src)).size!==10)
     throw Error('Games do not have ten unique working illustrations: '+JSON.stringify(thumbs));
   const desktop=await browser.newPage({viewport:{width:1440,height:900}});
