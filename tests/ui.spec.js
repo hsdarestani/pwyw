@@ -94,7 +94,7 @@ const {chromium}=require('playwright');
   await page.screenshot({path:'/tmp/pwyw-lounge-mobile.png',fullPage:true});
   for(const mode of ['memory','merge','rush','snake','breaker','hop','orbit','bloom','lane','sequence']){
     await page.locator('[data-game="'+mode+'"]').click();
-    if(await page.locator('body').getAttribute('data-game')!==mode)
+    if(await page.locator('body').getAttribute('data-world-game')!==mode)
       throw Error('Game world skin does not follow selected game: '+mode);
     if(mode==='memory'){
       if(await page.locator('.memory-tile').count()!==16)throw Error('Memory board count wrong');
