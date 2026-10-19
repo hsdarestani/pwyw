@@ -33,11 +33,9 @@
       }
       const intro=document.querySelector(".campaign-intro");
       if(brandArt.scene){
-        const dark=["noir","neon","chrome"].includes(brand?.theme);
-        const overlay=dark?"rgba(8,11,22,.75)":"rgba(248,241,222,.8)";
-        intro.style.backgroundImage="linear-gradient("+overlay+","+overlay+"),url('"+brandArt.scene+"')";
-        intro.style.backgroundSize="cover";intro.style.backgroundPosition="center";
-        intro.style.border="2px solid currentColor";intro.style.padding="20px";
+        // Keep merchant illustration behind legible UI text without overriding world layout.
+        intro.style.setProperty("--merchant-scene",'url("'+brandArt.scene+'")');
+        intro.classList.add("has-brand-scene");
       }
       if(brandArt.token){
         brandedToken=new Image();brandedToken.src=brandArt.token;
@@ -144,6 +142,9 @@
     $("featured-game-name").textContent=gameLabels[featured];
     $("featured-game-hint").textContent=gameHints[featured];
     $("featured-game-symbol").textContent=gameSymbols[featured];
+    $("featured-game-art").src="/static/game-art/"+featured+".svg";
+    document.querySelector(".featured-game").dataset.game=featured;
+    if(!game)document.body.dataset.game=featured;
     const picks=[...document.querySelectorAll("[data-game]")];
     picks.forEach(el=>el.style.order=el.dataset.game===featured?"-1":"0");
     track("view");
@@ -152,10 +153,16 @@
     const area=$("game-choices");area.replaceChildren();
     for(const [id,label] of Object.entries(gameLabels)){
       const btn=document.createElement("button");btn.type="button";btn.className="game-pick";btn.dataset.game=id;
-      const symbol=document.createElement("span");symbol.className="pick-icon";symbol.textContent=gameSymbols[id];
+      const thumb=document.createElement("span");thumb.className="game-pick-poster";thumb.setAttribute("aria-hidden","true");
+      const art=document.createElement("img");art.alt="";art.loading="lazy";art.decoding="async";
+      art.src="/static/game-art/"+id+".svg";thumb.append(art);
+      const copy=document.createElement("span");copy.className="game-pick-copy";
       const title=document.createElement("b");title.textContent=label;
       const hint=document.createElement("small");hint.textContent=gameHints[id];
-      btn.append(symbol,title,hint);btn.addEventListener("click",()=>startGame(id));area.append(btn);
+      copy.append(title,hint);
+      const arrow=document.createElement("span");arrow.className="game-pick-arrow";arrow.textContent="↗";arrow.setAttribute("aria-hidden","true");
+      btn.append(thumb,copy,arrow);
+      btn.addEventListener("click",()=>startGame(id));area.append(btn);
     }
   }
   function resetReward(){
@@ -299,6 +306,7 @@
   function showHome(){
     rewardRequestId++;
     cleanup();game=null;score=0;
+    document.body.dataset.game=featuredGame;
     $("game-home").hidden=false;$("game-active").hidden=true;$("finish-modal").hidden=true;document.body.classList.remove("is-result-open");
     $("touch-controls").replaceChildren();$("touch-controls").hidden=true;
     $("back-home").style.visibility="hidden";
@@ -363,9 +371,11 @@
     cleanup();
     if(!gameLabels[id])return;
     game=id;score=0;seconds=0;running=true;setText();mobileControls(id);
+    document.body.dataset.game=id;
     $("game-home").hidden=true;$("game-active").hidden=false;$("finish-modal").hidden=true;document.body.classList.remove("is-result-open");
     $("back-home").style.visibility="visible";
     $("active-title").textContent=gameLabels[id];
+    $("game-active").style.setProperty("--game-poster",'url("/static/game-art/'+id+'.svg")');
     const board=$("game-board");
     board.className="game-board "+(id==="memory"?"memory-board":id==="merge"?"merge-board":id==="rush"?"rush-board":"canvas-board");
     $("third-stat").textContent="00";
@@ -398,6 +408,7 @@
     const finalGame=game;
     cleanup();
     $("finish-modal").hidden=false;document.body.classList.add("is-result-open");
+    document.querySelector(".result-inside").style.setProperty("--game-poster",'url("/static/game-art/'+finalGame+'.svg")');
     $("finish-score").textContent=window.PWYWI18N?.locale()==="fa"?score.toLocaleString("fa-IR")+" امتیاز":score.toLocaleString("de-DE")+" PTS";
     $("finish-message").textContent=message || (finalGame==="rush"?"Lightning quick! Go again?":finalGame==="memory"?"Beautifully remembered. Fancy another?":"You've got a way with numbers.");
     $("nickname").value="";
