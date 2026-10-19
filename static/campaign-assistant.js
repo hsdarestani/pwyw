@@ -2,7 +2,8 @@
    No API secrets, unpublished draft persistence or generation happens in the browser. */
 (()=>{"use strict";
 const $=id=>document.getElementById(id);
-let current=null, requestSeq=0, busy=false;
+let current=null, requestSeq=0, busy=false,brandKey="";
+const drafts=new Map();
 const studio=()=>window.PWYWStudio;
 const fa=()=>window.PWYWI18N?.locale()==='fa';
 const label=(persian,german)=>fa()?persian:german;
@@ -48,6 +49,10 @@ function render(){
  $("proposal-title").textContent=data.title||p.title;
  $("proposal-description").textContent=data.description||p.description;
  $("proposal-simple-offer").textContent=data.offer||p.offer||data.description||p.description;
+ $("try-real-game").href="/play/luna-cafe?objective="+encodeURIComponent(p.objective)+(fa()?"&lang=fa":"&lang=de");
+ $("try-real-game").textContent=label("بازی واقعی نمونه رو امتحان کن ↗","Beispielspiel selbst testen ↗");
+ $("real-game-disclaimer").textContent=label("این بازی نمونه‌ست، نه بازی کسب‌وکار تو. مشتری بعد از بازی پیام بالا رو می‌بینه.",
+  "Das ist ein Demo-Spiel. Deine Kunden sehen nach dem Spielen den Text oben.");
  const industry=p.owner_explanation?.[fa()?"fa":"de"];
  $("proposal-owner-note-label").textContent=label("این پیشنهاد چطور کار می‌کنه؟","So funktioniert dieser Vorschlag");
  $("proposal-owner-note").textContent=industry||label(
@@ -91,10 +96,17 @@ function render(){
  $("customer-stage-game").querySelector(".customer-screen-overline").textContent=label("بازی روی گوشی","Ein Spiel fürs Smartphone");
  $("customer-stage-game").querySelector(".customer-preview-button").textContent=label("بازی کوتاه","Kurzes Spiel");
  $("customer-stage-result").querySelector(".customer-screen-overline").textContent=label("بعد از بازی، مشتری این رو می‌بینه","Das sieht dein Kunde nach dem Spiel");
- $("proposal-approve").textContent=label("انتشار بازی ↗","Spiel veröffentlichen ↗");
+ $("proposal-approve").textContent=label("تأیید و انتشار این هدف ↗","Dieses Ziel freigeben ↗");
+ $("proposal-card").querySelector(".proposal-eyebrow").textContent=label("این متنیه که مشتری بعد از بازی می‌بینه","Diesen Text sehen Kunden nach dem Spiel");
  $("proposal-reject").textContent=label("یه ایده دیگه","Andere Idee");
- $("proposal-details").querySelector("summary").firstChild.textContent=label("جزئیات پیشنهاد ","Details zum Vorschlag ");
- $("proposal-card").querySelector(".proposal-eyebrow").textContent=label("پیشنهاد آماده برای بررسی","Vorschlag zur Prüfung");
+ $("proposal-details").querySelector("summary").firstChild.textContent=label("جزئیات و مراحل ","Details und Ablauf ");
+ const others=(studio()?.getSelectedGoals()||[]).filter(k=>k!==p.objective&&!studio()?.getLiveGoals()?.includes(k));
+ $("draft-progress").textContent=others.length?label(
+   "برای "+others.length.toLocaleString("fa-IR")+" هدف دیگه هم پیشنهاد جدا داریم؛ بعد از تأیید این هدف می‌تونی اونا رو ببینی.",
+   "Für "+others.length+" weitere Ziele gibt es eigene Vorschläge. Prüfe sie danach."):
+   label("فعلاً فقط پیش‌نمایشه و هنوز برای مشتری منتشر نشده.",
+   "Nur Vorschau: Noch nicht für Kunden veröffentlicht.");
+
  $("proposal-card").querySelector(".proposal-trust").textContent=p.objective==="upsell"?
    label("با تأیید، «"+(data.product_name||p.product_name)+"» بعد از بازی به مشتری نمایش داده می‌شه. هیچ تخفیفی خودکار اعمال نمی‌شه.",
      "Mit deiner Freigabe wird „"+p.product_name+"“ nach dem Spiel gezeigt. Es wird kein Rabatt automatisch gewährt."):
@@ -127,50 +139,105 @@ async function call(path,body){
  if(!r.ok)throw Error(typeof data.detail==='string'?data.detail:"Request failed");
  return data;
 }
+const goalNames={
+ fa:{upsell:"فروش مکمل",return:"بازگشت مشتری",refer:"دعوت دوستان",learn:"پاسخ به سؤال‌ها"},
+ de:{upsell:"Zusatzverkauf",return:"Wiederkommen",refer:"Freunde einladen",learn:"Fragen beantworten"}
+};
+function goalText(key){return goalNames[fa()?"fa":"de"][key]||key}
+function selected(){return studio()?.getSelectedGoals()||[]}
+function live(){return studio()?.getLiveGoals()||[]}
+function renderGoalTabs(){
+ const area=$("selected-goal-tabs"),choices=selected(),currentGoal=studio()?.getObjective();
+ area.hidden=choices.length<2;area.replaceChildren();
+ for(const goal of choices){
+  const button=document.createElement("button");
+  button.type="button";button.setAttribute("aria-pressed",String(goal===currentGoal));
+  button.className=goal===currentGoal?"is-current":"";
+  button.textContent=goalText(goal)+(live().includes(goal)?" ✓":"");
+  button.addEventListener("click",()=>document.dispatchEvent(
+   new CustomEvent("pwyw:preview-goal",{detail:goal})));
+  area.append(button);
+ }
+}
+function publishedView(goal){
+ current=null;
+ $("proposal-card").hidden=true;$("proposal-loading").hidden=true;
+ $("proposal-published").hidden=false;
+ $("proposal-published").querySelector("strong").textContent=label("این هدف منتشر شده ✓","Dieses Ziel ist veröffentlicht ✓");
+ $("proposal-published").querySelector("p").textContent=label(
+   "مشتری‌ها می‌تونن بازی رو انجام بدن و بعد پیام مربوط به این هدف رو ببینن.",
+   "Kunden können jetzt spielen und danach die passende Nachricht sehen.");
+ const b=studio()?.getBrand();
+ const url="/play/"+encodeURIComponent(b.slug)+(live().length===1?"?objective="+encodeURIComponent(goal):"")+(fa()?(live().length===1?"&":"?")+"lang=fa":"");
+ $("proposal-open").href=url;
+ $("proposal-open").textContent=label("بازی مشتری رو ببین ↗","Kundenspiel ansehen ↗");
+ $("proposal-new").textContent=label("ویرایش این پیشنهاد","Angebot ändern");
+}
 async function propose(reject=false){
- const ctx=studio();
- const b=ctx?.getBrand();const objective=ctx?.getObjective();
- if(!b||!objective)return;
- const seq=++requestSeq;
- const previous=reject&&current?.campaign.objective===objective&&current?.brand===b.slug?current.proposal_id:"";
- setBusy(true);clearError();
- $("proposal-published").hidden=true;$("proposal-card").hidden=true;$("proposal-loading").hidden=false;
- $("proposal-loading").textContent=label("دارم یک پیشنهاد تازه آماده می‌کنم…","Ich erstelle einen neuen Vorschlag…");
+ const ctx=studio(),brand=ctx?.getBrand(),goal=ctx?.getObjective();
+ if(!brand||!goal||!selected().includes(goal))return;
+ const seq=++requestSeq,previous=reject?drafts.get(goal)?.proposal_id||"":"";
+ drafts.delete(goal);current=null;
+ setBusy(true);clearError();renderGoalTabs();
+ $("proposal-card").hidden=true;$("proposal-published").hidden=true;$("proposal-loading").hidden=false;
+ $("proposal-loading").textContent=label("پیشنهاد این هدف رو آماده می‌کنیم…","Wir bereiten deinen Vorschlag vor…");
  try{
-   const answer=await call("/api/brands/"+encodeURIComponent(b.slug)+"/campaigns/propose",{objective,reject_id:previous||""});
-   if(seq!==requestSeq||ctx.getBrand()?.slug!==b.slug||ctx.getObjective()!==objective)return;
-   current={...answer,brand:b.slug};
-   previewStep=2;$("preview-steps").open=false;$("proposal-details").open=false;
-   $("proposal-card").hidden=false;render();
- }catch(error){
-   if(seq===requestSeq)showError(label("پیشنهاد آماده نشد. دوباره تلاش کن.","Der Vorschlag konnte nicht erstellt werden. Versuche es erneut."));
- }finally{if(seq===requestSeq){$("proposal-loading").hidden=true;setBusy(false)}}
+  const result=await call("/api/brands/"+encodeURIComponent(brand.slug)+"/campaigns/propose",{objective:goal,reject_id:previous});
+  if(brandKey!==brand.slug)return;
+  drafts.set(goal,{...result,brand:brand.slug});
+  if(seq!==requestSeq||ctx.getObjective()!==goal||!selected().includes(goal))return;
+  current=drafts.get(goal);
+  previewStep=2;$("preview-steps").open=false;$("proposal-details").open=false;
+  $("proposal-card").hidden=false;render();
+ }catch(err){
+  if(seq===requestSeq){
+   showError(label("ساخت پیشنهاد انجام نشد. دوباره تلاش کن.","Vorschlag konnte nicht erstellt werden. Bitte erneut versuchen."));
+   $("proposal-reject").disabled=false;
+  }
+ }finally{
+  if(seq===requestSeq){$("proposal-loading").hidden=true;setBusy(false);}
+ }
+}
+function switchGoal(){
+ const ctx=studio(),brand=ctx?.getBrand(),goal=ctx?.getObjective();
+ ++requestSeq;setBusy(false);clearError();
+ renderGoalTabs();
+ $("proposal-loading").hidden=true;
+ $("proposal-published").hidden=true;$("proposal-card").hidden=true;
+ if(!brand||!goal||!selected().includes(goal))return;
+ if(brandKey!==brand.slug){brandKey=brand.slug;drafts.clear();}
+ if(drafts.has(goal)){
+  current=drafts.get(goal);
+  $("proposal-card").hidden=false;render();return;
+ }
+ if(live().includes(goal)){publishedView(goal);return;}
+ propose();
 }
 async function approve(){
- const p=current,ctx=studio();if(!p||busy)return;
- if(!ctx?.getBrand()||ctx.getBrand().slug!==p.brand||ctx.getObjective()!==p.campaign.objective)return;
+ const ctx=studio(),p=current;
+ if(!p||busy||!ctx?.getBrand()||ctx.getBrand().slug!==p.brand||
+  ctx.getObjective()!==p.campaign.objective||!selected().includes(p.campaign.objective))return;
  setBusy(true);clearError();
  try{
-   const result=await call("/api/brands/"+encodeURIComponent(p.brand)+"/campaigns/approve",{proposal_id:p.proposal_id});
-   if(current!==p)return;
-   $("proposal-card").hidden=true;
-   $("proposal-published").hidden=false;
-   const link="/play/"+encodeURIComponent(p.brand)+"?objective="+encodeURIComponent(p.campaign.objective)+(fa()?"&lang=fa":"");
-   $("proposal-open").href=link;
-   ctx.afterApproval(result.campaign);
-   render();
- }catch(error){showError(label("انتشار انجام نشد؛ دوباره تلاش کن.","Veröffentlichung fehlgeschlagen. Bitte erneut versuchen."))}
- finally{setBusy(false)}
+  const result=await call("/api/brands/"+encodeURIComponent(p.brand)+"/campaigns/approve",{proposal_id:p.proposal_id});
+  drafts.delete(p.campaign.objective);
+  ctx.afterApproval(result.campaign);
+  renderGoalTabs();
+  const next=selected().find(g=>!live().includes(g));
+  if(next){
+   document.dispatchEvent(new CustomEvent("pwyw:preview-goal",{detail:next}));
+  }else publishedView(p.campaign.objective);
+ }catch(err){
+  showError(label("انتشار انجام نشد؛ دوباره تلاش کن.","Veröffentlichung fehlgeschlagen. Bitte erneut versuchen."));
+ }finally{setBusy(false);}
 }
 $("proposal-approve").addEventListener("click",approve);
 $("proposal-reject").addEventListener("click",()=>propose(true));
-$("proposal-new").addEventListener("click",()=>{current=null;propose(false)});
-document.addEventListener("pwyw:objective-selected",()=>{current=null;propose(false)});
+$("proposal-new").addEventListener("click",()=>propose(false));
+document.addEventListener("pwyw:objective-selected",switchGoal);
 document.addEventListener("pwyw:language-changed",()=>{
- if(!$("proposal-published").hidden){
-  const b=studio()?.getBrand(),o=studio()?.getObjective();
-  if(b&&o)$("proposal-open").href="/play/"+encodeURIComponent(b.slug)+"?objective="+encodeURIComponent(o)+(fa()?"&lang=fa":"");
- }
- render()
+ renderGoalTabs();
+ if(!$("proposal-published").hidden && studio()?.getBrand())publishedView(studio().getObjective());
+ if(current && !$("proposal-card").hidden)render();
 });
 })();
