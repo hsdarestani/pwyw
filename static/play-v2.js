@@ -144,7 +144,7 @@
     $("featured-game-symbol").textContent=gameSymbols[featured];
     $("featured-game-art").src="/static/game-art/"+featured+".svg";
     document.querySelector(".featured-game").dataset.featuredGame=featured;
-    if(!game)document.body.dataset.game=featured;
+    if(!game)document.body.dataset.worldGame=featured;
     const picks=[...document.querySelectorAll("[data-game]")];
     picks.forEach(el=>el.style.order=el.dataset.game===featured?"-1":"0");
     track("view");
@@ -306,7 +306,7 @@
   function showHome(){
     rewardRequestId++;
     cleanup();game=null;score=0;
-    document.body.dataset.game=featuredGame;
+    document.body.dataset.worldGame=featuredGame;
     $("game-home").hidden=false;$("game-active").hidden=true;$("finish-modal").hidden=true;document.body.classList.remove("is-result-open");
     $("touch-controls").replaceChildren();$("touch-controls").hidden=true;
     $("back-home").style.visibility="hidden";
@@ -371,7 +371,7 @@
     cleanup();
     if(!gameLabels[id])return;
     game=id;score=0;seconds=0;running=true;setText();mobileControls(id);
-    document.body.dataset.game=id;
+    document.body.dataset.worldGame=id;
     $("game-home").hidden=true;$("game-active").hidden=false;$("finish-modal").hidden=true;document.body.classList.remove("is-result-open");
     $("back-home").style.visibility="visible";
     $("active-title").textContent=gameLabels[id];
