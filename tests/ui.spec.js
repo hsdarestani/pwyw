@@ -32,6 +32,21 @@ const {chromium}=require('playwright');
     throw Error('Upsell deep link incorrectly switched to another business objective');
   if(await page.locator('[data-objective=learn]').getAttribute('aria-pressed')==='true')
     throw Error('Upsell deep link displayed the learning quiz mission');
+  // Arcade identity: featured image, theme, and mobile layout are real assets.
+  const artwork=await page.locator('#featured-game-art').evaluate(img=>({
+    src:img.getAttribute('src'),complete:img.complete,width:img.naturalWidth
+  }));
+  if(!artwork.src?.startsWith('/static/game-art/')||!artwork.complete||!artwork.width)
+    throw Error('Featured illustration is missing: '+JSON.stringify(artwork));
+  const mobileGeometry=await page.evaluate(()=>({
+    viewport:document.documentElement.clientWidth,
+    width:document.documentElement.scrollWidth,
+    featured:document.querySelector('.featured-game').getBoundingClientRect().width
+  }));
+  if(mobileGeometry.width>mobileGeometry.viewport+3)
+    throw Error('New arcade world overflows phone screen: '+JSON.stringify(mobileGeometry));
+  if(mobileGeometry.featured<250)
+    throw Error('Arcade game showcase is too narrow on mobile');
   // A curated default question and its unprefixed answers must be localized.
   const demoOption=await page.evaluate(()=>window.PWYWI18N?.t('Bring the requested documents'));
   if(demoOption!=='مدارک لازم رو همراهت بیار')
@@ -55,6 +70,18 @@ const {chromium}=require('playwright');
   if(await page.locator('#game-choices [data-game=memory]').isVisible())throw Error('Other games should not compete with the featured game at first glance');
   await page.locator('#all-games summary').click();
   if(!await page.locator('#game-choices [data-game=memory]').isVisible())throw Error('Expanded game library is inaccessible');
+  const thumbs=await page.locator('#game-choices .game-pick-poster img').evaluateAll(
+    images=>images.map(img=>({src:img.getAttribute('src'),loaded:img.complete&&img.naturalWidth>0}))
+  );
+  if(thumbs.length!==10||thumbs.some(image=>!image.loaded)||new Set(thumbs.map(x=>x.src)).size!==10)
+    throw Error('Games do not have ten unique working illustrations: '+JSON.stringify(thumbs));
+  const desktop=await browser.newPage({viewport:{width:1440,height:900}});
+  await desktop.goto(base+'/play/luna-cafe?objective=upsell&lang=de',{waitUntil:'networkidle'});
+  await desktop.locator('#load-overlay').waitFor({state:'hidden'});
+  const desktopWidth=await desktop.locator('.play-area').evaluate(node=>node.getBoundingClientRect().width);
+  if(desktopWidth<900)throw Error('Desktop arcade still uses the old narrow phone column: '+desktopWidth);
+  await desktop.screenshot({path:'/tmp/pwyw-lounge-desktop.png',fullPage:true});
+  await desktop.close();
   const nativePicks=await page.locator('#game-choices').innerText();
   if(!nativePicks.includes('پیدا کردن جفت‌ها')||!nativePicks.includes('ستاره‌گیر')||!nativePicks.includes('حافظه تصویری'))
     throw Error('Game labels are not natural Persian: '+nativePicks);
@@ -65,6 +92,8 @@ const {chromium}=require('playwright');
   await page.screenshot({path:'/tmp/pwyw-lounge-mobile.png',fullPage:true});
   for(const mode of ['memory','merge','rush','snake','breaker','hop','orbit','bloom','lane','sequence']){
     await page.locator('[data-game="'+mode+'"]').click();
+    if(await page.locator('body').getAttribute('data-game')!==mode)
+      throw Error('Game world skin does not follow selected game: '+mode);
     if(mode==='memory'){
       if(await page.locator('.memory-tile').count()!==16)throw Error('Memory board count wrong');
       await page.locator('.memory-tile').nth(0).click();
