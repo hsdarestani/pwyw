@@ -1,7 +1,7 @@
 /* PWYW v2 / Outcome-first self-service brand studio. */
 (()=>{'use strict';
 const $=id=>document.getElementById(id);
-const state={mode:'login',brands:[],brand:null,theme:'atelier',objective:'upsell',campaigns:{},logoPreview:null};
+const state={mode:'login',brands:[],brand:null,theme:'atelier',objective:'upsell',selectedGoals:new Set(),campaigns:{},logoPreview:null};
 const objectives={
   upsell:{title:'Perfekte Ergänzung',description:'Spiele und entdecke danach ein passendes Extra.',cta:'Ergänzung anzeigen',offer:'Passendes Extra entdecken',product_name:'Empfohlenes Extra',game:'orbit'},
   return:{title:'Noch ein Besuch?',description:'Ein kleines Spiel jetzt, ein Extra beim nächsten Besuch.',cta:'Belohnung für nächsten Besuch merken',offer:'Überraschung beim nächsten Besuch',product_name:'Nächster Besuch',game:'bloom'},
@@ -76,32 +76,27 @@ async function fetchBrands(prefer=''){
 function customerLink(){
  if(!state.brand)return '';
  const link=new URL('/play/'+encodeURIComponent(state.brand.slug),location.origin);
- link.searchParams.set('objective',state.objective);
+ const active=Object.entries(state.campaigns).filter(([,c])=>c.is_active!==false&&c.is_active!==0).map(([o])=>o);
+ if(active.length===1)link.searchParams.set('objective',active[0]);
  if(locale()==='fa')link.searchParams.set('lang','fa');
  return link.href;
 }
 function updateQuick(){
- const quick=$('studio-quick');
- if(!state.brand){quick.hidden=true;return;}
- const f=locale()==='fa';
- const selectedCampaign=state.campaigns[state.objective];
- const live=Boolean(selectedCampaign && selectedCampaign.is_active!==false && selectedCampaign.is_active!==0);
- quick.hidden=!live;
- if(!live)$('quick-more').open=false;
- const url=customerLink(), relative=url.replace(location.origin,'');
- $('quick-open').href=url;
- $('open-play').href=relative;
- $('campaign-share-link').href=relative;
- $('quick-verify').hidden=state.objective==='learn';
- $('quick-copy').disabled=!live;
- $('quick-qr').disabled=!live;
- $('quick-verify').disabled=!live;
- $('quick-open').textContent=f?'دیدن بازی ↗':'Spiel ansehen ↗';
- $('quick-copy').textContent=f?'کپی لینک':'Link kopieren';
+ const quick=$('studio-quick'),f=locale()==='fa';
+ const active=Object.entries(state.campaigns).filter(([,c])=>c.is_active!==false&&c.is_active!==0).map(([o])=>o);
+ quick.hidden=!state.brand || !active.length;
+ if(quick.hidden)return;
+ const url=customerLink(),relative=url.replace(location.origin,'');
+ $('quick-open').href=url;$('open-play').href=relative;$('campaign-share-link').href=relative;
+ $('quick-copy').disabled=false;$('quick-qr').disabled=false;
+ $('quick-verify').hidden=!active.some(o=>o!=='learn');$('quick-verify').disabled=false;
+ $('quick-open').textContent=f?'دیدن بازی مشتری ↗':'Kundenspiel ansehen ↗';
+ $('quick-copy').textContent=f?'کپی لینک بازی':'Spiellink kopieren';
  $('quick-more').querySelector('summary').textContent=f?'کارهای بیشتر':'Weitere Aktionen';
- $('quick-status').textContent=f?'● پیشنهاد فعلی منتشر شده':'● Aktuelles Angebot veröffentlicht';
- const img='/qr/'+encodeURIComponent(state.brand.slug)+'.svg?objective='+encodeURIComponent(state.objective)+(f?'&lang=fa':'');
- $('qr-image').src=img;$('qr-download').href=img;
+ const number=active.length.toLocaleString(f?'fa-IR':'de-DE');
+ $('quick-status').textContent=f?'● '+number+' هدف منتشر شده':'● '+number+' Ziel'+(active.length===1?'':'e')+' veröffentlicht';
+ const q='/qr/'+encodeURIComponent(state.brand.slug)+'.svg'+(active.length===1?'?objective='+encodeURIComponent(active[0])+(f?'&lang=fa':''):(f?'?lang=fa':''));
+ $('qr-image').src=q;$('qr-download').href=q;
  $('quick-copy-help').hidden=true;
 }
 function openTool(section,focusId){
@@ -163,17 +158,46 @@ $('brand-logo').addEventListener('change',e=>{
  const img=document.createElement('img');img.src=pendingLogo;img.alt='Brand logo';img.style.cssText='max-height:60px;max-width:115px;object-fit:contain';
  $('preview-logo').replaceChildren(img);
 });
+
+const goalNames={
+ fa:{upsell:'فروش مکمل',return:'بازگشت مشتری',refer:'معرفی به دوستان',learn:'پاسخ به سؤال‌ها'},
+ de:{upsell:'Zusatzverkauf',return:'Wiederkommen',refer:'Freunde gewinnen',learn:'Fragen beantworten'}
+};
+const goalExamples={
+ fa:{upsell:'مثلاً: کنار قهوه شیرینی هم پیشنهاد بده',return:'مثلاً: کد مراجعه بعدی بده',refer:'مثلاً: دعوت از دوست برای بازی',learn:'وقتی مشتری‌ها سؤال‌های مشابه می‌پرسن'},
+ de:{upsell:'Beispiel: Kuchen zum Kaffee',return:'Beispiel: Code für den nächsten Besuch',refer:'Beispiel: Einen Freund zum Spiel einladen',learn:'Wenn Gäste oft dieselben Fragen stellen'}
+};
+function selectedGoals(){return [...state.selectedGoals]}
+function renderGoalSelection(){
+ const f=locale()==='fa',lang=f?'fa':'de',n=state.selectedGoals.size;
+ document.querySelectorAll('.purpose-option').forEach(btn=>{
+  const goal=btn.dataset.objective,on=state.selectedGoals.has(goal);
+  btn.classList.toggle('active',on);btn.classList.toggle('current',on&&state.objective===goal);
+  btn.setAttribute('aria-pressed',String(on));
+  btn.querySelector('strong').textContent=goalNames[lang][goal];
+  btn.querySelector('small').textContent=goalExamples[lang][goal];
+ });
+ $('goal-explainer').textContent=f?'می‌تونی چند هدف انتخاب کنی. هر هدف پیشنهاد خودش رو داره.':'Du kannst mehrere Ziele wählen. Jedes bekommt ein eigenes Angebot.';
+ $('goal-selection-summary').textContent=n?
+   (f?n.toLocaleString('fa-IR')+' هدف انتخاب کردی. پیشنهادها رو قبل از انتشار بررسی کن.':n+' Ziele ausgewählt. Prüfe die Vorschläge vor der Veröffentlichung.'):
+   (f?'برای شروع یک یا چند هدف انتخاب کن.':'Wähle ein oder mehrere Ziele.');
+ $('campaign-section').hidden=!state.brand||!n;
+}
+function toggleGoal(goal){
+ if(!objectives[goal])return;
+ if(state.selectedGoals.has(goal))state.selectedGoals.delete(goal);
+ else state.selectedGoals.add(goal);
+ const next=state.selectedGoals.has(goal)?goal:(selectedGoals()[0]||'upsell');
+ objective(next);
+}
 function objective(value){
  if(!objectives[value])return;
  state.objective=value;
- document.querySelectorAll('.purpose-option').forEach(b=>b.classList.toggle('active',b.dataset.objective===value));
- $('campaign-heading').textContent=(window.PWYWI18N?.locale()==='fa'?'بازی پیشنهادی برای ':'Spielvorschlag für ')+(window.PWYWI18N?.locale()==='fa'?({upsell:'افزایش مبلغ خرید',return:'مراجعه دوباره',refer:'معرفی به دوستان',learn:'آشنایی با خدمات'})[value]:({upsell:'Mehrverkauf',return:'Wiederbesuch',refer:'Weiterempfehlung',learn:'Service erklären'})[value]);
- const c=state.campaigns[value]||objectives[value];
- const fa=c.translations?.fa||{};
+ renderGoalSelection();
+ const c=state.campaigns[value]||objectives[value],fa=c.translations?.fa||{};
  for(const [key,id] of Object.entries({title:'title',description:'description',cta:'cta',offer:'offer',product_name:'product'})){
-   // Translate only fixed defaults that we authored; never guess merchant-entered text.
-   const safeDefault=c[key]===objectives[value][key]?nativeDefaults[value][key]:'';
-   $('campaign-fa-'+id).value=fa[key]||safeDefault;
+  const safeDefault=c[key]===objectives[value][key]?nativeDefaults[value][key]:'';
+  $('campaign-fa-'+id).value=fa[key]||safeDefault;
  }
  $('quiz-fa-question').value=fa.quiz_question||'';
  for(let i=0;i<3;i++)$('quiz-fa-option-'+i).value=fa.quiz_options?.[i]||'';
@@ -188,18 +212,21 @@ function objective(value){
  $('campaign-reward').value=Number(c.reward_cost||0);
  $('learning-builder').hidden=value!=='learn';
  $('quiz-question').value=c.quiz_question||'';
- const quizOpts=Array.isArray(c.quiz_options)?c.quiz_options:[];
- for(let i=0;i<3;i++)$('quiz-option-'+i).value=quizOpts[i]||'';
+ const options=Array.isArray(c.quiz_options)?c.quiz_options:[];
+ for(let i=0;i<3;i++)$('quiz-option-'+i).value=options[i]||'';
  $('quiz-correct').value=String(c.quiz_correct_index||0);
  if(state.brand){
-   $('campaign-share-link').href='/play/'+encodeURIComponent(state.brand.slug)+'?objective='+value;
-   $('redeem-section').hidden=value==='learn';
+  $('campaign-share-link').href='/play/'+encodeURIComponent(state.brand.slug)+'?objective='+value;
+  $('redeem-section').hidden=value==='learn';
  }
- message('campaign-status','');
- updateQuick();
- document.dispatchEvent(new CustomEvent('pwyw:objective-selected',{detail:{slug:state.brand?.slug||'',objective:value}}));
+ message('campaign-status','');updateQuick();
+ document.dispatchEvent(new CustomEvent('pwyw:objective-selected',
+  {detail:{slug:state.brand?.slug||'',objective:value,selectedGoals:selectedGoals()}}));
 }
-document.querySelectorAll('.purpose-option').forEach(b=>b.onclick=()=>objective(b.dataset.objective));
+document.querySelectorAll('.purpose-option').forEach(btn=>btn.onclick=()=>toggleGoal(btn.dataset.objective));
+document.addEventListener('pwyw:preview-goal',e=>{
+ if(state.selectedGoals.has(e.detail))objective(e.detail);
+});
 function clearLogo(){
  if(pendingLogo)URL.revokeObjectURL(pendingLogo);pendingLogo=null;
  $('preview-logo').textContent='✳';
@@ -254,7 +281,7 @@ document.addEventListener('keydown',e=>{
  else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
 });
 function newBrand(){
- state.brand=null;state.campaigns={};$('brand-form').reset();
+ state.brand=null;state.campaigns={};state.selectedGoals=new Set();$('brand-form').reset();
  $('brand-settings').open=true;$('studio-tools').open=false;
  $('manual-campaign-settings').open=false;$('security-settings').open=false;$('brand-slug').disabled=false;
  $('brand-logo').value='';$('brand-scene').value='';$('brand-token').value='';$('brand-accent').value='#d8ff3e';
@@ -267,6 +294,7 @@ function newBrand(){
 }
 $('new-brand').onclick=newBrand;
 async function selectBrand(b){
+ const draftSelections=!state.brand?selectedGoals():[];
  state.brand=b;
  $('brand-settings').open=false;$('studio-tools').open=false;
  $('security-settings').open=false;closeStudioSettings();
@@ -300,7 +328,9 @@ async function selectBrand(b){
  state.campaigns={};
  try{for(const c of await api('/api/brands/'+encodeURIComponent(b.slug)+'/campaigns'))state.campaigns[c.objective]=c}
  catch(e){message('save-status','Could not load campaigns: '+e.message,true)}
- objective(state.objective);preview();renderBrandList();await refreshStats();
+ const live=Object.keys(state.campaigns).filter(k=>state.campaigns[k].is_active!==false&&state.campaigns[k].is_active!==0);
+ state.selectedGoals=new Set([...draftSelections,...live]);
+ objective(state.selectedGoals.has(state.objective)?state.objective:(selectedGoals()[0]||'upsell'));preview();renderBrandList();await refreshStats();
 }
 $('brand-form').addEventListener('submit',async e=>{
  e.preventDefault();const btn=$('brand-save');btn.disabled=true;message('save-status','Saving...');
@@ -405,6 +435,7 @@ for(const x of document.querySelectorAll('#campaign-copy-fa input,#campaign-copy
 window.PWYWStudio={
  getBrand:()=>state.brand,
  getObjective:()=>state.objective,
+ getSelectedGoals:()=>selectedGoals(),
  afterApproval:campaign=>{
   state.campaigns[campaign.objective]=campaign;
   if(!state.brand)return;
@@ -428,7 +459,7 @@ function objectiveHeadingRefresh(){
  $('campaign-heading').textContent=(window.PWYWI18N?.locale()==='fa'?'بازی پیشنهادی برای ':'Spielvorschlag für ')+names[value];
 }
 document.addEventListener('pwyw:language-changed',()=>{
- setCampaignLocale();objectiveHeadingRefresh();preview();updateQuick();
+ setCampaignLocale();objectiveHeadingRefresh();renderGoalSelection();preview();updateQuick();
  if(state.brand){
   $('workspace-subtitle').textContent=window.PWYWI18N?.locale()==='fa'?
    'هدفت رو مشخص کن؛ ما بازی و پیام مناسب برای مشتری‌هات پیشنهاد می‌دیم.':
