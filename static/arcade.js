@@ -147,10 +147,46 @@
       for(let i=0;i<6;i++){circle(c,190,220,65+i*62+Math.sin(t*.4)*5);c.stroke()}
     }
     c.restore();
+    // Each mini-game has its own atmospheric world, independent of merchant palette.
+    modeScenery(s,t);
     c.save();c.globalAlpha=.22;c.font=theme==="neon"?`900 110px ${canvasFont()}`:"italic 115px Georgia";
     c.textAlign="center";c.fillStyle=p[1];c.fillText((s.brand.name||"PWYW").split(" ")[0].slice(0,5),W/2,H-36);c.restore();
     // Brand crest / industry motif in the playing world's permanent art layer.
     c.save();c.translate(W-45,42);c.globalAlpha=.5; emblem(c,s.brand.industry||"cafe",p[3]);c.restore();
+  }
+  function modeScenery(s,t){
+    const c=s.ctx,p=s.palette,k=s.mode;
+    c.save();c.globalAlpha=.22;c.lineWidth=1.5;
+    if(k==="breaker"){
+      c.strokeStyle=p[4];
+      for(let i=0;i<13;i++){c.beginPath();c.moveTo(i*38,66);c.lineTo(i*38-72,H);c.stroke()}
+      c.strokeStyle=p[2];for(let i=0;i<7;i++){c.beginPath();c.moveTo(0,100+i*45);c.lineTo(W,100+i*45);c.stroke()}
+    }else if(k==="orbit"){
+      c.strokeStyle=p[3];
+      c.translate(W/2,H/2);
+      for(let i=0;i<5;i++){c.save();c.rotate(i*.3+t*.018);c.beginPath();c.ellipse(0,0,55+i*35,120+i*18,0,0,TAU);c.stroke();c.restore()}
+    }else if(k==="snake"){
+      c.strokeStyle=p[3];
+      for(let i=0;i<12;i++){c.beginPath();c.moveTo(i*42-45,70);c.lineTo(i*42+105,H);c.stroke()}
+      for(let j=0;j<9;j++){c.beginPath();c.moveTo(0,j*48+45);c.lineTo(W,j*48+45);c.stroke()}
+    }else if(k==="hop"){
+      c.fillStyle=p[3];
+      for(let i=0;i<9;i++){const x=(i*102-t*14+W*12)%W,y=(i*73)%H;
+        c.beginPath();c.ellipse(x,y,36+i%3*12,11,0,0,TAU);c.fill()}
+    }else if(k==="bloom"){
+      c.strokeStyle=p[3];
+      for(let i=0;i<12;i++){const x=(i*73)%W,y=(i*117)%H;
+        c.save();c.translate(x,y);c.rotate(t*.04+i);
+        for(let j=0;j<6;j++){c.rotate(TAU/6);c.beginPath();c.ellipse(0,10,8,16,0,0,TAU);c.stroke()}c.restore()}
+    }else if(k==="lane"){
+      c.strokeStyle=p[2];
+      for(let i=-3;i<7;i++){c.beginPath();c.moveTo(W/2,65);c.lineTo(i*105,H);c.stroke()}
+      c.strokeStyle=p[3];for(let y=100;y<H;y+=70){c.beginPath();c.moveTo(0,y+Math.sin(t)*3);c.lineTo(W,y+Math.sin(t)*3);c.stroke()}
+    }else if(k==="sequence"){
+      c.strokeStyle=p[4];
+      for(let i=0;i<7;i++){c.beginPath();c.arc(W/2,H/2,42+i*36,0,TAU);c.stroke()}
+    }
+    c.restore();
   }
   function emblem(c,industry,col){
     c.strokeStyle=col;c.fillStyle=col;c.lineWidth=3;
