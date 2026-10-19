@@ -233,3 +233,52 @@ button,a,input,select,textarea{touch-action:manipulation}
  .studio-v2 .proposal-actions{flex-direction:column!important}
  .studio-v2 .proposal-actions button{width:100%!important}
 }
+
+/* Merchant clarity pass: useful reasons, multiple goals, actual game preview. */
+.studio-v2 .goal-explainer{font:500 13px/1.7 'Estedad',Manrope,sans-serif;color:#536078;margin:0 0 16px;max-width:660px}
+.studio-v2 .goal-selection-summary{font:600 12px/1.6 'Estedad',Manrope,sans-serif;color:#62547f;margin:12px 1px 0}
+.studio-v2 .purpose-option{position:relative;min-height:135px!important;gap:6px!important;padding:15px 11px!important}
+.studio-v2 .purpose-option small{
+ display:block!important;font:500 11px/1.55 'Estedad',Manrope,sans-serif!important;
+ color:#647086;text-align:center;max-width:185px;letter-spacing:0;
+}
+.studio-v2 .purpose-option.active:after{content:"✓";position:absolute;top:8px;right:9px;width:20px;height:20px;border-radius:50%;background:#6a56bf;color:white;font:700 12px/20px system-ui;text-align:center}
+html[dir=rtl] .studio-v2 .purpose-option.active:after{right:auto;left:9px}
+.studio-v2 .purpose-option.current{box-shadow:0 0 0 3px #7864c020!important}
+.studio-v2 .merchant-journey{
+ display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:14px 0;
+ font:700 11px/1.7 'Estedad',Manrope,sans-serif;color:#67708b
+}
+.studio-v2 .merchant-journey b{color:#372b5f}
+.studio-v2 .merchant-preview-link{
+ display:flex;flex-wrap:wrap;align-items:center;gap:7px 14px;margin:10px 0 15px;
+}
+.studio-v2 .merchant-preview-link a{
+ display:inline-flex;align-items:center;justify-content:center;min-height:44px;border-radius:11px;
+ padding:9px 15px;border:1px solid #8b7ac6;background:#f5f2ff;
+ font:800 12px/1.5 'Estedad',Manrope,sans-serif;color:#49368e;text-decoration:none
+}
+.studio-v2 .merchant-preview-link small{font:500 11px/1.6 'Estedad',Manrope,sans-serif;color:#737d90;max-width:380px}
+.studio-v2 .selected-goal-tabs:not([hidden]){display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:8px 0 15px}
+.studio-v2 .selected-goal-tabs button{
+ border:1px solid #dcdde9;background:#f9f9fc;color:#3a4056;border-radius:11px;
+ min-height:42px;padding:9px 14px;font:750 12px/1.5 'Estedad',Manrope,sans-serif
+}
+.studio-v2 .selected-goal-tabs button.is-current{background:#eee9ff;border-color:#856dc6;color:#463385}
+.studio-v2 .draft-progress{font:500 12px/1.7 'Estedad',Manrope,sans-serif;color:#747d91;margin:0 0 16px}
+.studio-v2 .proposal-card .proposal-eyebrow{font:800 12px/1.6 'Estedad',Manrope,sans-serif!important;color:#66539c}
+.studio-v2 .proposal-card h3{margin-top:12px!important}
+.studio-v2 .proposal-simple-offer{margin-bottom:12px!important}
+.studio-v2 .proposal-published{border:1px solid #dbd3f3}
+.studio-v2 .proposal-published>p{display:block!important;margin:8px auto 15px;max-width:400px}
+.player-v2 #purpose-dial:not([hidden]){display:flex;gap:8px;flex-wrap:wrap;padding:8px 0 14px;justify-content:center}
+.player-v2 #purpose-dial [data-objective]{font-size:12px;min-height:45px;flex:1 1 135px}
+.player-v2 #purpose-dial [data-objective][hidden]{display:none!important}
+@media(max-width:720px){
+ .studio-v2 .purpose-options{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .studio-v2 .purpose-option{min-height:129px!important;padding:11px 7px!important}
+ .studio-v2 .purpose-option small{font-size:10px!important}
+ .studio-v2 .merchant-journey{font-size:10px}
+ .studio-v2 .selected-goal-tabs button{flex:1 1 110px}
+ .studio-v2 .merchant-preview-link a{width:100%}
+}

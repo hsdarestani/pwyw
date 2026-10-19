@@ -243,11 +243,16 @@ const {chromium}=require('playwright');
     throw Error('Full journey should be collapsed for a first-time merchant');
   if(await page.locator('#studio-quick').isVisible())throw Error('Unpublished campaign must not show sharing actions');
   if(!await page.locator('#proposal-simple-offer').isVisible())throw Error('The concise offer is missing');
+  if(!await page.locator('#try-real-game').isVisible())throw Error('Merchant cannot try a real sample game before publishing');
+  if(!await page.locator('#try-real-game').getAttribute('href').then(x=>x.includes('/play/luna-cafe?objective=return')))
+    throw Error('Game preview is not relevant to the selected goal');
+  if(await page.locator('[data-objective="return"]').first().getAttribute('aria-pressed')!=='true')
+    throw Error('Business goal was not selected');
   await page.screenshot({path:'/tmp/pwyw-merchant-compact-mobile.png',fullPage:true});
   if(await page.locator('#proposal-details').evaluate(x=>x.open))throw Error('Details must start collapsed');
   if(await page.locator('#customer-preview').isVisible().catch(()=>false))throw Error('Nested preview should be hidden by default');
   const qrLink=await page.locator('#qr-image').getAttribute('src');
-  if(!qrLink.includes('objective=return'))throw Error('QR link does not preserve campaign goal: '+qrLink);
+  if(!qrLink.startsWith('/qr/playwright-garage.svg'))throw Error('Missing saved business QR');
   if(!await page.locator('#proposal-approve').isVisible())throw Error('Publish action must be immediately visible');
   if(!await page.locator('#proposal-reject').isVisible())throw Error('Alternative idea action must be visible');
   if(await page.locator('[data-customer-stage]').count()!==3)
@@ -314,6 +319,37 @@ const {chromium}=require('playwright');
     throw Error('Merchant cannot see that the campaign is published');
   if(!await page.locator('#proposal-open').getAttribute('href'))
     throw Error('Approved campaign has no share link');
+  // The same business may select and publish another goal without losing the first.
+  await page.locator('.purpose-option[data-objective=refer]').click();
+  if(await page.locator('.purpose-option[data-objective=return]').getAttribute('aria-pressed')!=='true')
+    throw Error('Selecting second goal deselected the first');
+  if(await page.locator('.purpose-option[data-objective=refer]').getAttribute('aria-pressed')!=='true')
+    throw Error('The second goal was not selected');
+  await page.locator('#proposal-card').waitFor({state:'visible',timeout:18000});
+  if(!await page.locator('#selected-goal-tabs').isVisible())
+    throw Error('Multiple selected campaigns are not reviewable');
+  if(!await page.locator('#try-real-game').getAttribute('href').then(h=>h.includes('objective=refer')))
+    throw Error('Wrong game sample shown for the second goal');
+  await page.locator('#proposal-approve').click();
+  await page.locator('#proposal-published').waitFor({state:'visible',timeout:14000});
+  const sharedGame=await page.locator('#quick-open').getAttribute('href');
+  if(sharedGame.includes('objective='))throw Error('Multi-goal link must let customers choose from live goals');
+  const twoPublished=await page.evaluate(async()=>{
+    const r=await fetch('/api/brands/playwright-garage/campaigns');return await r.json()
+  });
+  if(!twoPublished.some(c=>c.objective==='return')||!twoPublished.some(c=>c.objective==='refer'))
+    throw Error('Publishing a second goal removed the existing offer');
+  await page.goto(new URL(sharedGame,base).href,{waitUntil:'networkidle'});
+  await page.locator('#load-overlay').waitFor({state:'hidden'});
+  if(!await page.locator('#purpose-dial').isVisible())throw Error('Customers cannot choose between live goals');
+  if(await page.locator('#purpose-dial [data-objective=learn]').isVisible())
+    throw Error('An unpublished customer goal is incorrectly visible');
+  await page.locator('#purpose-dial [data-objective=refer]').click();
+  if(await page.locator('#purpose-dial [data-objective=refer]').getAttribute('aria-pressed')!=='true')
+    throw Error('Customer goal selection does not work');
+  await page.goto(base+'/dashboard?lang=fa',{waitUntil:'networkidle'});
+  await page.locator('#app-shell').waitFor({state:'visible'});
+
   await page.locator('#open-studio-settings').click();
   await page.locator('#security-settings>summary').click();
   if(!await page.locator('#password-change input').first().isVisible())
