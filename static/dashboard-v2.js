@@ -436,6 +436,7 @@ window.PWYWStudio={
  getBrand:()=>state.brand,
  getObjective:()=>state.objective,
  getSelectedGoals:()=>selectedGoals(),
+ getLiveGoals:()=>Object.keys(state.campaigns).filter(k=>state.campaigns[k].is_active!==false&&state.campaigns[k].is_active!==0),
  afterApproval:campaign=>{
   state.campaigns[campaign.objective]=campaign;
   if(!state.brand)return;
