@@ -110,7 +110,7 @@
     chooseObjective(active.includes(selected)?selected:(active[0]||"upsell"));
     const dial=$("purpose-dial");
     const offerNames={
-      fa:{upsell:"پیشنهاد خرید",return:"مراجعه بعدی",refer:"دعوت دوست",learn:"نکات کاربردی"},
+      fa:{upsell:"پیشنهاد خرید",return:"مراجعه بعدی",refer:"دعوت از دوستان",learn:"نکات کاربردی"},
       de:{upsell:"Angebot",return:"Nächster Besuch",refer:"Freunde einladen",learn:"Infos"}
     };
     const language=window.PWYWI18N?.locale()==="fa"?"fa":"de";
@@ -643,7 +643,7 @@
     chooseObjective(objective);
     const active=Object.keys(campaigns),direct=new URLSearchParams(location.search).get("objective");
     const language=window.PWYWI18N?.locale()==="fa"?"fa":"de";
-    const names=language==="fa"?{upsell:"پیشنهاد خرید",return:"مراجعه بعدی",refer:"دعوت دوست",learn:"نکات کاربردی"}:
+    const names=language==="fa"?{upsell:"پیشنهاد خرید",return:"مراجعه بعدی",refer:"دعوت از دوستان",learn:"نکات کاربردی"}:
       {upsell:"Angebot",return:"Nächster Besuch",refer:"Freunde einladen",learn:"Infos"};
     const dial=$("purpose-dial");dial.hidden=Boolean(direct)||active.length<2;
     dial.querySelectorAll("[data-objective]").forEach(b=>{b.textContent=names[b.dataset.objective]});
