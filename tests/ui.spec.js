@@ -252,7 +252,7 @@ const {chromium}=require('playwright');
   if(await page.locator('#proposal-details').evaluate(x=>x.open))throw Error('Details must start collapsed');
   if(await page.locator('#customer-preview').isVisible().catch(()=>false))throw Error('Nested preview should be hidden by default');
   const qrLink=await page.locator('#qr-image').getAttribute('src');
-  if(!qrLink.includes('objective=return'))throw Error('QR link does not preserve campaign goal: '+qrLink);
+  if(!qrLink.startsWith('/qr/playwright-garage.svg'))throw Error('Missing saved business QR');
   if(!await page.locator('#proposal-approve').isVisible())throw Error('Publish action must be immediately visible');
   if(!await page.locator('#proposal-reject').isVisible())throw Error('Alternative idea action must be visible');
   if(await page.locator('[data-customer-stage]').count()!==3)
