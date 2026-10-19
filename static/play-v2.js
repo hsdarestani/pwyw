@@ -143,7 +143,7 @@
     $("featured-game-hint").textContent=gameHints[featured];
     $("featured-game-symbol").textContent=gameSymbols[featured];
     $("featured-game-art").src="/static/game-art/"+featured+".svg";
-    document.querySelector(".featured-game").dataset.game=featured;
+    document.querySelector(".featured-game").dataset.featuredGame=featured;
     if(!game)document.body.dataset.game=featured;
     const picks=[...document.querySelectorAll("[data-game]")];
     picks.forEach(el=>el.style.order=el.dataset.game===featured?"-1":"0");
