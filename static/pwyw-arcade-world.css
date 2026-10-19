@@ -191,7 +191,7 @@
  .player-v2 .campaign-intro h1,html[lang="fa"] .player-v2 .campaign-intro h1{font-size:clamp(24px,6vw,34px)!important;line-height:1.4!important}
  .player-v2 .world-mark{top:13px;inset-inline-start:21px;font-size:9px}
  .player-v2 .world-orb{width:188px;height:188px;top:-60px;right:-85px}
- .player-v2 .purpose-dial{order:1;margin:12px 0 0}
+ .player-v2 .purpose-dial{margin:12px 0 0}
  .player-v2 .purpose-brief{min-height:0;margin:10px 0 0!important;padding:10px 13px!important}
  .player-v2 .featured-game{margin-top:14px!important;border-radius:23px!important}
  .player-v2 .featured-poster{height:clamp(150px,45vw,220px)}
@@ -218,3 +218,37 @@
  .player-v2 .game-topline{font-size:18px}
 }
 @media(prefers-reduced-motion:reduce){.player-v2 .poster-shine,.player-v2 .result-fireworks i{animation:none!important}.player-v2 .featured-poster img{transition:none!important}}
+
+/* Three tactile games have DOM boards instead of a canvas; keep their own visual language. */
+.player-v2 .game-board.memory-board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(7px,1.5vw,11px);padding:clamp(7px,1.6vw,16px);
+ background:radial-gradient(circle at 55% 35%,#254a7a,#131e42 80%);border:1px solid #628ac955}
+.player-v2 .memory-tile{border:1px solid #90d7ed80!important;border-radius:14px!important;background:linear-gradient(160deg,#263c6b,#192b50)!important;
+ color:#96eefe!important;box-shadow:inset 0 2px 0 #ffffff14,0 7px 15px #070f254d!important;
+ transition:transform .22s,background .22s!important;min-width:0}
+.player-v2 .memory-tile.revealed,.player-v2 .memory-tile.matched{background:#dafaff!important;color:#162e54!important;border-color:#fff!important;transform:rotateY(4deg) scale(1.02)}
+.player-v2 .memory-tile.matched{opacity:.72}
+.player-v2 .game-board.merge-board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(5px,1.4vw,10px);
+ padding:clamp(6px,1.4vw,13px);background:#352350;border:1px solid #ffc37e77!important;border-radius:15px}
+.player-v2 .merge-cell{border-radius:10px;min-width:0;min-height:0;font:900 clamp(17px,3vw,29px)/1.2 system-ui!important;box-shadow:inset 0 -3px 0 #0002}
+.player-v2 .merge-cell.empty{background:#71598a!important;opacity:.42}
+.player-v2 .game-board.rush-board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(9px,2vw,16px);padding:15px;
+ border-radius:16px;background:radial-gradient(circle at 50% 40%,#205d66,#092d35 76%)}
+.player-v2 .rush-pad{min-width:0;border:2px solid #65dacf73!important;border-radius:26px!important;
+ background:radial-gradient(circle at 40% 30%,#216c69,#0c4047)!important;color:#a6fbd5!important;
+ box-shadow:0 10px 21px #00252e77,inset 0 2px 0 #ffffff26!important;transition:transform .1s,box-shadow .15s}
+.player-v2 .rush-pad.active{background:radial-gradient(circle at 40% 30%,#dfffab,#a4fc7c)!important;color:#154749!important;
+ border-color:#dcffba!important;box-shadow:0 0 32px #a6fc97a6!important}
+.player-v2 .rush-pad.hit{transform:scale(.91)}
+.player-v2 .play-brand #game-symbol{color:var(--world-flare)}
+@media(max-width:800px){
+ .player-v2 .featured-game{overflow:hidden}
+ .player-v2 .play-brand{gap:7px}
+ .player-v2 .play-brand strong{font-size:13px}
+ .player-v2 .game-library .game-pick,.player-v2 .game-library .game-pick:nth-child(4n+2){min-height:84px!important}
+ .player-v2 .featured-game .featured-poster{min-height:148px}
+}
+@media(max-width:370px){
+ .player-v2 .game-pick-poster{flex-basis:85px;width:85px;height:62px}
+ .player-v2 .game-pick-copy b{font-size:12px}
+ .player-v2 .play-area{padding-inline:13px!important}
+}
