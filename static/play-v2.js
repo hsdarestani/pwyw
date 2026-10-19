@@ -106,7 +106,22 @@
     }catch{campaigns={}}
     const params=new URLSearchParams(location.search);
     const selected=params.get("objective");
-    chooseObjective(goalNames[selected]?selected:(Object.keys(campaigns)[0]||"upsell"));
+    const active=Object.keys(campaigns);
+    chooseObjective(active.includes(selected)?selected:(active[0]||"upsell"));
+    const dial=$("purpose-dial");
+    const offerNames={
+      fa:{upsell:"پیشنهاد خرید",return:"مراجعه بعدی",refer:"دعوت دوست",learn:"نکات کاربردی"},
+      de:{upsell:"Angebot",return:"Nächster Besuch",refer:"Freunde einladen",learn:"Infos"}
+    };
+    const language=window.PWYWI18N?.locale()==="fa"?"fa":"de";
+    dial.hidden=Boolean(selected)||active.length<2;
+    for(const button of dial.querySelectorAll("[data-objective]")){
+      const goal=button.dataset.objective;
+      button.hidden=!active.includes(goal);
+      button.textContent=offerNames[language][goal];
+    }
+    dial.setAttribute("aria-label",language==="fa"?"بعد از بازی چه چیزی می‌خوای؟":"Was möchtest du nach dem Spiel?");
+
     const direct=params.get("game");
     if(direct && gameLabels[direct])startGame(direct);
   }
@@ -623,11 +638,21 @@
   buildGamePicks();
   $("back-home").style.visibility="hidden";
   window.addEventListener("pagehide",cleanup);
-  document.addEventListener('pwyw:language-changed',()=>{if(brand)brandView(brand);chooseObjective(objective);if(!$("finish-modal").hidden)renderReward({retainClaim:true})});
-  // Business owners choose the objective in the studio. Customers see one focused campaign.
+  document.addEventListener('pwyw:language-changed',()=>{
+    if(brand)brandView(brand);
+    chooseObjective(objective);
+    const active=Object.keys(campaigns),direct=new URLSearchParams(location.search).get("objective");
+    const language=window.PWYWI18N?.locale()==="fa"?"fa":"de";
+    const names=language==="fa"?{upsell:"پیشنهاد خرید",return:"مراجعه بعدی",refer:"دعوت دوست",learn:"نکات کاربردی"}:
+      {upsell:"Angebot",return:"Nächster Besuch",refer:"Freunde einladen",learn:"Infos"};
+    const dial=$("purpose-dial");dial.hidden=Boolean(direct)||active.length<2;
+    dial.querySelectorAll("[data-objective]").forEach(b=>{b.textContent=names[b.dataset.objective]});
+    if(!$("finish-modal").hidden)renderReward({retainClaim:true});
+  });
+  // A shared link offers only published goals; direct goal links stay focused.
   const isDemo=location.pathname==="/demo";
   document.body.classList.toggle("is-demo-lounge",isDemo);
-  if(!isDemo)$("purpose-dial").hidden=true;
+  $("purpose-dial").hidden=true;
   request("/api/public/brands/"+encodeURIComponent(slug)).then(async b=>{
     brandView(b);
     await Promise.all([fetchBrandArt(),loadCampaigns()]);
