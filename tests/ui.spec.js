@@ -9,15 +9,32 @@ const {chromium}=require('playwright');
   await page.goto(base+'/',{waitUntil:'networkidle'});
   if(!await page.locator('.hero h1').count() || !(await page.locator('.hero h1').innerText()).trim())
     throw Error('Branded landing headline missing');
+  const landing=await page.evaluate(()=>({
+    steps:document.querySelectorAll('.simple-step').length,
+    goals:document.querySelectorAll('.simple-goal-card').length,
+    width:document.documentElement.scrollWidth,
+    viewport:document.documentElement.clientWidth,
+    actualDemo:document.querySelector('.hero-showcase a')?.getAttribute('href'),
+    styles:[...document.styleSheets].some(x=>x.href?.includes('pwyw-unified.css'))
+  }));
+  if(landing.steps!==3||landing.goals!==4||!landing.actualDemo?.startsWith('/play/')||!landing.styles)
+    throw Error('Simplified landing structure missing: '+JSON.stringify(landing));
+  if(landing.width>landing.viewport+4)throw Error('Landing overflows mobile: '+JSON.stringify(landing));
+  const illustration=await page.locator('.showcase-art').evaluate(img=>({loaded:img.complete&&img.naturalWidth>0}));
+  if(!illustration.loaded)throw Error('Landing mini-game illustration did not load');
   await page.screenshot({path:'/tmp/pwyw-landing-mobile.png',fullPage:true});
   await page.locator('#pwyw-language-switch [data-lang=fa]').click();
   if(await page.locator('html').getAttribute('dir')!=='rtl')throw Error('Persian landing RTL missing');
+  if(!/[\u0600-\u06FF]/.test(await page.locator('#how-heading').textContent()))
+    throw Error('Three-step onboarding was not localized into Persian');
+  if(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)>4)
+    throw Error('Persian landing overflows the mobile viewport');
   if(!/[\u0600-\u06FF]/.test(await page.locator('.hero h1').textContent()))throw Error('Landing headline did not localize');
 
   const nativeHome=await page.locator('.hero h1').innerText();
-  if(!nativeHome.includes('انتظار رو')||!nativeHome.includes('به یه فرصت'))
+  if(!nativeHome.includes('یه بازی')||!nativeHome.includes('فرصت‌های بیشتر'))
     throw Error('Native Persian landing headline is missing: '+nativeHome);
-  if(await page.title()!=='PWYW — انتظار را به فرصت تبدیل کن.')
+  if(await page.title()!=='PWYW — بازی برای کسب‌وکار تو')
     throw Error('Browser title not localized in Persian');
   await page.screenshot({path:'/tmp/pwyw-landing-fa-mobile.png',fullPage:true});
   await page.locator('#pwyw-language-switch [data-lang=de]').click();
@@ -219,6 +236,7 @@ const {chromium}=require('playwright');
   await page.goto(base+'/admin',{waitUntil:'networkidle'});
   await page.locator('#pwyw-language-switch [data-lang=fa]').click();
   if(await page.locator('html').getAttribute('dir')!=='rtl')throw Error('Persian admin RTL missing');
+  if(!await page.locator('link[href*="pwyw-unified.css"]').count())throw Error('Administrator does not share visual system');
   await page.locator('#pwyw-language-switch [data-lang=de]').click();
   // Admin information architecture is tested with isolated read-only API fixtures.
   const adminFixtures=[
@@ -235,6 +253,9 @@ const {chromium}=require('playwright');
   if(!await page.locator('#cr-brands-panel').evaluate(e=>e.open))throw Error('Admin business overview is not available by default');
   if(await page.locator('#cr-users-panel').evaluate(e=>e.open))throw Error('Admin account directory is too prominent');
   if(await page.locator('#cr-stats>div').count()!==3)throw Error('Admin needs three clear top level KPIs');
+  const adminCardRadius=await page.locator('#cr-stats>div').first().evaluate(el=>getComputedStyle(el).borderRadius);
+  if(adminCardRadius==='0px')throw Error('Admin still renders legacy flat KPI tiles');
+  await page.screenshot({path:'/tmp/pwyw-admin-mobile.png',fullPage:true});
   await page.locator('#cr-brand-search').fill('Garage');
   if(await page.locator('#cr-brands tbody tr:visible').count()!==1)throw Error('Admin business search not working');
   await page.locator('#cr-more-stats summary').click();
@@ -247,6 +268,8 @@ const {chromium}=require('playwright');
   if(!initialFaHeading.includes('چه نتیجه‌ای')||/[A-Za-z]/.test(initialFaHeading))
     throw Error('Persian goal heading contains untranslated German copy: '+initialFaHeading);
 
+  const studioCss=await page.evaluate(()=>[...document.styleSheets].some(x=>x.href?.includes('pwyw-unified.css')));
+  if(!studioCss)throw Error('Merchant login not using shared site design');
   const faStudioHero=(await page.locator('.studio-auth-art h1').innerText()).replace(/\\s+/g,' ');
   if(!faStudioHero.includes('برای برندت') || !faStudioHero.includes('یه بازی') || !faStudioHero.includes('بساز.'))
     throw Error('Persian studio headline is grammatically broken: '+faStudioHero);
@@ -294,6 +317,8 @@ const {chromium}=require('playwright');
   await page.screenshot({path:'/tmp/pwyw-studio-mobile.png',fullPage:true});
   await page.locator('#brand-save').click();
   await page.locator('#proposal-card').waitFor({state:'visible',timeout:18000});
+  if(await page.locator('.purpose-option small').first().isHidden())
+    throw Error('Merchant goal explanations are hidden again');
   // A simple result preview is shown by default; the full journey stays available on demand.
   if(await page.locator('#preview-steps').evaluate(x=>x.open))
     throw Error('Full journey should be collapsed for a first-time merchant');
