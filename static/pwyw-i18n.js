@@ -6,6 +6,8 @@
   const catalog = new Map();
   // catalog entries are registered below, as explicit reviewed UI translations.
   const entries = [
+    ["Für dich ausgewählt","Für dich ausgewählt","بازی پیشنهادی"],
+    ["Mehr zur Aktion","Mehr zur Aktion","درباره این پیشنهاد"],
     ["Wähle eins oder mehrere Ziele. Jedes erhält ein eigenes Angebot.","Wähle eins oder mehrere Ziele. Jedes erhält ein eigenes Angebot.","می‌تونی چند هدف انتخاب کنی؛ هر کدوم پیشنهاد خودش رو داره."],
     ["Zusatzverkauf","Zusatzverkauf","فروش مکمل"],
     ["Beispiel: zum Kaffee einen Kuchen anbieten","Beispiel: zum Kaffee einen Kuchen anbieten","مثلاً کنار قهوه شیرینی هم پیشنهاد بده"],
