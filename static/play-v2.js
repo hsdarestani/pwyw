@@ -134,6 +134,7 @@
     $("purpose-overline").textContent="YOUR MOMENT / "+name.toUpperCase();
     $("purpose-summary").textContent=localized(campaign,'description')||"This experience has not been published by the business yet.";
     document.querySelector(".purpose-brief").hidden=!campaign;
+    $("campaign-context").hidden=!campaign;
     $("game-heading").textContent=localized(campaign,'title')||"A LITTLE PLAY. A LOT MORE.";
     $("game-heading").style.overflowWrap="anywhere";
     document.querySelector(".purpose-brief").style.borderLeftColor=brand?.accent||"currentColor";

@@ -47,7 +47,28 @@ const {chromium}=require('playwright');
     throw Error('New arcade world overflows phone screen: '+JSON.stringify(mobileGeometry));
   if(mobileGeometry.featured<250)
     throw Error('Arcade game showcase is too narrow on mobile');
-  // A curated default question and its unprefixed answers must be localized.
+  // Premium calm redesign: the game, not decoration, is the visual focal point.
+  const clearStart=await page.evaluate(()=>{
+    const intro=document.querySelector('.campaign-intro'),featured=document.querySelector('.featured-game');
+    const poster=document.querySelector('.featured-poster'),cta=document.getElementById('start-featured');
+    const context=document.getElementById('campaign-context');
+    return {
+      title:document.getElementById('game-heading').textContent,
+      layout:getComputedStyle(featured).display,
+      introBackground:getComputedStyle(intro).backgroundColor,
+      posterWidth:poster.getBoundingClientRect().width,
+      callToAction:cta.getBoundingClientRect().height,
+      contextCollapsed:!context.open,
+      ornaments:getComputedStyle(document.body,'::before').display,
+      posterShine:document.querySelector('.poster-shine')!==null,
+    };
+  });
+  if(clearStart.posterWidth<250||clearStart.callToAction<50||!clearStart.contextCollapsed)
+    throw Error('Simple primary-game journey is not focused: '+JSON.stringify(clearStart));
+  if(clearStart.posterShine||clearStart.ornaments!=='none')
+    throw Error('Decorative arcade clutter still visible: '+JSON.stringify(clearStart));
+  await page.screenshot({path:'/tmp/pwyw-premium-calm-mobile.png',fullPage:true});
+    // A curated default question and its unprefixed answers must be localized.
   const demoOption=await page.evaluate(()=>window.PWYWI18N?.t('Bring the requested documents'));
   if(demoOption!=='مدارک لازم رو همراهت بیار')
     throw Error('Demo quiz answers are not localized before numbering');
@@ -82,6 +103,10 @@ const {chromium}=require('playwright');
   await desktop.locator('#load-overlay').waitFor({state:'hidden'});
   const desktopWidth=await desktop.locator('.play-area').evaluate(node=>node.getBoundingClientRect().width);
   if(desktopWidth<900)throw Error('Desktop arcade still uses the old narrow phone column: '+desktopWidth);
+  const desktopDisplay=await desktop.locator('.featured-game').evaluate(el=>getComputedStyle(el).display);
+  if(desktopDisplay!=='grid')throw Error('Premium desktop primary game must use balanced media/editorial columns: '+desktopDisplay);
+  if(await desktop.locator('#campaign-context').evaluate(el=>el.open))
+    throw Error('Additional campaign explanation must stay collapsed by default');
   await desktop.screenshot({path:'/tmp/pwyw-lounge-desktop.png',fullPage:true});
   await desktop.close();
   const nativePicks=await page.locator('#game-choices').innerText();
