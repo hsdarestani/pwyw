@@ -1,7 +1,7 @@
 name: PWYW pilot browser E2E
 on:
   push:
-    branches: [main]
+    branches: [main, design/unified-simple-entire-site-20261021]
     paths:
       - 'app.py'
       - 'admin_api.py'
