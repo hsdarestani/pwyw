@@ -6,6 +6,10 @@
   const catalog = new Map();
   // catalog entries are registered below, as explicit reviewed UI translations.
   const entries = [
+    ["PWYW — Spiele für dein Geschäft.","PWYW — Spiele für dein Geschäft.","PWYW — بازی برای کسب‌وکار تو"],
+    ["Ein Spiel.","Ein Spiel.","یه بازی."],
+    ["Mehr für dein Geschäft.","Mehr für dein Geschäft.","فرصت‌های بیشتر برای کسب‌وکارت."],
+    ["Spielen mit Ziel","Spielen mit Ziel","بازی با هدف"],
     ["Kleine Spiele. Echte Kundenaktionen.","Kleine Spiele. Echte Kundenaktionen.","بازی‌های کوتاه، نتیجه‌های واقعی برای کسب‌وکار"],
     ["Kein App Download. Ein Spiel. Ein Link.","Kein App-Download. Ein Spiel. Ein Link.","بدون نصب اپ. یک بازی، یک لینک."],
     ["Jetzt starten","Jetzt starten","همین حالا شروع کن"],
