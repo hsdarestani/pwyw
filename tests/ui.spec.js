@@ -32,9 +32,9 @@ const {chromium}=require('playwright');
   if(!/[\u0600-\u06FF]/.test(await page.locator('.hero h1').textContent()))throw Error('Landing headline did not localize');
 
   const nativeHome=await page.locator('.hero h1').innerText();
-  if(!nativeHome.includes('انتظار رو')||!nativeHome.includes('به یه فرصت'))
+  if(!nativeHome.includes('یه بازی')||!nativeHome.includes('فرصت‌های بیشتر'))
     throw Error('Native Persian landing headline is missing: '+nativeHome);
-  if(await page.title()!=='PWYW — انتظار را به فرصت تبدیل کن.')
+  if(await page.title()!=='PWYW — بازی برای کسب‌وکار تو')
     throw Error('Browser title not localized in Persian');
   await page.screenshot({path:'/tmp/pwyw-landing-fa-mobile.png',fullPage:true});
   await page.locator('#pwyw-language-switch [data-lang=de]').click();
