@@ -283,6 +283,9 @@ const {chromium}=require('playwright');
   await page.locator('#app-shell').waitFor({state:'visible'});
   await page.locator('#studio-settings-overlay').waitFor({state:'visible'});
   await page.locator('#close-studio-settings').click();
+  if(await page.locator('#legacy-campaigns').evaluate(x=>x.open))
+    throw Error('Legacy campaign editor should not obscure reward rules');
+  await page.locator('#legacy-campaigns > summary').click();
   // Native form language is the primary editor. Secondary copy remains editable, but hidden.
   await page.locator('#pwyw-language-switch [data-lang=fa]').click();
   if((await page.locator('#merchant-goal-title').textContent())!=='می‌خوای چه نتیجه‌ای بگیری؟')
@@ -316,6 +319,23 @@ const {chromium}=require('playwright');
   await page.locator('[data-theme=neon]').click();
   await page.screenshot({path:'/tmp/pwyw-studio-mobile.png',fullPage:true});
   await page.locator('#brand-save').click();
+  await page.locator('#reward-hub').waitFor({state:'visible',timeout:16000});
+  await page.locator('#rule-templates .reward-template').first().waitFor({state:'visible'});
+  if(await page.locator('#rule-templates .reward-template').count()<5)
+    throw Error('Rule templates are missing');
+  if(!await page.locator('#reward-portal-link').getAttribute('href').then(x=>x.endsWith('/play/playwright-garage')))
+    throw Error('Business cannot open its permanent portal');
+  await page.locator('#rule-templates [data-template="welcome"]').click();
+  if(!await page.locator('#rule-editor').evaluate(x=>x.open))
+    throw Error('Editable reward template did not open');
+  await page.locator('#rule-form input[name=is_active]').check();
+  await page.locator('#rule-save').click();
+  await page.waitForFunction(()=>document.querySelector('#rule-list .reward-on')?.textContent.includes('Aktiv'));
+  const publishedRules=await page.evaluate(async()=>{
+    const r=await fetch('/api/public/brands/playwright-garage/reward-rules');return await r.json();
+  });
+  if(publishedRules.length!==1||publishedRules[0].rule_type!=='first_play')
+    throw Error('Merchant rule was not persisted or published');
   await page.locator('#proposal-card').waitFor({state:'visible',timeout:18000});
   if(await page.locator('.purpose-option small').first().isHidden())
     throw Error('Merchant goal explanations are hidden again');
@@ -422,12 +442,18 @@ const {chromium}=require('playwright');
     throw Error('Publishing a second goal removed the existing offer');
   await page.goto(new URL(sharedGame,base).href,{waitUntil:'networkidle'});
   await page.locator('#load-overlay').waitFor({state:'hidden'});
-  if(!await page.locator('#purpose-dial').isVisible())throw Error('Customers cannot choose between live goals');
-  if(await page.locator('#purpose-dial [data-objective=learn]').isVisible())
-    throw Error('An unpublished customer goal is incorrectly visible');
-  await page.locator('#purpose-dial [data-objective=refer]').click();
-  if(await page.locator('#purpose-dial [data-objective=refer]').getAttribute('aria-pressed')!=='true')
-    throw Error('Customer goal selection does not work');
+  if(await page.locator('#purpose-dial').isVisible())
+    throw Error('The customer portal should not force marketing-goal selection');
+  if(!await page.locator('#all-games').evaluate(x=>x.open))
+    throw Error('All ten games should be immediately visible in portal mode');
+  if(await page.locator('#game-choices .game-pick').count()!==10)
+    throw Error('Portal is missing games');
+  if(!await page.locator('#portal-offers').isVisible())
+    throw Error('Published rewards are not visible in portal');
+  await page.locator('#game-choices [data-game="rush"]').click();
+  await page.locator('#back-home').click();
+  if(!await page.locator('#all-games').evaluate(x=>x.open))
+    throw Error('Player lost access to games after returning home');
   await page.goto(base+'/dashboard?lang=fa',{waitUntil:'networkidle'});
   await page.locator('#app-shell').waitFor({state:'visible'});
 
