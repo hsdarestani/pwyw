@@ -163,6 +163,27 @@ class PilotTests(unittest.TestCase):
     self.assertEqual(len(self.client.get("/api/public/brands/contest-lab/rewards",params={"sid":"contest-player-00001"}).json()),1)
     owner.close()
 
+  def test_reward_play_attempt_ticket_and_attempt_limit(self):
+    import hashlib
+    sid="valid-player-123456"
+    endpoint="/api/public/brands/luna-cafe/play-attempts"
+    self.assertEqual(self.client.post(endpoint+"/start",json={"sid":sid,"game":"bad"}).status_code,422)
+    for n in range(4):
+      result=self.client.post(endpoint+"/start",json={"sid":sid,"game":"memory"})
+      self.assertEqual(result.status_code,200)
+      token=result.json()["ticket"]
+      payload={"sid":sid,"game":"memory","ticket":token,"score":30+n}
+      self.assertEqual(self.client.post(endpoint+"/finish",json=payload).status_code,422)
+      with self.mod.db() as con:
+        con.execute("UPDATE play_attempts SET started_epoch=started_epoch-10 WHERE ticket_hash=?",
+                    (hashlib.sha256(token.encode()).hexdigest(),))
+      finished=self.client.post(endpoint+"/finish",json=payload)
+      self.assertEqual(finished.status_code,200)
+      self.assertEqual(finished.json()["eligible"],n<3)
+      self.assertEqual(self.client.post(endpoint+"/finish",json=payload).status_code,409)
+    self.assertEqual(self.client.post(endpoint+"/finish",
+      json={"sid":sid,"game":"memory","ticket":"A"*43,"score":1}).status_code,403)
+
   def test_four_business_objectives_and_verified_claims(self):
     owner=TestClient(self.mod.app)
     stranger=TestClient(self.mod.app)
