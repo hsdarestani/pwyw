@@ -1,0 +1,107 @@
+/* PWYW — calm, high-contrast product design across landing, studio, player and admin.
+   Prefer privacy-safe installed font stacks over loading visitors' fonts from external CDNs. */
+:root{--p-font:"Segoe UI Variable Text","Aptos","SF Pro Text",-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+--p-persian:"Vazirmatn","Noto Sans Arabic","Noto Naskh Arabic",Tahoma,sans-serif;
+--p-ink:#18243c;--p-muted:#65738a;--p-purple:#6552bc;--p-cloud:#f6f7fb;--p-line:#e4e8f0}
+html{font-synthesis:none}
+:is(.site-simplified,.studio-v2,.player-v2,.control){font-family:var(--p-font);font-size:14px;line-height:1.7;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased}
+html[lang="fa"] :is(.site-simplified,.studio-v2,.player-v2,.control),
+:is(.site-simplified,.studio-v2,.player-v2,.control) [lang="fa"]{
+ font-family:var(--p-persian);font-feature-settings:"kern" 1;line-height:1.9;letter-spacing:0!important}
+:is(.site-simplified,.studio-v2,.player-v2,.control) :is(h1,h2,h3,strong,b,button){
+ font-family:inherit}
+:is(.site-simplified,.studio-v2,.player-v2,.control) :is(button,input,select,textarea){
+ font-family:inherit}
+:is(.site-simplified,.studio-v2,.player-v2,.control) :is(button,a,input,select,textarea,summary):focus-visible{
+ outline:3px solid #b19fff!important;outline-offset:3px!important}
+.site-simplified .hero-grid{gap:clamp(30px,5vw,75px)}
+.site-simplified .hero h1{font-family:var(--p-font);font-weight:820;letter-spacing:-.06em;text-wrap:balance}
+html[lang=fa] .site-simplified .hero h1{font-family:var(--p-persian);letter-spacing:-.02em!important;line-height:1.55}
+.site-simplified .hero-showcase{transform:rotate(-1.6deg);transition:transform .22s ease}
+.site-simplified .hero-showcase:hover{transform:rotate(0)}
+.site-simplified .simple-goal-card{transition:transform .2s,border-color .2s,box-shadow .2s}
+.site-simplified .simple-goal-card:hover{box-shadow:0 12px 30px #30315614}
+.site-simplified .simple-step h3,.site-simplified .simple-goal-card h3{font-family:inherit;font-weight:800}
+.studio-v2{background:var(--p-cloud)!important}
+.studio-v2 .reward-hub-header{background:linear-gradient(122deg,#181f3c 0%,#292448 88%);box-shadow:0 18px 40px #151b3b1f}
+.studio-v2 .reward-hub-header h2{font-family:inherit;font-weight:860;letter-spacing:-.025em}
+.studio-v2 .reward-hub-header p{color:#d4d6e8}
+.studio-v2 .reward-portal-button{background:#d5c8ff;box-shadow:0 4px 13px #12133238}
+.studio-v2 .reward-onboarding{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:0 0 16px}
+.studio-v2 .reward-onboarding>div{display:grid;grid-template-columns:32px 1fr;align-content:center;column-gap:11px;row-gap:2px;padding:15px 16px;min-height:83px;background:#fff;border:1px solid var(--p-line);border-radius:15px}
+.studio-v2 .reward-onboarding>div>span{grid-row:1/3;display:grid;place-items:center;width:31px;height:31px;border-radius:9px;background:#ede9ff;color:#7056ba;font-weight:850;font-size:11px}
+.studio-v2 .reward-onboarding strong{font:850 13px/1.5 var(--p-font);color:var(--p-ink)}
+.studio-v2 .reward-onboarding small{font:500 11px/1.5 var(--p-font);color:var(--p-muted)}
+html[lang=fa] .studio-v2 .reward-onboarding :is(strong,small){font-family:var(--p-persian)}
+.studio-v2 .reward-overview{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:0 0 15px}
+.studio-v2 .reward-overview>div{padding:15px;background:#fff;border:1px solid var(--p-line);border-radius:15px;display:flex;flex-direction:column;gap:5px;min-width:0}
+.studio-v2 .reward-overview span{font:650 11px/1.6 var(--p-font);color:var(--p-muted)}
+.studio-v2 .reward-overview strong{font:850 clamp(17px,2.3vw,25px)/1.5 var(--p-font);color:#453a92;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+html[lang=fa] .studio-v2 .reward-overview :is(span,strong){font-family:var(--p-persian)}
+.studio-v2 .reward-action-status:empty{display:none}
+.studio-v2 .reward-action-status:not(:empty){margin:10px 0 14px;border:1px solid #dbd4fa;border-radius:12px;padding:12px 15px;color:#4d398c;background:#f5f1ff;font-size:12px}
+.studio-v2 .reward-action-status.error{border-color:#f5d0d2;background:#fff5f5;color:#ac2f45}
+.studio-v2 .reward-panel{box-shadow:0 4px 20px #24284907;border-radius:19px}
+.studio-v2 .reward-section-heading h3{font-family:inherit;font-weight:850;line-height:1.5}
+.studio-v2 .reward-template{position:relative;background:#fbfbff;border-radius:15px;box-shadow:none;transition:transform .16s,border-color .16s,background .16s}
+.studio-v2 .reward-template:hover{background:#f5f2ff;transform:translateY(-2px)}
+.studio-v2 .reward-template:active{transform:translateY(0)}
+.studio-v2 .reward-template strong{color:#272a4b;font-family:inherit;font-weight:840;font-size:14px}
+.studio-v2 .reward-template span{font-family:inherit;font-size:12px;color:#657189}
+.studio-v2 .reward-template .reward-best{color:#4a3799;background:#e8e0ff}
+.studio-v2 .reward-rule-item{box-shadow:none;border-color:#e0e4ef}
+.studio-v2 .reward-rule-top strong{font-family:inherit;font-weight:850}
+.studio-v2 .reward-rule-actions .reward-secondary{min-height:42px}
+.studio-v2 .reward-editor{overflow:visible}
+.studio-v2 .reward-editor>summary{background:#f9f7ff;border-radius:15px}
+.studio-v2 #rule-form{display:grid;gap:0;padding:clamp(16px,3vw,26px)}
+.studio-v2 .rule-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.studio-v2 .rule-grid label{font-family:inherit;font-size:12px;font-weight:700}
+.studio-v2 .rule-grid :is(input,select){min-height:51px;background:#fff;font-family:inherit;font-size:13px}
+.studio-v2 .rule-grid :is(input,select):focus{border-color:#9986de;box-shadow:0 0 0 3px #c4baf033;outline:0}
+.studio-v2 .rule-preview{background:linear-gradient(120deg,#f1edff,#f7f6ff);border:1px solid #ded5fa;border-radius:14px;padding:16px;margin:17px 0}
+.studio-v2 .rule-preview>span{display:block;color:#6b55b5;font-size:11px;font-weight:850;margin-bottom:7px}
+.studio-v2 .rule-preview p{color:#35365d;font:700 13px/1.8 inherit;line-height:1.9;margin:0}
+.studio-v2 .rule-advanced{border:1px solid #e1e4ed;border-radius:12px;overflow:hidden}
+.studio-v2 .rule-advanced>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;list-style:none;cursor:pointer;min-height:51px;padding:11px 16px;color:#3c3e68;background:#fafbfe;font-size:12px;font-weight:800}
+.studio-v2 .rule-advanced>summary::-webkit-details-marker{display:none}
+.studio-v2 .rule-advanced[open]>summary{border-bottom:1px solid #e2e5f0}
+.studio-v2 .rule-advanced[open]>summary span{transform:rotate(180deg)}
+.studio-v2 .rule-advanced>.rule-grid{padding:17px}
+.studio-v2 .reward-check{font-family:inherit;font-size:13px;margin:17px 0 5px;cursor:pointer}
+.studio-v2 .reward-caution{font-family:inherit;line-height:1.8}
+.studio-v2 .reward-editor-actions .reward-primary{background:#6853c3;font-family:inherit;font-size:13px}
+.studio-v2 .reward-editor-actions .reward-secondary{font-family:inherit}
+.studio-v2 .reward-rule-budget{font-family:inherit;color:#758099}
+.studio-v2 .reward-portal-share-body{align-items:center}
+.studio-v2 .studio-intro h1{font-family:inherit;font-weight:850}
+.studio-v2 .studio-auth-box{border-radius:20px}
+.control .cr-content h1{font-family:inherit;font-weight:850;line-height:1.4}
+.control .cr-stats strong{font-family:inherit}
+.player-v2 .game-library[open] .game-pick{transition:transform .18s,border-color .18s}
+.player-v2 .game-library[open] .game-pick:hover{transform:translateY(-2px)!important}
+.player-v2 .featured-game{box-shadow:0 14px 40px #00000018!important}
+.player-v2 .portal-offers{border-radius:19px}
+.player-v2 .portal-rule{border-radius:14px;box-shadow:0 3px 10px #0000000a}
+.player-v2 .portal-rule strong{font-family:inherit;font-weight:800}
+.player-v2 .portal-rule p{font-family:inherit}
+.player-v2 .portal-play-note{font-size:12px;line-height:1.8;color:var(--world-muted);margin:7px 0}
+@media(max-width:850px){.studio-v2 .reward-onboarding{grid-template-columns:1fr 1fr 1fr}.studio-v2 .reward-overview{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){
+.studio-v2 .reward-onboarding{grid-template-columns:1fr;gap:7px}
+.studio-v2 .reward-onboarding>div{min-height:60px;padding:9px 13px;grid-template-columns:31px 1fr}
+.studio-v2 .reward-onboarding strong{font-size:12px}
+.studio-v2 .reward-onboarding small{font-size:10px}
+.studio-v2 .reward-overview{gap:8px}
+.studio-v2 .reward-overview>div{padding:12px;min-height:79px}
+.studio-v2 .reward-overview strong{font-size:21px}
+.studio-v2 .rule-grid{grid-template-columns:1fr}
+.studio-v2 .reward-template-grid{grid-template-columns:1fr}
+.studio-v2 .reward-template{min-height:80px}
+.studio-v2 .reward-hub-header h2{font-size:clamp(23px,7vw,30px)}
+.studio-v2 .reward-hub-header p{font-size:12px}
+.studio-v2 #rule-form{padding:14px}
+.studio-v2 .rule-advanced>.rule-grid{padding:12px}
+.site-simplified .hero-showcase{transform:none}
+}
+@media(prefers-reduced-motion:reduce){.site-simplified .hero-showcase,.studio-v2 .reward-template,.player-v2 .game-library[open] .game-pick{transition:none!important;transform:none!important}}
