@@ -118,3 +118,13 @@ html[lang=fa] .studio-v2 .reward-trends>summary{font-family:var(--p-persian)}
 .studio-v2 .reward-trend-day>span{display:block;width:min(100%,29px);min-height:3px;background:linear-gradient(#9d8be7,#6d56c2);border-radius:7px 7px 2px 2px;transition:height .2s}
 .studio-v2 #reward-trend-caption{font:550 11px/1.8 var(--p-font);color:#748098;margin:9px 0 0}
 html[lang=fa] .studio-v2 #reward-trend-caption{font-family:var(--p-persian)}
+
+/* Portal-first landing: three concise editorial lines without cramped mobile wrapping. */
+.site-simplified .hero h1{font-size:clamp(46px,5.6vw,78px)!important;line-height:1.13;letter-spacing:-.065em}
+html[lang="fa"] .site-simplified .hero h1{font-size:clamp(38px,5.5vw,70px)!important;line-height:1.6!important;letter-spacing:0!important}
+.site-simplified .hero h1 em{font-style:normal}
+.site-simplified .hero .hero-copy{min-width:0}
+.site-simplified .hero-actions{flex-wrap:wrap}
+@media(max-width:600px){.site-simplified .hero h1{font-size:clamp(42px,11.5vw,59px)!important}
+ html[lang=fa] .site-simplified .hero h1{font-size:clamp(36px,9.5vw,48px)!important}
+}
