@@ -62,6 +62,97 @@ class PilotTests(unittest.TestCase):
     self.assertEqual(self.client.get("/qr/luna-cafe.svg?objective=unknown").status_code,422)
     self.assertEqual(self.client.get("/qr/luna-cafe.svg?lang=unknown").status_code,422)
 
+  def test_persistent_reward_rules_budget_owner_and_redemption(self):
+    from fastapi.testclient import TestClient
+    merchant=TestClient(self.mod.app);outsider=TestClient(self.mod.app)
+    self.assertEqual(merchant.post("/api/register",json={"email":"rule-owner@test.de","password":"StrongEnoughPassword99"}).status_code,200)
+    self.assertEqual(outsider.post("/api/register",json={"email":"rule-stranger@test.de","password":"StrongEnoughPassword88"}).status_code,200)
+    brand={"name":"Rule Lab","slug":"rule-lab","industry":"cafe","theme":"atelier","accent":"#CCAA77","tagline":"Games"}
+    self.assertEqual(merchant.post("/api/brands",json=brand).status_code,200)
+    template=self.client.get("/api/reward-rule-templates").json()
+    self.assertTrue(any(x["key"]=="weekly" for x in template))
+    suggestions=merchant.get("/api/brands/rule-lab/reward-recommendations")
+    self.assertEqual(suggestions.status_code,200)
+    self.assertIn("welcome",suggestions.json()["recommended"])
+    rule={"title":"First game bonus","rule_type":"first_play","game":"all","period":"lifetime",
+      "target_count":1,"reward_title":"Free topping","delivery":"code",
+      "reward_cost_cents":100,"budget_cents":200,"max_awards":10,"is_active":True}
+    self.assertEqual(outsider.post("/api/brands/rule-lab/reward-rules",json=rule).status_code,404)
+    self.assertEqual(merchant.post("/api/brands/rule-lab/reward-rules",json={**rule,"budget_cents":0}).status_code,422)
+    created=merchant.post("/api/brands/rule-lab/reward-rules",json=rule)
+    self.assertEqual(created.status_code,200)
+    rule_id=created.json()["id"]
+    self.assertEqual(outsider.get("/api/brands/rule-lab/reward-rules").status_code,404)
+    self.assertEqual(len(self.client.get("/api/public/brands/rule-lab/reward-rules").json()),1)
+    for index in range(3):
+      sid=f"player-rules-{index:05}"
+      start={"kind":"start","game":"memory","sid":sid}
+      finish={"kind":"complete","game":"memory","sid":sid,"score":200+index}
+      self.assertEqual(self.client.post("/api/public/brands/rule-lab/events",json=start).status_code,200)
+      response=self.client.post("/api/public/brands/rule-lab/events",json=finish)
+      self.assertEqual(response.status_code,200)
+      awards=self.client.get("/api/public/brands/rule-lab/rewards",params={"sid":sid}).json()
+      self.assertEqual(len(awards),1 if index<2 else 0)
+      if index==0:
+        code=awards[0]["code"]
+        self.assertEqual(len(code),26)
+        self.assertEqual(self.client.get(f"/reward-qr/{code}.svg").status_code,200)
+        self.assertEqual(outsider.post("/api/brands/rule-lab/reward-rules/redeem",json={"code":code}).status_code,404)
+        self.assertEqual(merchant.post("/api/brands/rule-lab/reward-rules/redeem",json={"code":code}).status_code,200)
+        self.assertEqual(merchant.post("/api/brands/rule-lab/reward-rules/redeem",json={"code":code}).status_code,409)
+      again=self.client.post("/api/public/brands/rule-lab/events",json=finish)
+      self.assertEqual(again.status_code,200)
+      self.assertEqual(len(self.client.get("/api/public/brands/rule-lab/rewards",params={"sid":sid}).json()),1 if index<2 else 0)
+    listed=merchant.get("/api/brands/rule-lab/reward-rules").json()[0]
+    self.assertEqual(listed["awards_issued"],2)
+    self.assertEqual(listed["awards_redeemed"],1)
+    self.assertEqual(merchant.put(f"/api/brands/rule-lab/reward-rules/{rule_id}",json={**rule,"game":"snake"}).status_code,409)
+    self.assertEqual(merchant.put(f"/api/brands/rule-lab/reward-rules/{rule_id}",json={**rule,"is_active":False}).status_code,200)
+    self.assertEqual(self.client.get("/api/public/brands/rule-lab/reward-rules").json(),[])
+    manual={**rule,"title":"Verified referral","rule_type":"verified_referral",
+      "reward_title":"Friend gift","budget_cents":1000,"max_awards":10}
+    result=merchant.post("/api/brands/rule-lab/reward-rules",json=manual)
+    self.assertEqual(result.status_code,200)
+    rid=result.json()["id"]
+    self.assertEqual(self.client.post(f"/api/brands/rule-lab/reward-rules/{rid}/verify",
+      json={"sid":"player-rules-00000"}).status_code,401)
+    ok=merchant.post(f"/api/brands/rule-lab/reward-rules/{rid}/verify",
+      json={"sid":"player-rules-00000"})
+    self.assertEqual(ok.status_code,200)
+    self.assertTrue(ok.json()["code"].startswith("RW"))
+    merchant.close();outsider.close()
+
+  def test_competition_requires_merchant_settlement_after_period(self):
+    from datetime import datetime,timedelta,timezone
+    from fastapi.testclient import TestClient
+    owner=TestClient(self.mod.app)
+    self.assertEqual(owner.post("/api/register",json={"email":"contest-owner@test.de","password":"StrongContestPassword123"}).status_code,200)
+    brand={"name":"Contest Lab","slug":"contest-lab","industry":"cafe","theme":"neon","accent":"#CCAA77","tagline":"Games"}
+    self.assertEqual(owner.post("/api/brands",json=brand).status_code,200)
+    rule={"title":"Daily Top","rule_type":"leaderboard_daily","game":"breaker","period":"daily",
+      "target_count":3,"reward_title":"Daily free drink","delivery":"qr",
+      "reward_cost_cents":250,"budget_cents":500,"max_awards":3,"is_active":True}
+    bad=owner.post("/api/brands/contest-lab/reward-rules",json={**rule,"game":"all"})
+    self.assertEqual(bad.status_code,422)
+    rid=owner.post("/api/brands/contest-lab/reward-rules",json=rule).json()["id"]
+    self.assertEqual(owner.post(f"/api/brands/contest-lab/reward-rules/{rid}/settle",
+      json={"period_key":datetime.now(timezone.utc).strftime("%Y-%m-%d")}).status_code,409)
+    yesterday=(datetime.now(timezone.utc)-timedelta(days=1)).strftime("%Y-%m-%d")
+    with self.mod.db() as con:
+      brand_id=con.execute("SELECT id FROM brands WHERE slug='contest-lab'").fetchone()["id"]
+      for i,score in enumerate([120,340,210]):
+        sid=f"contest-player-{i:05}"
+        for kind in ["start","complete"]:
+          con.execute("INSERT INTO events(brand_id,kind,game,sid,score,nickname,created_at) VALUES(?,?,?,?,?,?,?)",
+            (brand_id,kind,"breaker",sid,score if kind=="complete" else None,"",yesterday+" 15:00:00"))
+    outcome=owner.post(f"/api/brands/contest-lab/reward-rules/{rid}/settle",json={"period_key":yesterday})
+    self.assertEqual(outcome.status_code,200)
+    self.assertEqual(len(outcome.json()["winners"]),2)  # Budget for only two prizes
+    self.assertEqual([x["score"] for x in outcome.json()["winners"]],[340,210])
+    self.assertEqual(owner.post(f"/api/brands/contest-lab/reward-rules/{rid}/settle",json={"period_key":yesterday}).status_code,409)
+    self.assertEqual(len(self.client.get("/api/public/brands/contest-lab/rewards",params={"sid":"contest-player-00001"}).json()),1)
+    owner.close()
+
   def test_four_business_objectives_and_verified_claims(self):
     owner=TestClient(self.mod.app)
     stranger=TestClient(self.mod.app)
