@@ -30,6 +30,22 @@ function renderInsights(stats){
  $("reward-stat-rules").textContent=format(stats.live_rules);
  $("reward-stat-issued").textContent=format(stats.issued);
  $("reward-stat-liability").textContent=euro(stats.estimated_prize_liability_cents);
+ const container=$("reward-trend-bars");container.replaceChildren();
+ const byDay=new Map((stats.days||[]).map(x=>[x.day,Number(x.finishes)]));
+ const today=new Date(),max=Math.max(1,...byDay.values()),days=[];
+ for(let i=13;i>=0;i--){
+   const day=new Date(today.getTime());day.setUTCDate(day.getUTCDate()-i);
+   const key=day.toISOString().slice(0,10),count=byDay.get(key)||0;
+   days.push(count);
+   const bar=el("div","reward-trend-day");
+   const fill=el("span","reward-trend-bar");fill.style.height=Math.max(count?12:3,Math.round(count/max*100))+"%";
+   bar.append(fill);
+   bar.title=key+" · "+count;
+   bar.setAttribute("aria-label",key+" · "+count);
+   container.append(bar);
+ }
+ $("reward-trend-caption").textContent=txt("Qualifizierte Spielabschlüsse, keine nachgewiesenen Verkäufe. ","بازی‌های معتبر، نه فروش قطعی. ")+
+   (stats.games?.[0]?txt("Beliebtestes Spiel: ","محبوب‌ترین بازی: ")+(games[stats.games[0].game]||stats.games[0].game):"");
 }
 function updateRulePreview(){
  const info=formData(),format=fa();
