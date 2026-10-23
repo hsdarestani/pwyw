@@ -1,4 +1,58 @@
-# PWYW® — Purpose-first branded business games
+# PWYW® — Branded Gaming & Reward Automation
+
+**Current product direction (October 2026):** every business owns a permanent mini-game portal.
+Customers freely choose among ten games. Businesses define **independent, editable reward rules**,
+not a specific game bound to a marketing campaign. Existing campaigns continue to work under
+a direct `?objective=` link and remain in an optional legacy editor.
+
+### Permanent game portal
+- `/play/{slug}`: all ten games are available; active prize rules are displayed. No player
+  needs to choose a marketing objective. One QR points permanently to this portal.
+- `/play/{slug}?objective=return` (and other old objectives): existing campaigns, claims
+  and redemption codes keep working without data migration.
+- Anonymous visitor ID is held in session storage and can be shown at the desk for
+  merchant confirmation. It is **not** proof of identity.
+
+### Configurable rules and recommendations
+- Six preconfigured starters: first play, repeat days, daily and weekly rankings, confirmed
+  friend referral and confirmed visit; a custom form additionally exposes merchant-verified
+  score thresholds.
+- Conditions, game applicability, period, prize title, delivery (code/QR/staff), per-prize cost,
+  per-period prize cap, total period budget and active/paused status are editable.
+- Recommendations are transparent industry/usage-based templates, **not AI predictions of ROI**.
+- Persistent SQLite tables: `reward_rules`, `rule_awards`, `rule_settlements` with a
+  unique award per rule/player/period. The old campaigns and claims tables are untouched.
+- Low-cost play-participation rewards can issue after a recorded start and completion,
+  subject to caps. Other business events need **explicit merchant verification**.
+- Leaderboard prizes require the end of the UTC day/week and manual merchant settlement,
+  including review of the competition before issuing codes. Each game gets its own
+  leaderboard because scores from different game modes are not comparable.
+- QR delivery encodes the one-time voucher code; scanning alone cannot redeem it. The
+  merchant must use the authenticated redemption action, which rejects duplicates.
+
+### New APIs
+- `GET /api/reward-rule-templates`
+- `GET /api/brands/{slug}/reward-recommendations`
+- `GET, POST /api/brands/{slug}/reward-rules`
+- `PUT /api/brands/{slug}/reward-rules/{id}`
+- `POST /api/brands/{slug}/reward-rules/{id}/verify`
+- `POST /api/brands/{slug}/reward-rules/{id}/settle`
+- `POST /api/brands/{slug}/reward-rules/redeem`
+- `GET /api/public/brands/{slug}/reward-rules`
+- `GET /api/public/brands/{slug}/rewards?sid=...`
+- `GET /reward-qr/{code}.svg`
+
+### Honest launch limitations
+**Do not market this as fraud-proof, fully automatic contest adjudication or POS-verified revenue.**
+Browser events and scores can be spoofed; budgets cap liability but cannot establish a unique
+human or a valid sale. Leaderboard settlement is *merchant-initiated*, not a scheduled job.
+The pilot still needs identity/anti-bot mechanisms, privacy/data retention work, consumer
+terms and legal review, true POS verification, analytics against control groups and
+scheduled period finalization. Use only controlled, low-cost pilots until those are built.
+
+---
+
+# PWYW® — Earlier pilot campaigns (legacy reference)
 
 **Site:** https://pwyw.smarbiz.sbs
 
