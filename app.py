@@ -331,9 +331,12 @@ def record_event(slug:str,data:EventInput,request:Request):
     with db() as c:
         brand=c.execute("SELECT id FROM brands WHERE slug=?",(slug,)).fetchone()
         if not brand: raise HTTPException(404,"Brand not found")
+        if data.kind=="complete":c.execute("BEGIN IMMEDIATE")
         c.execute("""INSERT INTO events(brand_id,kind,game,sid,score,nickname)
           VALUES(?,?,?,?,?,?)""",(brand["id"],data.kind,data.game,data.sid,score,name))
-    return {"ok":True}
+        awarded=(reward_rules.issue_for_completion(c,brand["id"],data.sid,data.game,score)
+                 if data.kind=="complete" else [])
+    return {"ok":True,"new_rewards":awarded}
 
 @app.get("/api/public/brands/{slug}/leaderboard/{game}")
 def leaderboard(slug:str,game:str):
@@ -463,5 +466,7 @@ import brandpack
 brandpack.install(app, db, user_from, owned_brand, public_brand, throttle, DATA)
 import admin_api
 admin_api.install(app, db, user_from)
+import reward_rules
+reward_rules.install(app, db, user_from, owned_brand, public_brand, throttle)
 
 app.mount("/static",StaticFiles(directory=BASE/"static"),name="static")

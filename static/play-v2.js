@@ -18,6 +18,8 @@
   const localized=(obj,key)=>(window.PWYWI18N?.locale()==='fa' && obj?.translations?.fa?.[key])||obj?.[key]||'';
   const tr = value => window.PWYWI18N?.t(value) || value;
   const goalNames={upsell:"Play to Upsell",return:"Play to Return",refer:"Play to Refer",learn:"Play to Learn"};
+  const portalMode=!new URLSearchParams(location.search).has("objective");
+  let portalRules=[];
   let objective="upsell",campaigns={},campaign=null,refCode=new URLSearchParams(location.search).get("ref")||"",rewardCode="",rewardIsDemo=false,claimStatus="idle",rewardRequestId=0,featuredGame="orbit";
   let brandArt={}; let brandedToken=null;
   async function fetchBrandArt(){
@@ -66,9 +68,9 @@
   }
   function event(kind,extra={}){
     if(!brand)return;
-    request("/api/public/brands/"+encodeURIComponent(brand.slug)+"/events",{
+    return request("/api/public/brands/"+encodeURIComponent(brand.slug)+"/events",{
       method:"POST",body:JSON.stringify({kind,game:game||"",sid,...extra})
-    }).catch(()=>{});
+    }).catch(()=>null);
   }
   function brandView(b){
     brand=b;
@@ -91,11 +93,92 @@
     if(!visitSent){event("visit");visitSent=true}
   }
   async function track(kind,detail=""){
-    if(!campaign)return;
+    if(portalMode||!campaign)return;
     try{
       await request("/api/public/brands/"+encodeURIComponent(slug)+"/campaigns/"+objective+"/track",{
         method:"POST",body:JSON.stringify({sid,game:game||"",event:kind,detail})});
     }catch{}
+  }
+  async function loadPortalRules(){
+    try{portalRules=await request("/api/public/brands/"+encodeURIComponent(slug)+"/reward-rules")}
+    catch{portalRules=[]}
+    renderPortalRules();
+  }
+  function renderPortalRules(){
+    const block=$("portal-offers"),list=$("portal-rule-list"),isFa=window.PWYWI18N?.locale()==="fa";
+    block.hidden=!portalMode||!portalRules.length;list.replaceChildren();
+    $("portal-offers-title").textContent=isFa?"جایزه‌ها و مسابقه‌ها":"Preise & Challenges";
+    for(const rule of portalRules){
+      const card=document.createElement("div");card.className="portal-rule";
+      const icon=document.createElement("span");icon.className="portal-rule-icon";
+      icon.textContent=rule.rule_type.startsWith("leaderboard")?"🏆":rule.rule_type==="repeat_days"?"↺":"✦";
+      const title=document.createElement("strong");title.textContent=rule.title;
+      const line=document.createElement("p");line.textContent=rule.reward_title+
+        (rule.rule_type.startsWith("leaderboard")?(isFa?" · برندگان پس از پایان دوره تأیید می‌شن":" · Gewinner nach Prüfung"):"");
+      card.append(icon,title,line);
+      if(rule.rule_type.startsWith("leaderboard")){
+        const open=document.createElement("button");open.type="button";open.className="portal-rank-button";
+        open.textContent=isFa?"دیدن رتبه‌ها ↗":"Rangliste ansehen ↗";
+        const rankings=document.createElement("div");rankings.className="portal-ranks";rankings.hidden=true;
+        open.addEventListener("click",async()=>{
+          if(!rankings.hidden){rankings.hidden=true;return}
+          rankings.hidden=false;rankings.textContent=isFa?"در حال بارگذاری…":"Wird geladen…";
+          try{
+            const data=await request("/api/public/brands/"+encodeURIComponent(slug)+"/rule-leaderboard/"+rule.id);
+            rankings.replaceChildren();
+            const caption=document.createElement("small");
+            caption.textContent=data.period_key+(isFa?" · امتیازها هنوز تأیید نهایی نیستن":" · Vorläufige Ergebnisse");
+            rankings.append(caption);
+            for(const row of data.ranking){
+              const p=document.createElement("p");
+              p.textContent=row.rank+". "+row.nickname+" — "+visibleDigits(row.score);
+              rankings.append(p);
+            }
+            if(!data.ranking.length){
+              const p=document.createElement("p");p.textContent=isFa?"هنوز امتیازی ثبت نشده.":"Noch keine Punkte.";
+              rankings.append(p);
+            }
+          }catch{rankings.textContent=isFa?"امکان دریافت رتبه‌ها نبود.":"Rangliste derzeit nicht erreichbar."}
+        });
+        card.append(open,rankings);
+      }
+      list.append(card);
+    }
+    $("portal-offers").querySelector(".portal-disclaimer").textContent=isFa?
+      "امتیازها از مرورگر ثبت می‌شن و جایزه رقابت بعد از تأیید کسب‌وکار صادر می‌شه.":
+      "Spielpunkte sind browserbasiert; Wettbewerbspreise werden vom Geschäft bestätigt.";
+  }
+  async function loadEarnedRewards(){
+    if(!portalMode)return;
+    const box=$("portal-prizes");box.replaceChildren();box.hidden=false;
+    const isFa=window.PWYWI18N?.locale()==="fa";
+    try{
+      const rewards=await request("/api/public/brands/"+encodeURIComponent(slug)+"/rewards?sid="+encodeURIComponent(sid));
+      if(!rewards.length){
+        const p=document.createElement("p");p.textContent=isFa?
+          "هنوز جایزه‌ای صادر نشده. بازی‌های مختلف رو امتحان کن!":
+          "Noch kein Preis ausgestellt. Probiere ein weiteres Spiel!";
+        box.append(p);return;
+      }
+      rewards.slice(0,5).forEach(reward=>{
+        const card=document.createElement("div");card.className="portal-earned";
+        const title=document.createElement("strong");title.textContent=reward.reward_title;
+        const code=document.createElement("code");code.textContent=reward.code;
+        const status=document.createElement("small");
+        status.textContent=reward.redeemed_at?(isFa?"قبلاً استفاده شده":"Bereits eingelöst"):
+          (isFa?"برای استفاده به کارکنان نشون بده":"Beim Team vorzeigen");
+        card.append(title,code,status);
+        if(reward.delivery==="qr"&&!reward.redeemed_at){
+          const qr=document.createElement("img");qr.alt=isFa?"کد QR جایزه":"Prämien-QR";
+          qr.src="/reward-qr/"+encodeURIComponent(reward.code)+".svg";
+          qr.width=136;qr.height=136;qr.loading="lazy";card.append(qr);
+        }
+        box.append(card);
+      });
+    }catch{
+      const p=document.createElement("p");p.textContent=isFa?"دریافت جایزه‌ها ممکن نشد. دوباره تلاش کن.":"Preise konnten nicht geladen werden. Bitte erneut versuchen.";
+      box.append(p);
+    }
   }
   async function loadCampaigns(){
     try{
@@ -120,6 +203,14 @@
     }
     dial.setAttribute("aria-label",language==="fa"?"بعد از بازی چه چیزی می‌خوای؟":"Was möchtest du nach dem Spiel?");
 
+    if(portalMode){
+      $("all-games").open=true;
+      $("purpose-dial").hidden=true;
+      $("game-heading").textContent=window.PWYWI18N?.locale()==="fa"?"هر بازی دوست داری انتخاب کن":"Such dir dein Lieblingsspiel aus";
+      $("campaign-context").hidden=true;
+      document.querySelector(".featured-game .featured-label").textContent=window.PWYWI18N?.locale()==="fa"?"پیشنهاد برای شروع":"Zum Einstieg";
+      await loadPortalRules();
+    }
     const direct=params.get("game");
     if(direct && gameLabels[direct])startGame(direct);
   }
@@ -242,7 +333,15 @@
     $("reward-kicker").textContent=tr("AFTER THE GAME");
     $("reward-title").textContent=localized(campaign,'product_name')||tr("Your next move.");
     $("reward-copy").textContent=localized(campaign,'offer')||tr("Ask the team about your next step.");
-    if(!campaign){
+    if(portalMode){
+      $("reward-title").textContent=window.PWYWI18N?.locale()==="fa"?"جایزه‌های تو":"Deine Preise";
+      $("reward-copy").textContent=window.PWYWI18N?.locale()==="fa"?
+        "اگر قانون جایزه‌ای شامل حالت بشه، اینجا نمایش داده می‌شه.":
+        "Wenn eine Preisregel erfüllt ist, erscheint sie hier.";
+      $("claim-reward").hidden=true;$("reward-code").hidden=true;$("merchant-link").hidden=true;
+      $("referral-share").hidden=true;$("reward-note").textContent="";
+      loadEarnedRewards();
+    }else if(!campaign){
       $("claim-reward").hidden=true;$("reward-code").hidden=true;
       $("reward-note").textContent=tr("No active campaign. Games remain free to play.");
     }else if(objective==="learn"){
@@ -257,7 +356,7 @@
     }
   }
   async function issueReward(){
-    if(!campaign||objective==="learn")return;
+    if(portalMode||!campaign||objective==="learn")return;
     const id=++rewardRequestId,chosenObjective=objective;
     claimStatus="loading";showClaimState();
     try{
@@ -417,10 +516,11 @@
     $("leaderboard").replaceChildren();
     $("scoreboard-details").open=false;
     $("scoreboard-details").dataset.loaded="";
-    event("complete",{score});
+    const completed=event("complete",{score});
     renderReward();track("finish");
-    issueReward();
-    (campaign && objective!=="learn"?$("reward-code"):$("play-again")).focus({preventScroll:true});
+    if(portalMode)completed?.then(()=>loadEarnedRewards());
+    else issueReward();
+    (!portalMode && campaign && objective!=="learn"?$("reward-code"):$("play-again")).focus({preventScroll:true});
   }
   async function showLeaderboard(g){
     try{
@@ -451,6 +551,12 @@
     }catch(e){$("post-score").disabled=false}
   });
   $("play-again").addEventListener("click",()=>startGame(game||featuredGame));
+  $("player-id-value").textContent=sid;
+  $("copy-player-id").addEventListener("click",async()=>{
+    try{await navigator.clipboard.writeText(sid);
+      $("copy-player-id").textContent=window.PWYWI18N?.locale()==="fa"?"کپی شد ✓":"Kopiert ✓";
+    }catch{$("player-id-value").focus()}
+  });
   $("result-other-game").addEventListener("click",showHome);
   $("start-featured").addEventListener("click",()=>startGame(featuredGame));
   $("scoreboard-details").addEventListener("toggle",()=>{
@@ -659,6 +765,11 @@
       {upsell:"Angebot",return:"Nächster Besuch",refer:"Freunde einladen",learn:"Infos"};
     const dial=$("purpose-dial");dial.hidden=Boolean(direct)||active.length<2;
     dial.querySelectorAll("[data-objective]").forEach(b=>{b.textContent=names[b.dataset.objective]});
+    if(portalMode){
+      $("game-heading").textContent=window.PWYWI18N?.locale()==="fa"?"هر بازی دوست داری انتخاب کن":"Such dir dein Lieblingsspiel aus";
+      document.querySelector(".featured-game .featured-label").textContent=window.PWYWI18N?.locale()==="fa"?"پیشنهاد برای شروع":"Zum Einstieg";
+      renderPortalRules();
+    }
     if(!$("finish-modal").hidden)renderReward({retainClaim:true});
   });
   // A shared link offers only published goals; direct goal links stay focused.
