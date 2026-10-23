@@ -327,7 +327,7 @@ const {chromium}=require('playwright');
     throw Error('Business cannot open its permanent portal');
   await page.locator('#rule-templates [data-template="welcome"]').click();
   if(await page.locator('#rule-advanced').evaluate(x=>x.open))throw Error('Advanced rule controls must be initially collapsed');
-  if(!(await page.locator('#rule-preview-copy').textContent()).includes('Willkommen'))
+  if(!(await page.locator('#rule-preview-copy').textContent()).includes('Überraschung'))
     throw Error('Reward rule preview does not explain the selected prize');
   if(!await page.locator('#reward-overview').isVisible())
     throw Error('Merchant overview is missing real reward metrics');
