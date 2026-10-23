@@ -178,8 +178,8 @@ def install(app,db,user_from,owned_brand,public_brand,throttle):
    row=con.execute("SELECT * FROM reward_rules WHERE id=? AND brand_id=?",(rule_id,brand["id"])).fetchone()
    if not row:raise HTTPException(404,"Rule not found")
    issued=con.execute("SELECT 1 FROM rule_awards WHERE rule_id=? LIMIT 1",(rule_id,)).fetchone()
-   if issued and any((row[k]!=getattr(data,k)) for k in ("rule_type","period","game","reward_cost_cents")):
-    raise HTTPException(409,"Pause and create a new rule when changing trigger, game, period or cost")
+   if issued and any((row[k]!=getattr(data,k)) for k in ("rule_type","period","game","reward_cost_cents","reward_title","delivery")):
+    raise HTTPException(409,"Create a new rule to change the conditions or prize terms after rewards have been issued")
    con.execute("""UPDATE reward_rules SET title=?,rule_type=?,game=?,period=?,target_count=?,reward_title=?,
     delivery=?,reward_cost_cents=?,budget_cents=?,max_awards=?,is_active=? WHERE id=? AND brand_id=?""",
     (data.title.strip(),data.rule_type,data.game,data.period,data.target_count,data.reward_title.strip(),
