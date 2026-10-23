@@ -195,6 +195,29 @@ def install(app,db,user_from,owned_brand,public_brand,throttle):
                      FROM reward_rules WHERE brand_id=? AND is_active=1 ORDER BY id DESC""",(bid,)).fetchall()
   return [dict(x) for x in rows]
 
+ @app.get("/api/public/brands/{slug}/rule-leaderboard/{rule_id}")
+ def public_rule_leaderboard(slug:str,rule_id:int):
+  public_brand(slug)
+  with db() as con:
+   rule=con.execute("""SELECT r.* FROM reward_rules r JOIN brands b ON b.id=r.brand_id
+                  WHERE b.slug=? AND r.id=? AND r.is_active=1""",(slug,rule_id)).fetchone()
+   if not rule:raise HTTPException(404,"Rule not found")
+   if rule["rule_type"] not in ("leaderboard_daily","leaderboard_weekly"):
+    raise HTTPException(422,"Not a leaderboard rule")
+   period=key_for(rule["period"])
+   start,end,_=bounds(rule["period"],period)
+   rows=con.execute("""SELECT e.sid,MAX(e.score) score,MAX(e.nickname) nickname FROM events e
+      WHERE e.brand_id=? AND e.kind='complete' AND e.game=? AND e.score IS NOT NULL
+       AND e.created_at>=? AND e.created_at<?
+       AND EXISTS (SELECT 1 FROM events st WHERE st.brand_id=e.brand_id AND st.sid=e.sid
+          AND st.game=e.game AND st.kind='start' AND st.created_at>=? AND st.created_at<?)
+      GROUP BY e.sid ORDER BY score DESC,e.sid LIMIT 10""",
+       (rule["brand_id"],rule["game"],start,end,start,end)).fetchall()
+  return {"period_key":period,"game":rule["game"],"verified":False,
+          "note":"Scores are client-reported; final rewards are merchant-reviewed.",
+          "ranking":[{"rank":i+1,"nickname":(row["nickname"] or ("Spieler "+row["sid"][-4:]))[:20],
+                      "score":row["score"]} for i,row in enumerate(rows)]}
+
  @app.get("/api/public/brands/{slug}/rewards")
  def rewards(slug:str,sid:str):
   public_brand(slug)
