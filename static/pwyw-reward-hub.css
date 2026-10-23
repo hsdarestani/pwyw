@@ -71,3 +71,14 @@
  .studio-v2 .reward-editor-actions button{width:100%}
  .studio-v2 .reward-hub{margin-top:10px}
 }
+
+.studio-v2 .reward-portal-share{margin:-3px 0 17px;background:#fff;border:1px solid #e1e3ed;border-radius:15px;overflow:hidden}
+.studio-v2 .reward-portal-share>summary{display:flex;align-items:center;justify-content:space-between;padding:14px 19px;min-height:48px;cursor:pointer;list-style:none;font:800 12px 'Estedad',Manrope,sans-serif;color:#51427f}
+.studio-v2 .reward-portal-share>summary::-webkit-details-marker{display:none}
+.studio-v2 .reward-portal-share[open]>summary{border-bottom:1px solid #e3e5eb}
+.studio-v2 .reward-portal-share-body{display:flex;align-items:center;gap:20px;padding:17px 20px}
+.studio-v2 .reward-portal-share-body img{max-width:142px;border-radius:12px;border:1px solid #e6e6ee}
+.studio-v2 .reward-portal-share-body p{font:550 12px/1.8 'Estedad',Manrope,sans-serif;color:#5e687f;margin-bottom:10px}
+.studio-v2 .reward-portal-share-actions{display:flex;gap:9px;flex-wrap:wrap}
+.studio-v2 .reward-portal-share-actions a{text-decoration:none;display:inline-flex;align-items:center}
+@media(max-width:520px){.studio-v2 .reward-portal-share-body{flex-direction:column;align-items:flex-start}}
