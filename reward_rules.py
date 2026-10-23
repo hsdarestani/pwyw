@@ -4,6 +4,8 @@ Leaderboard rewards are issued only after explicit merchant settlement.
 """
 import re
 import secrets
+import hashlib
+import time
 from datetime import datetime, timedelta, timezone
 from fastapi import HTTPException, Request
 from pydantic import BaseModel, Field
@@ -21,6 +23,16 @@ TEMPLATES=[
  {"key":"refer","label":"Echte Empfehlung","label_fa":"معرفی واقعی دوست","reason":"Erst nach Bestätigung durch das Personal.","reason_fa":"بعد از تأیید واقعی توسط کارکنان.","rule_type":"verified_referral","period":"lifetime","game":"all","title":"Freunde bringen Freunde","reward_title":"Dankeschön für deine Empfehlung","delivery":"staff","reward_cost_cents":300,"budget_cents":3000,"max_awards":10,"target_count":1},
  {"key":"visit","label":"Bestätigter Besuch","label_fa":"جایزه مراجعه تأییدشده","reason":"Ein Besuch wird von Personal bestätigt.","reason_fa":"مراجعه توسط کارکنان تأیید می‌شود.","rule_type":"verified_visit","period":"lifetime","game":"all","title":"Schön, dass du da bist","reward_title":"Treue-Bonus","delivery":"code","reward_cost_cents":150,"budget_cents":1500,"max_awards":10,"target_count":1}
 ]
+
+class PlayStart(BaseModel):
+ sid:str=Field(min_length=12,max_length=80)
+ game:str
+
+class PlayFinish(BaseModel):
+ sid:str=Field(min_length=12,max_length=80)
+ game:str
+ ticket:str=Field(min_length=32,max_length=80)
+ score:int=Field(ge=0,le=100000)
 
 class RuleInput(BaseModel):
  title:str=Field(min_length=3,max_length=100)
@@ -91,16 +103,16 @@ def award(con,rule,sid,period_key,score=None):
 
 def issue_for_completion(con,brand_id,sid,game,score):
  # Reward only participation; self-reported score can NEVER directly claim a ranking prize.
- started=con.execute("""SELECT 1 FROM events WHERE brand_id=? AND sid=? AND game=? AND kind='start'
-             AND created_at>=datetime('now','-30 minutes') LIMIT 1""",(brand_id,sid,game)).fetchone()
+ started=con.execute("""SELECT 1 FROM play_attempts WHERE brand_id=? AND sid=? AND game=? AND eligible=1
+             AND completed_at>=datetime('now','-5 seconds') LIMIT 1""",(brand_id,sid,game)).fetchone()
  if not started:return []
  result=[]
  rows=con.execute("""SELECT * FROM reward_rules WHERE brand_id=? AND is_active=1
               AND rule_type IN ('first_play','repeat_days') AND (game='all' OR game=?)""",(brand_id,game)).fetchall()
  for rule in rows:
   if rule["rule_type"]=="repeat_days":
-   count=con.execute("""SELECT COUNT(DISTINCT substr(created_at,1,10)) n FROM events
-       WHERE brand_id=? AND sid=? AND kind='complete' AND (game=? OR ?='all')""",
+   count=con.execute("""SELECT COUNT(DISTINCT substr(completed_at,1,10)) n FROM play_attempts
+       WHERE brand_id=? AND sid=? AND eligible=1 AND (game=? OR ?='all')""",
        (brand_id,sid,rule["game"],rule["game"])).fetchone()["n"]
    if count<rule["target_count"]:continue
   new=award(con,rule,sid,"lifetime",score)
@@ -110,6 +122,13 @@ def issue_for_completion(con,brand_id,sid,game,score):
 def install(app,db,user_from,owned_brand,public_brand,throttle):
  with db() as con:
   con.executescript("""
+   CREATE TABLE IF NOT EXISTS play_attempts(
+    id INTEGER PRIMARY KEY,brand_id INTEGER NOT NULL REFERENCES brands(id),
+    sid TEXT NOT NULL,game TEXT NOT NULL,ticket_hash TEXT NOT NULL UNIQUE,
+    started_epoch INTEGER NOT NULL,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    completed_at TEXT,score INTEGER,eligible INTEGER NOT NULL DEFAULT 0);
+   CREATE INDEX IF NOT EXISTS play_attempts_rank ON play_attempts(brand_id,game,eligible,completed_at);
+   CREATE INDEX IF NOT EXISTS play_attempts_session ON play_attempts(brand_id,sid,created_at);
    CREATE TABLE IF NOT EXISTS reward_rules(
     id INTEGER PRIMARY KEY,brand_id INTEGER NOT NULL REFERENCES brands(id),title TEXT NOT NULL,
     rule_type TEXT NOT NULL,game TEXT NOT NULL DEFAULT 'all',period TEXT NOT NULL DEFAULT 'lifetime',
@@ -132,6 +151,46 @@ def install(app,db,user_from,owned_brand,public_brand,throttle):
     PRIMARY KEY(rule_id,period_key));
   """)
 
+ @app.post("/api/public/brands/{slug}/play-attempts/start")
+ def play_start(slug:str,data:PlayStart,request:Request):
+  throttle(request,"play-attempt",45,3600)
+  brand=public_brand(slug)
+  if not SID_RE.fullmatch(data.sid) or data.game not in GAMES:
+   raise HTTPException(422,"Invalid player or game")
+  ticket=secrets.token_urlsafe(32)
+  with db() as con:
+   con.execute("INSERT INTO play_attempts(brand_id,sid,game,ticket_hash,started_epoch) VALUES((SELECT id FROM brands WHERE slug=?),?,?,?,?)",
+               (slug,data.sid,data.game,hashlib.sha256(ticket.encode()).hexdigest(),int(time.time())))
+  return {"ticket":ticket,"expires_seconds":900}
+
+ @app.post("/api/public/brands/{slug}/play-attempts/finish")
+ def play_finish(slug:str,data:PlayFinish,request:Request):
+  throttle(request,"play-finish",45,3600)
+  public_brand(slug)
+  if not SID_RE.fullmatch(data.sid) or data.game not in GAMES:raise HTTPException(422,"Invalid player or game")
+  token=hashlib.sha256(data.ticket.encode()).hexdigest()
+  now=int(time.time())
+  with db() as con:
+   con.execute("BEGIN IMMEDIATE")
+   attempt=con.execute("""SELECT a.* FROM play_attempts a JOIN brands b ON b.id=a.brand_id
+                         WHERE b.slug=? AND a.ticket_hash=?""",(slug,token)).fetchone()
+   if not attempt or attempt["sid"]!=data.sid or attempt["game"]!=data.game:
+    raise HTTPException(403,"Invalid game ticket")
+   if attempt["completed_at"]:raise HTTPException(409,"Game ticket already used")
+   duration=now-attempt["started_epoch"]
+   if duration<6 or duration>900:raise HTTPException(422,"Game time does not qualify")
+   daily=con.execute("""SELECT COUNT(*) n FROM play_attempts
+     WHERE brand_id=? AND sid=? AND game=? AND eligible=1
+     AND completed_at>=datetime('now','-1 day')""",
+     (attempt["brand_id"],data.sid,data.game)).fetchone()["n"]
+   # Maximum three reward/competition-eligible runs per game per session per rolling day.
+   eligible=int(daily<3)
+   con.execute("UPDATE play_attempts SET completed_at=CURRENT_TIMESTAMP,score=?,eligible=? WHERE id=?",
+               (data.score,eligible,attempt["id"]))
+   awarded=issue_for_completion(con,attempt["brand_id"],data.sid,data.game,data.score) if eligible else []
+  return {"ok":True,"eligible":bool(eligible),"new_rewards":awarded,
+          "note":"Participation validated; score still browser-reported and subject to merchant review."}
+
  @app.get("/api/reward-rule-templates")
  def templates():return TEMPLATES
 
@@ -140,14 +199,40 @@ def install(app,db,user_from,owned_brand,public_brand,throttle):
   brand=owned_brand(slug,user_from(request))
   with db() as con:
    live=con.execute("SELECT COUNT(*) n FROM reward_rules WHERE brand_id=? AND is_active=1",(brand["id"],)).fetchone()["n"]
-   plays=con.execute("""SELECT COUNT(*) n FROM events WHERE brand_id=? AND kind='complete'
-                      AND created_at>=datetime('now','-30 days')""",(brand["id"],)).fetchone()["n"]
+   plays=con.execute("""SELECT COUNT(*) n FROM play_attempts WHERE brand_id=? AND eligible=1
+                      AND completed_at>=datetime('now','-30 days')""",(brand["id"],)).fetchone()["n"]
   preferred=(["welcome","return","weekly"] if brand["industry"] in ("cafe","restaurant","hotel") else
              ["welcome","visit","weekly"] if brand["industry"] in ("salon","health") else ["welcome","refer","weekly"])
   reason=("Starte mit einer kleinen Budgetgrenze." if plays<20 else
           "Es gibt Spielaktivität. Teste eine begrenzte Wochen-Challenge.")
   return {"recommended":preferred,"reason":reason,"games_30d":plays,"live_rules":live,
           "disclaimer":"Rule suggestions are templates, not proven sales uplift."}
+
+ @app.get("/api/brands/{slug}/reward-insights")
+ def reward_insights(slug:str,request:Request):
+  brand=owned_brand(slug,user_from(request))
+  with db() as con:
+   summary=con.execute("""SELECT
+     (SELECT COUNT(*) FROM play_attempts WHERE brand_id=? AND eligible=1
+       AND completed_at>=datetime('now','-30 days')) finished,
+     (SELECT COUNT(DISTINCT sid) FROM play_attempts WHERE brand_id=? AND eligible=1
+       AND completed_at>=datetime('now','-30 days')) players,
+     (SELECT COUNT(*) FROM reward_rules WHERE brand_id=? AND is_active=1) live_rules,
+     (SELECT COUNT(*) FROM rule_awards WHERE brand_id=? AND issued_at>=datetime('now','-30 days')) issued,
+     (SELECT COUNT(*) FROM rule_awards WHERE brand_id=? AND redeemed_at>=datetime('now','-30 days')) redeemed
+   """,(brand["id"],)*5).fetchone()
+   costs=con.execute("""SELECT COALESCE(SUM(r.reward_cost_cents),0) spent
+      FROM rule_awards a JOIN reward_rules r ON r.id=a.rule_id
+      WHERE a.brand_id=? AND a.issued_at>=datetime('now','-30 days')""",(brand["id"],)).fetchone()["spent"]
+   games=con.execute("""SELECT game,COUNT(*) attempts FROM play_attempts
+      WHERE brand_id=? AND eligible=1 AND completed_at>=datetime('now','-30 days')
+      GROUP BY game ORDER BY attempts DESC LIMIT 10""",(brand["id"],)).fetchall()
+   daily=con.execute("""SELECT substr(completed_at,1,10) day,COUNT(*) finishes
+      FROM play_attempts WHERE brand_id=? AND eligible=1 AND completed_at>=datetime('now','-14 days')
+      GROUP BY substr(completed_at,1,10) ORDER BY day""",(brand["id"],)).fetchall()
+  return {**dict(summary),"estimated_prize_liability_cents":costs,
+          "games":[dict(row) for row in games],"days":[dict(row) for row in daily],
+          "note":"Anonymous browser sessions, capped prize liability estimates and merchant-declared redemptions; no proven sales uplift or verified unique customers."}
 
  @app.get("/api/brands/{slug}/reward-rules")
  def list_rules(slug:str,request:Request):
@@ -206,16 +291,14 @@ def install(app,db,user_from,owned_brand,public_brand,throttle):
     raise HTTPException(422,"Not a leaderboard rule")
    period=key_for(rule["period"])
    start,end,_=bounds(rule["period"],period)
-   rows=con.execute("""SELECT e.sid,MAX(e.score) score,MAX(e.nickname) nickname FROM events e
-      WHERE e.brand_id=? AND e.kind='complete' AND e.game=? AND e.score IS NOT NULL
-       AND e.created_at>=? AND e.created_at<?
-       AND EXISTS (SELECT 1 FROM events st WHERE st.brand_id=e.brand_id AND st.sid=e.sid
-          AND st.game=e.game AND st.kind='start' AND st.created_at>=? AND st.created_at<?)
-      GROUP BY e.sid ORDER BY score DESC,e.sid LIMIT 10""",
-       (rule["brand_id"],rule["game"],start,end,start,end)).fetchall()
+   rows=con.execute("""SELECT a.sid,MAX(a.score) score FROM play_attempts a
+      WHERE a.brand_id=? AND a.eligible=1 AND a.game=? AND a.score IS NOT NULL
+       AND a.completed_at>=? AND a.completed_at<?
+      GROUP BY a.sid ORDER BY score DESC,a.sid LIMIT 10""",
+       (rule["brand_id"],rule["game"],start,end)).fetchall()
   return {"period_key":period,"game":rule["game"],"verified":False,
           "note":"Scores are client-reported; final rewards are merchant-reviewed.",
-          "ranking":[{"rank":i+1,"nickname":(row["nickname"] or ("Spieler "+row["sid"][-4:]))[:20],
+          "ranking":[{"rank":i+1,"nickname":("Spieler "+row["sid"][-4:]),
                       "score":row["score"]} for i,row in enumerate(rows)]}
 
  @app.get("/api/public/brands/{slug}/rewards")
@@ -242,12 +325,42 @@ def install(app,db,user_from,owned_brand,public_brand,throttle):
    if row["rule_type"] not in ("verified_visit","verified_referral","score_threshold"):
     raise HTTPException(422,"This rule cannot be staff verified")
    if row["rule_type"]=="score_threshold":
-    best=con.execute("SELECT MAX(score) score FROM events WHERE brand_id=? AND sid=? AND kind='complete' AND game=?",
+    best=con.execute("SELECT MAX(score) score FROM play_attempts WHERE brand_id=? AND sid=? AND eligible=1 AND game=?",
                      (brand["id"],data.sid,row["game"])).fetchone()["score"]
     if best is None or best<row["target_count"]:raise HTTPException(422,"Score threshold not reached")
    item=award(con,row,data.sid,"lifetime")
   if not item:raise HTTPException(409,"Budget exhausted")
   return {"ok":True,"code":item["code"],"note":"Staff confirmed, not independently POS verified"}
+
+ @app.get("/api/brands/{slug}/reward-rules/{rule_id}/settlement-preview")
+ def settlement_preview(slug:str,rule_id:int,request:Request,period_key:str=""):
+  brand=owned_brand(slug,user_from(request))
+  with db() as con:
+   rule=con.execute("SELECT * FROM reward_rules WHERE brand_id=? AND id=? AND is_active=1",
+                    (brand["id"],rule_id)).fetchone()
+   if not rule:raise HTTPException(404,"Rule not found")
+   if rule["rule_type"] not in ("leaderboard_daily","leaderboard_weekly"):
+    raise HTTPException(422,"Not a competition")
+   now=datetime.now(timezone.utc)
+   key=period_key or key_for(rule["period"],now-timedelta(days=1 if rule["period"]=="daily" else 7))
+   start,end,close=bounds(rule["period"],key)
+   if close>now:raise HTTPException(409,"Period has not ended")
+   already=bool(con.execute("SELECT 1 FROM rule_settlements WHERE rule_id=? AND period_key=?",
+                            (rule_id,key)).fetchone())
+   rows=con.execute("""SELECT sid,MAX(score) best,COUNT(*) attempts,
+          MIN(completed_at) first_finish FROM play_attempts
+      WHERE brand_id=? AND game=? AND eligible=1 AND score IS NOT NULL
+        AND completed_at>=? AND completed_at<?
+      GROUP BY sid ORDER BY best DESC,sid LIMIT ?""",
+      (brand["id"],rule["game"],start,end,rule["max_awards"])).fetchall()
+   winners=min(len(rows),rule["max_awards"],
+               rule["budget_cents"]//rule["reward_cost_cents"] if rule["reward_cost_cents"] else rule["max_awards"])
+   return {"period_key":key,"game":rule["game"],"already_settled":already,
+           "winners_possible":winners,
+           "estimated_prize_cost_cents":winners*rule["reward_cost_cents"],
+           "candidates":[{"nickname":"Spieler "+row["sid"][-4:],"score":row["best"],
+                          "attempts":row["attempts"]} for row in rows],
+           "warning":"Client-reported scores. Review suspicious results; not independently proven."}
 
  @app.post("/api/brands/{slug}/reward-rules/{rule_id}/settle")
  def settle(slug:str,rule_id:int,data:SettleInput,request:Request):
@@ -265,13 +378,11 @@ def install(app,db,user_from,owned_brand,public_brand,throttle):
    if close>now:raise HTTPException(409,"Competition not ended")
    if con.execute("SELECT 1 FROM rule_settlements WHERE rule_id=? AND period_key=?",(rule_id,key)).fetchone():
     raise HTTPException(409,"Competition already settled")
-   rows=con.execute("""SELECT e.sid,MAX(e.score) best FROM events e
-      WHERE e.brand_id=? AND e.kind='complete' AND e.game=? AND e.score IS NOT NULL
-      AND e.created_at>=? AND e.created_at<?
-      AND EXISTS (SELECT 1 FROM events st WHERE st.brand_id=e.brand_id AND st.sid=e.sid AND
-      st.kind='start' AND st.game=e.game AND st.created_at>=? AND st.created_at<?)
-      GROUP BY e.sid ORDER BY best DESC,e.sid LIMIT ?""",
-      (brand["id"],rule["game"],start,end,start,end,rule["max_awards"])).fetchall()
+   rows=con.execute("""SELECT a.sid,MAX(a.score) best FROM play_attempts a
+      WHERE a.brand_id=? AND a.eligible=1 AND a.game=? AND a.score IS NOT NULL
+      AND a.completed_at>=? AND a.completed_at<?
+      GROUP BY a.sid ORDER BY best DESC,a.sid LIMIT ?""",
+      (brand["id"],rule["game"],start,end,rule["max_awards"])).fetchall()
    winners=[]
    for row in rows:
     item=award(con,rule,row["sid"],key,row["best"])

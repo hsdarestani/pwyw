@@ -91,6 +91,16 @@ class PilotTests(unittest.TestCase):
       self.assertEqual(self.client.post("/api/public/brands/rule-lab/events",json=start).status_code,200)
       response=self.client.post("/api/public/brands/rule-lab/events",json=finish)
       self.assertEqual(response.status_code,200)
+      self.assertEqual(self.client.get("/api/public/brands/rule-lab/rewards",params={"sid":sid}).json(),[])
+      ticket=self.client.post("/api/public/brands/rule-lab/play-attempts/start",json={"sid":sid,"game":"memory"}).json()["ticket"]
+      with self.mod.db() as con:
+        con.execute("UPDATE play_attempts SET started_epoch=started_epoch-10 WHERE ticket_hash=?",
+          (__import__("hashlib").sha256(ticket.encode()).hexdigest(),))
+      valid=self.client.post("/api/public/brands/rule-lab/play-attempts/finish",json={
+        "sid":sid,"game":"memory","ticket":ticket,"score":200+index})
+      self.assertEqual(valid.status_code,200)
+      self.assertEqual(self.client.post("/api/public/brands/rule-lab/play-attempts/finish",json={
+        "sid":sid,"game":"memory","ticket":ticket,"score":200+index}).status_code,409)
       awards=self.client.get("/api/public/brands/rule-lab/rewards",params={"sid":sid}).json()
       self.assertEqual(len(awards),1 if index<2 else 0)
       if index==0:
@@ -142,9 +152,13 @@ class PilotTests(unittest.TestCase):
       brand_id=con.execute("SELECT id FROM brands WHERE slug='contest-lab'").fetchone()["id"]
       for i,score in enumerate([120,340,210]):
         sid=f"contest-player-{i:05}"
-        for kind in ["start","complete"]:
-          con.execute("INSERT INTO events(brand_id,kind,game,sid,score,nickname,created_at) VALUES(?,?,?,?,?,?,?)",
-            (brand_id,kind,"breaker",sid,score if kind=="complete" else None,"",yesterday+" 15:00:00"))
+        con.execute("""INSERT INTO play_attempts(brand_id,sid,game,ticket_hash,started_epoch,created_at,completed_at,score,eligible)
+          VALUES(?,?,?,?,?,?,?,?,1)""",(brand_id,sid,"breaker",f"sample-ticket-{i}",0,
+            yesterday+" 15:00:00",yesterday+" 15:00:10",score))
+    review=owner.get(f"/api/brands/contest-lab/reward-rules/{rid}/settlement-preview",params={"period_key":yesterday})
+    self.assertEqual(review.status_code,200)
+    self.assertEqual(review.json()["winners_possible"],2)
+    self.assertEqual(review.json()["estimated_prize_cost_cents"],500)
     outcome=owner.post(f"/api/brands/contest-lab/reward-rules/{rid}/settle",json={"period_key":yesterday})
     self.assertEqual(outcome.status_code,200)
     self.assertEqual(len(outcome.json()["winners"]),2)  # Budget for only two prizes
@@ -152,6 +166,27 @@ class PilotTests(unittest.TestCase):
     self.assertEqual(owner.post(f"/api/brands/contest-lab/reward-rules/{rid}/settle",json={"period_key":yesterday}).status_code,409)
     self.assertEqual(len(self.client.get("/api/public/brands/contest-lab/rewards",params={"sid":"contest-player-00001"}).json()),1)
     owner.close()
+
+  def test_reward_play_attempt_ticket_and_attempt_limit(self):
+    import hashlib
+    sid="valid-player-123456"
+    endpoint="/api/public/brands/luna-cafe/play-attempts"
+    self.assertEqual(self.client.post(endpoint+"/start",json={"sid":sid,"game":"bad"}).status_code,422)
+    for n in range(4):
+      result=self.client.post(endpoint+"/start",json={"sid":sid,"game":"memory"})
+      self.assertEqual(result.status_code,200)
+      token=result.json()["ticket"]
+      payload={"sid":sid,"game":"memory","ticket":token,"score":30+n}
+      self.assertEqual(self.client.post(endpoint+"/finish",json=payload).status_code,422)
+      with self.mod.db() as con:
+        con.execute("UPDATE play_attempts SET started_epoch=started_epoch-10 WHERE ticket_hash=?",
+                    (hashlib.sha256(token.encode()).hexdigest(),))
+      finished=self.client.post(endpoint+"/finish",json=payload)
+      self.assertEqual(finished.status_code,200)
+      self.assertEqual(finished.json()["eligible"],n<3)
+      self.assertEqual(self.client.post(endpoint+"/finish",json=payload).status_code,409)
+    self.assertEqual(self.client.post(endpoint+"/finish",
+      json={"sid":sid,"game":"memory","ticket":"A"*43,"score":1}).status_code,403)
 
   def test_four_business_objectives_and_verified_claims(self):
     owner=TestClient(self.mod.app)

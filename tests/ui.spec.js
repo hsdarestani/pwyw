@@ -326,11 +326,21 @@ const {chromium}=require('playwright');
   if(!await page.locator('#reward-portal-link').getAttribute('href').then(x=>x.endsWith('/play/playwright-garage')))
     throw Error('Business cannot open its permanent portal');
   await page.locator('#rule-templates [data-template="welcome"]').click();
+  if(await page.locator('#rule-advanced').evaluate(x=>x.open))throw Error('Advanced rule controls must be initially collapsed');
+  if(!(await page.locator('#rule-preview-copy').textContent()).includes('Überraschung'))
+    throw Error('Reward rule preview does not explain the selected prize');
+  if(!await page.locator('#reward-overview').isVisible())
+    throw Error('Merchant overview is missing real reward metrics');
   if(!await page.locator('#rule-editor').evaluate(x=>x.open))
     throw Error('Editable reward template did not open');
   await page.locator('#rule-form input[name=is_active]').check();
   await page.locator('#rule-save').click();
   await page.waitForFunction(()=>document.querySelector('#rule-list .reward-on')?.textContent.includes('Aktiv'));
+  await page.waitForFunction(()=>document.querySelector('#reward-stat-rules')?.textContent?.trim()==='1');
+  if(!await page.locator('#reward-trends').isVisible())throw Error('Merchant activity chart disclosure missing');
+  await page.locator('#reward-trends summary').click();
+  if(await page.locator('#reward-trend-bars .reward-trend-day').count()!==14)
+    throw Error('Merchant activity chart must show fourteen days');
   const publishedRules=await page.evaluate(async()=>{
     const r=await fetch('/api/public/brands/playwright-garage/reward-rules');return await r.json();
   });

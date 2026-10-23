@@ -42,6 +42,28 @@ a direct `?objective=` link and remain in an optional legacy editor.
 - `GET /api/public/brands/{slug}/rewards?sid=...`
 - `GET /reward-qr/{code}.svg`
 
+### Second iteration: safer play and simpler business UI
+
+- New single-use `POST /api/public/brands/{slug}/play-attempts/start` and `.../finish`
+  record eligible attempts. A ticket must match session and game, must last at least 6 seconds,
+  and can be used only once within 15 minutes. Only **three** attempts per game/session/rolling
+  24 hours count for eligibility; other plays remain available for entertainment.
+- Unauthenticated legacy `/events` calls are retained for historic aggregate instrumentation
+  but **never issue rule awards**. Contest rankings and score-threshold checks now only
+  read ticket-qualified attempts. Scores themselves are **still supplied by browsers**,
+  so this does **not** solve bots, shared devices, duplicate identities or tampering.
+- Owner-only `GET /api/brands/{slug}/reward-insights` reports eligible game completions,
+  approximate sessions, issued/redeemed prizes and estimated committed prize costs.
+  The dashboard shows four essential KPIs and an optional 14-day activity chart.
+- `GET /api/brands/{slug}/reward-rules/{id}/settlement-preview` lets owners review
+  provisional winners and costs before manual confirmation; it makes **no fraud-proof claim**.
+- New UI emphasizes a single portal QR, 3 simple onboarding steps, recommended templates,
+  a plain-language live rule preview and optional advanced budget settings.
+- Typography uses a privacy-friendly local system stack with Vazirmatn/Noto Arabic when
+  available; it intentionally avoids third-party font CDNs on German-facing customer pages.
+  For pixel-identical Persian typography across devices, self-hosting an OFL-compliant
+  font binary is still needed.
+
 ### Honest launch limitations
 **Do not market this as fraud-proof, fully automatic contest adjudication or POS-verified revenue.**
 Browser events and scores can be spoofed; budgets cap liability but cannot establish a unique

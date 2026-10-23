@@ -334,9 +334,9 @@ def record_event(slug:str,data:EventInput,request:Request):
         if data.kind=="complete":c.execute("BEGIN IMMEDIATE")
         c.execute("""INSERT INTO events(brand_id,kind,game,sid,score,nickname)
           VALUES(?,?,?,?,?,?)""",(brand["id"],data.kind,data.game,data.sid,score,name))
-        awarded=(reward_rules.issue_for_completion(c,brand["id"],data.sid,data.game,score)
-                 if data.kind=="complete" else [])
-    return {"ok":True,"new_rewards":awarded}
+        # Historic browser events remain analytics-only. Only ticket-validated
+        # game attempts can become eligible for rule prizes or rankings.
+    return {"ok":True,"new_rewards":[]}
 
 @app.get("/api/public/brands/{slug}/leaderboard/{game}")
 def leaderboard(slug:str,game:str):

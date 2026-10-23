@@ -1,4 +1,4 @@
-<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#11111b"><title>PWYW® Brand Lab — Build games with a purpose</title><link rel="stylesheet" href="/static/pwyw-v2.css"><link rel="stylesheet" href="/static/pwyw-studio-brand.css?v=1"><link rel="stylesheet" href="/static/pwyw-locale.css?v=20261016"><link rel="stylesheet" href="/static/pwyw-experience.css?v=20261016-02"><link rel="stylesheet" href="/static/pwyw-studio-mobile.css?v=20261016-v1"><link rel="stylesheet" href="/static/pwyw-campaign-wizard.css?v=20261016-u3"><link rel="stylesheet" href="/static/pwyw-studio-dialog.css?v=20261016-u3"><link rel="stylesheet" href="/static/pwyw-customer-preview.css?v=20261016-02"><link rel="stylesheet" href="/static/pwyw-simple.css?v=multi-goal-20261019"><link rel="stylesheet" href="/static/pwyw-unified.css?v=site20261021-01"><link rel="stylesheet" href="/static/pwyw-reward-hub.css?v=20261023-1"></head>
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#11111b"><title>PWYW® Brand Lab — Build games with a purpose</title><link rel="stylesheet" href="/static/pwyw-v2.css"><link rel="stylesheet" href="/static/pwyw-studio-brand.css?v=1"><link rel="stylesheet" href="/static/pwyw-locale.css?v=20261016"><link rel="stylesheet" href="/static/pwyw-experience.css?v=20261016-02"><link rel="stylesheet" href="/static/pwyw-studio-mobile.css?v=20261016-v1"><link rel="stylesheet" href="/static/pwyw-campaign-wizard.css?v=20261016-u3"><link rel="stylesheet" href="/static/pwyw-studio-dialog.css?v=20261016-u3"><link rel="stylesheet" href="/static/pwyw-customer-preview.css?v=20261016-02"><link rel="stylesheet" href="/static/pwyw-simple.css?v=multi-goal-20261019"><link rel="stylesheet" href="/static/pwyw-unified.css?v=site20261021-01"><link rel="stylesheet" href="/static/pwyw-reward-hub.css?v=20261023-2"><link rel="stylesheet" href="/static/pwyw-next.css?v=20261023-final"></head>
 <body class="studio-v2"><header class="studio-top"><a class="identity" href="/"><span class="identity-symbol"><svg viewBox="0 0 50 50" fill="none" aria-hidden="true"><circle cx="25" cy="25" r="22" stroke="currentColor" stroke-width="2"/><path d="M13 20L19 33L25 23L31 33L38 17" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="37.8" cy="17" r="4.5" fill="#ff8c6c"/></svg></span><span class="identity-word">PWYW<small>BRAND LAB / 01</small></span></a><div class="studio-top-right"><span class="pilot-label">● PRIVATE PILOT / NO BILLING</span><span id="user-email"></span><a href="/admin" id="platform-admin-link" hidden>CONTROL ROOM ↗</a><button id="logout" hidden>LOG OUT ↗</button></div></header>
 <main id="auth-shell" class="studio-auth"><section class="studio-auth-art"><span>YOUR CAMPAIGN STUDIO / PWYW®</span><h1>MAKE<br>YOUR BRAND<br><em>PLAY.</em></h1><p>Don’t start with a game. Start with what you want customers to do.</p></section><section class="studio-auth-box"><div class="mode-toggle"><button id="tab-login" class="active" type="button">SIGN IN</button><button id="tab-signup" type="button">CREATE AN ACCOUNT</button></div><h2 id="auth-title">Welcome back.</h2><p>One studio. Four business goals. Ten games.</p><form id="auth-form"><label>YOUR EMAIL<input type="email" name="email" autocomplete="email" placeholder="you@yourbusiness.de" required></label><label>PASSWORD<input type="password" name="password" autocomplete="current-password" minlength="10" placeholder="At least 10 characters" required></label><button class="solid-btn" id="auth-submit" type="submit">SIGN IN <span>↗</span></button><div id="auth-error" class="notice error" role="alert" hidden></div></form><p class="helper">Pilot studio. No credit card, no promises of incremental revenue.</p></section></main>
 <main id="app-shell" class="studio-shell" hidden><aside class="studio-menu"><div class="menu-title"><span>MY BRAND WORLDS</span><button id="new-brand" type="button" aria-label="Create a new brand">+</button></div><div id="brand-list" class="brand-list"></div><div class="menu-end">✳ PWYW BRAND LAB / BETA<a href="/" target="_blank" rel="noopener">EXPLORE THE WEBSITE ↗</a></div></aside>
@@ -9,6 +9,21 @@
    <p>Deine Gäste wählen selbst ein Spiel. Du entscheidest, wann es etwas zu gewinnen gibt.</p></div>
    <a id="reward-portal-link" href="#" target="_blank" rel="noopener" class="reward-portal-button">Spielportal öffnen ↗</a>
  </div>
+ <div class="reward-onboarding" aria-label="In drei Schritten starten">
+  <div><span>01</span><strong>Portal teilen</strong><small>Ein QR für alle Spiele</small></div>
+  <div><span>02</span><strong>Regel wählen</strong><small>Vorlage oder eigene Regel</small></div>
+  <div><span>03</span><strong>Preise prüfen</strong><small>Budget und Einlösung im Blick</small></div>
+ </div>
+ <section id="reward-overview" class="reward-overview" aria-label="Aktuelle Zahlen">
+  <div><span>Spiele · 30 Tage</span><strong id="reward-stat-plays">–</strong></div>
+  <div><span>Aktive Regeln</span><strong id="reward-stat-rules">–</strong></div>
+  <div><span>Ausgegebene Preise</span><strong id="reward-stat-issued">–</strong></div>
+  <div><span>Preisbudget gebunden</span><strong id="reward-stat-liability">–</strong></div>
+ </section>
+ <details id="reward-trends" class="reward-trends"><summary>Aktivität der letzten 14 Tage <span>⌄</span></summary>
+  <div class="reward-trends-inner"><div id="reward-trend-bars" class="reward-trend-bars" aria-label="Spielabschlüsse der letzten 14 Tage"></div>
+   <p id="reward-trend-caption"></p></div>
+ </details>
  <details id="reward-portal-share" class="reward-portal-share"><summary>QR-Code und Link für Gäste <span>⌄</span></summary>
   <div class="reward-portal-share-body">
    <img id="reward-portal-qr" alt="QR-Code für alle Spiele" width="142" height="142">
@@ -19,6 +34,7 @@
    </div>
   </div>
  </details>
+ <p id="reward-action-status" class="reward-action-status" role="status" aria-live="polite"></p>
  <div class="reward-hub-main">
   <section class="reward-panel" aria-labelledby="reward-template-title">
    <div class="reward-section-heading"><div><h3 id="reward-template-title">Starte mit einer einfachen Regel</h3><p>Du kannst Vorschläge anpassen oder eigene Regeln bauen.</p></div></div>
@@ -48,13 +64,16 @@
       <option value="sequence">Sequence</option></select></label>
      <label id="rule-target-wrap">Zielwert<input name="target_count" type="number" min="1" max="100000" step="1" value="1"></label>
      <label>Was bekommt der Gast?<input name="reward_title" maxlength="150" required placeholder="z. B. ein gratis Getränk"></label>
+    </div>
+    <div id="rule-preview" class="rule-preview" aria-live="polite"><span>So funktioniert deine Regel</span><p id="rule-preview-copy"></p></div>
+    <details id="rule-advanced" class="rule-advanced"><summary>Budget und weitere Einstellungen <span>⌄</span></summary><div class="rule-grid">
      <label>Wie wird der Preis eingelöst?<select name="delivery"><option value="code">Einmalcode</option><option value="staff">Bestätigung am Tresen</option><option value="qr">QR-Code zur Kontrolle</option></select></label>
      <label>Kosten pro Preis (€)<input name="reward_cost" type="number" min="0" max="1000" step=".01" value="1"></label>
      <label>Budget pro Zeitraum (€)<input name="budget" type="number" min="0" max="100000" step=".01" value="20" required></label>
      <label>Maximale Preise pro Zeitraum<input name="max_awards" type="number" min="1" max="100" step="1" value="20"></label>
-    </div>
+    </div></details>
     <label class="reward-check"><input type="checkbox" name="is_active"> Sofort aktivieren</label>
-    <p class="reward-caution">Spielpunkte kommen aus dem Browser. Ranglisten werden erst nach Prüfung durch dein Team abgerechnet. Die Auswertung beweist keinen zusätzlichen Umsatz.</p>
+    <p class="reward-caution">Wettbewerbsergebnisse bleiben vorläufig. Spielpunkte kommen aus dem Browser. Ranglisten werden erst nach Prüfung durch dein Team abgerechnet. Die Auswertung beweist keinen zusätzlichen Umsatz.</p>
     <div class="reward-editor-actions"><button type="submit" class="reward-primary" id="rule-save">Regel speichern</button><button id="rule-cancel" type="button" class="reward-secondary">Abbrechen</button></div>
     <p id="rule-form-status" role="status"></p>
    </form>
@@ -181,4 +200,4 @@
  </section>
 </div>
 <footer class="studio-footer">PWYW® BY A+SOLUTION · PURPOSE FIRST · THE ARCADE FOLLOWS.</footer></section></main>
-<script defer src="/static/dashboard-v2.js?v=multi-goal-20261019"></script><script defer src="/static/reward-studio.js?v=20261023-1"></script><script defer src="/static/campaign-assistant.js?v=multi-goal-20261019"></script><script defer src="/static/pwyw-native-fa.js?v=20261016-u3"></script><script defer src="/static/pwyw-i18n.js?v=site20261021-01"></script></body></html>
+<script defer src="/static/dashboard-v2.js?v=multi-goal-20261019"></script><script defer src="/static/reward-studio.js?v=20261023-2"></script><script defer src="/static/campaign-assistant.js?v=multi-goal-20261019"></script><script defer src="/static/pwyw-native-fa.js?v=20261016-u3"></script><script defer src="/static/pwyw-i18n.js?v=site20261021-01"></script></body></html>

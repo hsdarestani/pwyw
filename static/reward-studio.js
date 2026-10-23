@@ -23,7 +23,48 @@ function message(target,text,error=false){
  const node=$(target);node.textContent=text;node.classList.toggle("error",error);
 }
 function el(tag,klass,text){const n=document.createElement(tag);if(klass)n.className=klass;if(text!==undefined)n.textContent=text;return n}
-function selected(){return state.rules.find(r=>r.id===state.editing)}
+function status(text,error=false){message("reward-action-status",text,error)}
+function renderInsights(stats){
+ const format=n=>Number(n||0).toLocaleString(fa()?"fa-IR":"de-DE");
+ $("reward-stat-plays").textContent=format(stats.finished);
+ $("reward-stat-rules").textContent=format(stats.live_rules);
+ $("reward-stat-issued").textContent=format(stats.issued);
+ $("reward-stat-liability").textContent=euro(stats.estimated_prize_liability_cents);
+ const container=$("reward-trend-bars");container.replaceChildren();
+ const byDay=new Map((stats.days||[]).map(x=>[x.day,Number(x.finishes)]));
+ const today=new Date(),max=Math.max(1,...byDay.values()),days=[];
+ for(let i=13;i>=0;i--){
+   const day=new Date(today.getTime());day.setUTCDate(day.getUTCDate()-i);
+   const key=day.toISOString().slice(0,10),count=byDay.get(key)||0;
+   days.push(count);
+   const bar=el("div","reward-trend-day");
+   const fill=el("span","reward-trend-bar");fill.style.height=Math.max(count?12:3,Math.round(count/max*100))+"%";
+   bar.append(fill);
+   bar.title=key+" · "+count;
+   bar.setAttribute("aria-label",key+" · "+count);
+   container.append(bar);
+ }
+ $("reward-trend-caption").textContent=txt("Qualifizierte Spielabschlüsse, keine nachgewiesenen Verkäufe. ","بازی‌های معتبر، نه فروش قطعی. ")+
+   (stats.games?.[0]?txt("Beliebtestes Spiel: ","محبوب‌ترین بازی: ")+(games[stats.games[0].game]||stats.games[0].game):"");
+}
+function updateRulePreview(){
+ const info=formData(),format=fa();
+ const when={
+  first_play:["beim ersten Spiel","بعد از اولین بازی"],
+  repeat_days:["nach "+info.target_count+" verschiedenen Spieltagen","بعد از "+info.target_count+" روز بازی"],
+  score_threshold:["bei mindestens "+info.target_count+" geprüften Punkten","با حداقل "+info.target_count+" امتیاز تأییدشده"],
+  leaderboard_daily:["für die besten Plätze des Tages","برای نفرات برتر روز"],
+  leaderboard_weekly:["für die besten Plätze der Woche","برای نفرات برتر هفته"],
+  verified_visit:["nach bestätigtem Besuch","بعد از مراجعه تأییدشده"],
+  verified_referral:["nach bestätigter Empfehlung","بعد از معرفی تأییدشده"]
+ }[info.rule_type]||["beim Spielen","هنگام بازی"];
+ const qualifier=info.game==="all"?(format?"در همه بازی‌ها":"in allen Spielen"):
+  (format?"در بازی ":"im Spiel ")+(games[info.game]||info.game);
+ const text=format?qualifier+"، "+when[1]+"، جایزه «"+info.reward_title+"» ارائه می‌شه.":
+  qualifier+" "+when[0]+": „"+info.reward_title+"“.";
+ $("rule-preview-copy").textContent=text;
+}
+
 function formData(){
  const form=$("rule-form");
  const n=name=>form.elements.namedItem(name);
@@ -50,6 +91,7 @@ function setForm(rule){
   if(field.type==="checkbox")field.checked=Boolean(final);else field.value=final;
  }
  $("rule-editor").open=true;
+ $("rule-advanced").open=false;
  typeChanged();
  message("rule-form-status","");
  $("rule-editor").scrollIntoView({behavior:"smooth",block:"start"});
@@ -65,6 +107,7 @@ function typeChanged(){
  f.elements.namedItem("game").querySelector('option[value="all"]').disabled=isRanking;
  // Daily/weekly winners use max_awards; the numerical threshold is not relevant.
  if(isRanking)n.value=1;
+ updateRulePreview();
 }
 function templateCard(template){
  const button=el("button","reward-template");
@@ -103,19 +146,31 @@ function ruleCard(rule){
    const keys=["title","rule_type","game","period","target_count","reward_title","delivery","reward_cost_cents","budget_cents","max_awards","is_active"];
    await api("/api/brands/"+encodeURIComponent(state.slug)+"/reward-rules/"+rule.id,"PUT",Object.fromEntries(keys.map(k=>[k,payload[k]])));
    await load();
-  }catch(e){message("rule-form-status",e.message,true)}finally{toggle.disabled=false}
+  }catch(e){status(e.message,true)}finally{toggle.disabled=false}
  });actions.append(toggle);
  if(rule.is_active&&rule.rule_type.startsWith("leaderboard")){
   const settle=el("button","reward-secondary",txt("Letzten Zeitraum abrechnen","دوره قبلی را نهایی کن"));
   settle.type="button";
   settle.addEventListener("click",async()=>{
-   if(!confirm(txt("Browser-Punkte sind nicht fälschungssicher. Hast du die Ergebnisse geprüft und möchtest die Preise ausgeben?",
-     "امتیاز مرورگر ضدتقلب قطعی نیست. نتایج را بررسی کرده‌ای و می‌خواهی جایزه‌ها صادر شوند؟")))return;
+   settle.disabled=true;
+   try{
+     const review=await api("/api/brands/"+encodeURIComponent(state.slug)+"/reward-rules/"+rule.id+"/settlement-preview");
+     if(review.already_settled){status(txt("Dieser Zeitraum wurde bereits abgerechnet.","این دوره قبلاً نهایی شده."));return}
+     const rows=review.candidates.map((r,i)=>
+       (i+1)+". "+r.nickname+" · "+r.score+" "+txt("Punkte","امتیاز")+" ("+r.attempts+" "+txt("Versuche","تلاش")+")").join("\n");
+     const messageText=txt("Zeitraum: ","دوره: ")+review.period_key+"\n"+
+       (rows||txt("Keine qualifizierten Ergebnisse","نتیجه معتبری ثبت نشده"))+"\n\n"+
+       txt("Maximale Gewinner: ","حداکثر برنده: ")+review.winners_possible+
+       " · "+txt("Prämienkosten: ","هزینه جوایز: ")+euro(review.estimated_prize_cost_cents)+"\n\n"+
+       txt("Punkte bleiben browserbasiert. Nur nach manueller Prüfung bestätigen?",
+           "امتیازها هنوز از مرورگر ثبت می‌شن. بعد از بررسی دستی تأیید می‌کنی؟");
+     if(!confirm(messageText))return;
+   }catch(err){status(err.message,true);return}finally{settle.disabled=false}
    settle.disabled=true;
    try{const res=await api("/api/brands/"+encodeURIComponent(state.slug)+"/reward-rules/"+rule.id+"/settle","POST",{});
-    message("rule-form-status",txt("Gewinner: ","برندگان: ")+res.winners.length+" · "+res.period_key);
+    status(txt("Gewinner: ","برندگان: ")+res.winners.length+" · "+res.period_key);
     await load();
-   }catch(e){message("rule-form-status",e.message,true)}finally{settle.disabled=false}
+   }catch(e){status(e.message,true)}finally{settle.disabled=false}
   });actions.append(settle);
  }
  box.append(actions);return box;
@@ -133,15 +188,16 @@ function renderRules(){
 async function load(){
  const slug=state.slug;if(!slug)return;
  const n=++state.seq;
- const [rules,rec]=await Promise.all([
+ const [rules,rec,stats]=await Promise.all([
   api("/api/brands/"+encodeURIComponent(slug)+"/reward-rules"),
-  api("/api/brands/"+encodeURIComponent(slug)+"/reward-recommendations")
+  api("/api/brands/"+encodeURIComponent(slug)+"/reward-recommendations"),
+  api("/api/brands/"+encodeURIComponent(slug)+"/reward-insights")
  ]);
  if(n!==state.seq||state.slug!==slug)return;
  state.rules=rules;state.recommended=rec.recommended||[];
  const phrase=fa()?"توصیه اولیه بر اساس نوع کسب‌وکاره؛ افزایش فروش هنوز اثبات نشده.":rec.reason;
  $("rule-recommendation").textContent=phrase;
- renderTemplates();renderRules();
+ renderInsights(stats);renderTemplates();renderRules();
 }
 function chooseBrand(slug){
  state.slug=slug||"";state.editing=null;state.seq++;
@@ -152,8 +208,8 @@ function chooseBrand(slug){
  $("reward-portal-qr").src=qr;$("reward-qr-download").href=qr;
  $("reward-portal-share").open=false;
  $("rule-editor").open=false;
- message("rule-form-status","");
- load().catch(e=>message("rule-form-status",e.message,true));
+ message("rule-form-status","");status("");
+ load().catch(e=>status(e.message,true));
 }
 $("reward-copy-portal").addEventListener("click",async()=>{
  const link=new URL("/play/"+encodeURIComponent(state.slug),location.origin).href;
@@ -162,6 +218,8 @@ $("reward-copy-portal").addEventListener("click",async()=>{
  }catch{message("reward-share-status",link)}
 });
 $("rule-type").addEventListener("change",typeChanged);
+$("rule-form").addEventListener("input",updateRulePreview);
+$("rule-form").addEventListener("change",updateRulePreview);
 $("rule-from-scratch").addEventListener("click",()=>{
  $("rule-form").reset();setForm({id:null,title:"Meine neue Regel",rule_type:"first_play",game:"all",period:"lifetime",
   target_count:1,reward_title:"Kleines Dankeschön",delivery:"code",
@@ -177,15 +235,15 @@ $("rule-form").addEventListener("submit",async e=>{
   if(state.editing)await api("/api/brands/"+encodeURIComponent(state.slug)+"/reward-rules/"+state.editing,"PUT",data);
   else await api("/api/brands/"+encodeURIComponent(state.slug)+"/reward-rules","POST",data);
   $("rule-editor").open=false;state.editing=null;await load();
-  message("rule-form-status",txt("Regel gespeichert.","قانون ذخیره شد."));
- }catch(err){message("rule-form-status",err.message,true)}finally{button.disabled=false}
+  status(txt("Regel gespeichert. Du kannst das Portal direkt testen.","قانون ذخیره شد. حالا می‌تونی پورتال رو تست کنی."));
+ }catch(err){message("rule-form-status",err.message,true);status(err.message,true)}finally{button.disabled=false}
 });
 $("rule-verify-form").addEventListener("submit",async e=>{
  e.preventDefault();const id=$("rule-verify-select").value;
  if(!id)return;
  try{const res=await api("/api/brands/"+encodeURIComponent(state.slug)+"/reward-rules/"+id+"/verify","POST",
    {sid:$("rule-verify-sid").value.trim()});
-  message("rule-staff-status",txt("Belohnungscode: ","کد جایزه: ")+res.code);await load()
+  message("rule-staff-status",txt("Belohnungscode: ","کد جایزه: ")+res.code);await load();status(txt("Aktion bestätigt.","مراجعه یا فعالیت تأیید شد."))
  }catch(err){message("rule-staff-status",err.message,true)}
 });
 $("rule-redeem-form").addEventListener("submit",async e=>{

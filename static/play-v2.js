@@ -19,7 +19,7 @@
   const tr = value => window.PWYWI18N?.t(value) || value;
   const goalNames={upsell:"Play to Upsell",return:"Play to Return",refer:"Play to Refer",learn:"Play to Learn"};
   const portalMode=!new URLSearchParams(location.search).has("objective");
-  let portalRules=[];
+  let portalRules=[],playRun=null;
   let objective="upsell",campaigns={},campaign=null,refCode=new URLSearchParams(location.search).get("ref")||"",rewardCode="",rewardIsDemo=false,claimStatus="idle",rewardRequestId=0,featuredGame="orbit";
   let brandArt={}; let brandedToken=null;
   async function fetchBrandArt(){
@@ -148,9 +148,14 @@
       "امتیازها از مرورگر ثبت می‌شن و جایزه رقابت بعد از تأیید کسب‌وکار صادر می‌شه.":
       "Spielpunkte sind browserbasiert; Wettbewerbspreise werden vom Geschäft bestätigt.";
   }
+  function setPortalPlayNote(de,persian){
+    const notice=$("portal-play-note");
+    if(notice)notice.textContent=window.PWYWI18N?.locale()==="fa"?persian:de;
+  }
   async function loadEarnedRewards(){
     if(!portalMode)return;
     const box=$("portal-prizes");box.replaceChildren();box.hidden=false;
+    setPortalPlayNote("","");
     const isFa=window.PWYWI18N?.locale()==="fa";
     try{
       const rewards=await request("/api/public/brands/"+encodeURIComponent(slug)+"/rewards?sid="+encodeURIComponent(sid));
@@ -480,6 +485,11 @@
     board.className="game-board "+(id==="memory"?"memory-board":id==="merge"?"merge-board":id==="rush"?"rush-board":"canvas-board");
     $("third-stat").textContent="00";
     event("start");track("play");
+    playRun=portalMode?{
+      id,promise:request("/api/public/brands/"+encodeURIComponent(slug)+"/play-attempts/start",{
+        method:"POST",body:JSON.stringify({sid,game:id})
+      }).catch(()=>null)
+    }:null;
     if(id==="memory")memory();
     else if(id==="merge")merge();
     else if(id==="rush")rush();
@@ -515,11 +525,27 @@
     $("post-score").disabled=false;
     $("leaderboard").replaceChildren();
     $("scoreboard-details").open=false;
+    $("scoreboard-details").hidden=portalMode;
     $("scoreboard-details").dataset.loaded="";
-    const completed=event("complete",{score});
+    event("complete",{score});
     renderReward();track("finish");
-    if(portalMode)completed?.then(()=>loadEarnedRewards());
-    else issueReward();
+    if(portalMode){
+      const run=playRun;playRun=null;
+      (async()=>{
+        const pass=run&&run.id===finalGame?await run.promise:null;
+        if(!pass?.ticket){await loadEarnedRewards();setPortalPlayNote("Die Teilnahme konnte nicht bestätigt werden.","امکان تأیید این دور بازی نبود.");return}
+        try{
+          const outcome=await request("/api/public/brands/"+encodeURIComponent(slug)+"/play-attempts/finish",{
+            method:"POST",body:JSON.stringify({sid,game:finalGame,ticket:pass.ticket,score})
+          });
+          await loadEarnedRewards();
+          if(!outcome.eligible)setPortalPlayNote("Heute sind 3 Versuche pro Spiel für die Wertung erlaubt.","برای رتبه‌بندی امروز هر بازی سه تلاش معتبر داری.");
+        }catch{
+          await loadEarnedRewards();
+          setPortalPlayNote("Dieser Versuch zählt nicht für Preise oder Ranglisten.","این دور بازی برای جایزه یا لیدربورد حساب نمی‌شه.");
+        }
+      })();
+    }else issueReward();
     (!portalMode && campaign && objective!=="learn"?$("reward-code"):$("play-again")).focus({preventScroll:true});
   }
   async function showLeaderboard(g){
