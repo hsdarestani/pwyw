@@ -115,7 +115,34 @@
       const title=document.createElement("strong");title.textContent=rule.title;
       const line=document.createElement("p");line.textContent=rule.reward_title+
         (rule.rule_type.startsWith("leaderboard")?(isFa?" · برندگان پس از پایان دوره تأیید می‌شن":" · Gewinner nach Prüfung"):"");
-      card.append(icon,title,line);list.append(card);
+      card.append(icon,title,line);
+      if(rule.rule_type.startsWith("leaderboard")){
+        const open=document.createElement("button");open.type="button";open.className="portal-rank-button";
+        open.textContent=isFa?"دیدن رتبه‌ها ↗":"Rangliste ansehen ↗";
+        const rankings=document.createElement("div");rankings.className="portal-ranks";rankings.hidden=true;
+        open.addEventListener("click",async()=>{
+          if(!rankings.hidden){rankings.hidden=true;return}
+          rankings.hidden=false;rankings.textContent=isFa?"در حال بارگذاری…":"Wird geladen…";
+          try{
+            const data=await request("/api/public/brands/"+encodeURIComponent(slug)+"/rule-leaderboard/"+rule.id);
+            rankings.replaceChildren();
+            const caption=document.createElement("small");
+            caption.textContent=data.period_key+(isFa?" · امتیازها هنوز تأیید نهایی نیستن":" · Vorläufige Ergebnisse");
+            rankings.append(caption);
+            for(const row of data.ranking){
+              const p=document.createElement("p");
+              p.textContent=row.rank+". "+row.nickname+" — "+visibleDigits(row.score);
+              rankings.append(p);
+            }
+            if(!data.ranking.length){
+              const p=document.createElement("p");p.textContent=isFa?"هنوز امتیازی ثبت نشده.":"Noch keine Punkte.";
+              rankings.append(p);
+            }
+          }catch{rankings.textContent=isFa?"امکان دریافت رتبه‌ها نبود.":"Rangliste derzeit nicht erreichbar."}
+        });
+        card.append(open,rankings);
+      }
+      list.append(card);
     }
     $("portal-offers").querySelector(".portal-disclaimer").textContent=isFa?
       "امتیازها از مرورگر ثبت می‌شن و جایزه رقابت بعد از تأیید کسب‌وکار صادر می‌شه.":
