@@ -181,7 +181,7 @@
       $("purpose-dial").hidden=true;
       $("game-heading").textContent=window.PWYWI18N?.locale()==="fa"?"هر بازی دوست داری انتخاب کن":"Such dir dein Lieblingsspiel aus";
       $("campaign-context").hidden=true;
-      $("featured-game").querySelector(".featured-label").textContent=window.PWYWI18N?.locale()==="fa"?"پیشنهاد برای شروع":"Zum Einstieg";
+      document.querySelector(".featured-game .featured-label").textContent=window.PWYWI18N?.locale()==="fa"?"پیشنهاد برای شروع":"Zum Einstieg";
       await loadPortalRules();
     }
     const direct=params.get("game");
@@ -740,7 +740,7 @@
     dial.querySelectorAll("[data-objective]").forEach(b=>{b.textContent=names[b.dataset.objective]});
     if(portalMode){
       $("game-heading").textContent=window.PWYWI18N?.locale()==="fa"?"هر بازی دوست داری انتخاب کن":"Such dir dein Lieblingsspiel aus";
-      $("featured-game").querySelector(".featured-label").textContent=window.PWYWI18N?.locale()==="fa"?"پیشنهاد برای شروع":"Zum Einstieg";
+      document.querySelector(".featured-game .featured-label").textContent=window.PWYWI18N?.locale()==="fa"?"پیشنهاد برای شروع":"Zum Einstieg";
       renderPortalRules();
     }
     if(!$("finish-modal").hidden)renderReward({retainClaim:true});
