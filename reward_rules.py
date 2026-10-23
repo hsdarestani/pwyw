@@ -255,6 +255,20 @@ def install(app,db,user_from,owned_brand,public_brand,throttle):
   return {"ok":True,"period_key":key,"winners":winners,
           "notice":"Scores are browser-reported. Review results before accepting reward codes."}
 
+ @app.get("/reward-qr/{code}.svg")
+ def reward_qr(code:str):
+  import io
+  import qrcode
+  from qrcode.image.svg import SvgPathImage
+  from fastapi import Response
+  if not CODE_RE.fullmatch(code):raise HTTPException(404,"Unknown reward code")
+  with db() as con:
+   row=con.execute("SELECT 1 FROM rule_awards WHERE code=?",(code,)).fetchone()
+  if not row:raise HTTPException(404,"Unknown reward code")
+  img=qrcode.make(code,image_factory=SvgPathImage,box_size=8,border=3)
+  out=io.BytesIO();img.save(out)
+  return Response(out.getvalue(),media_type="image/svg+xml",headers={"Cache-Control":"no-store"})
+
  @app.post("/api/brands/{slug}/reward-rules/redeem")
  def redeem(slug:str,data:RedeemInput,request:Request):
   brand=owned_brand(slug,user_from(request))
