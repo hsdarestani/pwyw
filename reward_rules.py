@@ -199,8 +199,8 @@ def install(app,db,user_from,owned_brand,public_brand,throttle):
   brand=owned_brand(slug,user_from(request))
   with db() as con:
    live=con.execute("SELECT COUNT(*) n FROM reward_rules WHERE brand_id=? AND is_active=1",(brand["id"],)).fetchone()["n"]
-   plays=con.execute("""SELECT COUNT(*) n FROM events WHERE brand_id=? AND kind='complete'
-                      AND created_at>=datetime('now','-30 days')""",(brand["id"],)).fetchone()["n"]
+   plays=con.execute("""SELECT COUNT(*) n FROM play_attempts WHERE brand_id=? AND eligible=1
+                      AND completed_at>=datetime('now','-30 days')""",(brand["id"],)).fetchone()["n"]
   preferred=(["welcome","return","weekly"] if brand["industry"] in ("cafe","restaurant","hotel") else
              ["welcome","visit","weekly"] if brand["industry"] in ("salon","health") else ["welcome","refer","weekly"])
   reason=("Starte mit einer kleinen Budgetgrenze." if plays<20 else
