@@ -105,3 +105,16 @@ html[lang=fa] .studio-v2 .reward-overview :is(span,strong){font-family:var(--p-p
 .site-simplified .hero-showcase{transform:none}
 }
 @media(prefers-reduced-motion:reduce){.site-simplified .hero-showcase,.studio-v2 .reward-template,.player-v2 .game-library[open] .game-pick{transition:none!important;transform:none!important}}
+
+.studio-v2 .reward-trends{margin:0 0 14px;border:1px solid var(--p-line);border-radius:15px;background:#fff;overflow:hidden}
+.studio-v2 .reward-trends>summary{min-height:48px;padding:11px 16px;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;color:#5b4a98;font:750 12px/1.6 var(--p-font)}
+html[lang=fa] .studio-v2 .reward-trends>summary{font-family:var(--p-persian)}
+.studio-v2 .reward-trends>summary::-webkit-details-marker{display:none}
+.studio-v2 .reward-trends[open]>summary{border-bottom:1px solid var(--p-line)}
+.studio-v2 .reward-trends[open]>summary span{transform:rotate(180deg)}
+.studio-v2 .reward-trends-inner{padding:16px 20px}
+.studio-v2 .reward-trend-bars{height:96px;display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:clamp(4px,1vw,12px);align-items:end;border-bottom:1px solid #d9dfe9}
+.studio-v2 .reward-trend-day{height:92px;display:flex;align-items:flex-end;justify-content:center;min-width:0}
+.studio-v2 .reward-trend-day>span{display:block;width:min(100%,29px);min-height:3px;background:linear-gradient(#9d8be7,#6d56c2);border-radius:7px 7px 2px 2px;transition:height .2s}
+.studio-v2 #reward-trend-caption{font:550 11px/1.8 var(--p-font);color:#748098;margin:9px 0 0}
+html[lang=fa] .studio-v2 #reward-trend-caption{font-family:var(--p-persian)}
