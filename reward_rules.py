@@ -188,21 +188,23 @@ def install(app,db,user_from,owned_brand,public_brand,throttle):
 
  @app.get("/api/public/brands/{slug}/reward-rules")
  def public_rules(slug:str):
-  brand=public_brand(slug)
+  public_brand(slug)
   with db() as con:
+   bid=con.execute("SELECT id FROM brands WHERE slug=?",(slug,)).fetchone()["id"]
    rows=con.execute("""SELECT id,title,rule_type,game,period,target_count,reward_title,delivery,max_awards
-                     FROM reward_rules WHERE brand_id=? AND is_active=1 ORDER BY id DESC""",(brand["id"],)).fetchall()
+                     FROM reward_rules WHERE brand_id=? AND is_active=1 ORDER BY id DESC""",(bid,)).fetchall()
   return [dict(x) for x in rows]
 
  @app.get("/api/public/brands/{slug}/rewards")
  def rewards(slug:str,sid:str):
-  brand=public_brand(slug)
+  public_brand(slug)
   if not SID_RE.fullmatch(sid):raise HTTPException(422,"Invalid session")
   with db() as con:
+   bid=con.execute("SELECT id FROM brands WHERE slug=?",(slug,)).fetchone()["id"]
    rows=con.execute("""SELECT a.code,a.period_key,a.issued_at,a.redeemed_at,
      r.title,r.reward_title,r.delivery,r.rule_type
      FROM rule_awards a JOIN reward_rules r ON r.id=a.rule_id
-     WHERE a.brand_id=? AND a.sid=? ORDER BY a.id DESC LIMIT 30""",(brand["id"],sid)).fetchall()
+     WHERE a.brand_id=? AND a.sid=? ORDER BY a.id DESC LIMIT 30""",(bid,sid)).fetchall()
   return [dict(x) for x in rows]
 
  @app.post("/api/brands/{slug}/reward-rules/{rule_id}/verify")
