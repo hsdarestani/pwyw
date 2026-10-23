@@ -6,6 +6,19 @@
   const catalog = new Map();
   // catalog entries are registered below, as explicit reviewed UI translations.
   const entries = [
+    ["Portal teilen","Portal teilen","اشتراک پورتال"],
+    ["Ein QR für alle Spiele","Ein QR für alle Spiele","یک QR برای همه بازی‌ها"],
+    ["Regel wählen","Regel wählen","انتخاب قانون"],
+    ["Vorlage oder eigene Regel","Vorlage oder eigene Regel","قانون آماده یا دلخواه"],
+    ["Preise prüfen","Preise prüfen","بررسی جایزه‌ها"],
+    ["Budget und Einlösung im Blick","Budget und Einlösung im Blick","کنترل بودجه و جایزه"],
+    ["Spiele · 30 Tage","Spiele · 30 Tage","بازی‌ها · ۳۰ روز"],
+    ["Aktive Regeln","Aktive Regeln","قانون‌های فعال"],
+    ["Ausgegebene Preise","Ausgegebene Preise","جایزه‌های صادرشده"],
+    ["Preisbudget gebunden","Preisbudget gebunden","هزینه جوایز صادرشده"],
+    ["Aktivität der letzten 14 Tage","Aktivität der letzten 14 Tage","فعالیت ۱۴ روز گذشته"],
+    ["So funktioniert deine Regel","So funktioniert deine Regel","قانون تو چطور کار می‌کنه"],
+    ["Budget und weitere Einstellungen","Budget und weitere Einstellungen","بودجه و تنظیمات بیشتر"],
     ["In drei Schritten starten","In drei Schritten starten","در سه قدم شروع کن"],
     ["Portal teilen","Portal teilen","اشتراک پورتال"],
     ["Ein QR für alle Spiele","Ein QR für alle Spiele","یک QR برای همه بازی‌ها"],
