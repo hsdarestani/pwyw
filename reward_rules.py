@@ -332,6 +332,36 @@ def install(app,db,user_from,owned_brand,public_brand,throttle):
   if not item:raise HTTPException(409,"Budget exhausted")
   return {"ok":True,"code":item["code"],"note":"Staff confirmed, not independently POS verified"}
 
+ @app.get("/api/brands/{slug}/reward-rules/{rule_id}/settlement-preview")
+ def settlement_preview(slug:str,rule_id:int,request:Request,period_key:str=""):
+  brand=owned_brand(slug,user_from(request))
+  with db() as con:
+   rule=con.execute("SELECT * FROM reward_rules WHERE brand_id=? AND id=? AND is_active=1",
+                    (brand["id"],rule_id)).fetchone()
+   if not rule:raise HTTPException(404,"Rule not found")
+   if rule["rule_type"] not in ("leaderboard_daily","leaderboard_weekly"):
+    raise HTTPException(422,"Not a competition")
+   now=datetime.now(timezone.utc)
+   key=period_key or key_for(rule["period"],now-timedelta(days=1 if rule["period"]=="daily" else 7))
+   start,end,close=bounds(rule["period"],key)
+   if close>now:raise HTTPException(409,"Period has not ended")
+   already=bool(con.execute("SELECT 1 FROM rule_settlements WHERE rule_id=? AND period_key=?",
+                            (rule_id,key)).fetchone())
+   rows=con.execute("""SELECT sid,MAX(score) best,COUNT(*) attempts,
+          MIN(completed_at) first_finish FROM play_attempts
+      WHERE brand_id=? AND game=? AND eligible=1 AND score IS NOT NULL
+        AND completed_at>=? AND completed_at<?
+      GROUP BY sid ORDER BY best DESC,sid LIMIT ?""",
+      (brand["id"],rule["game"],start,end,rule["max_awards"])).fetchall()
+   winners=min(len(rows),rule["max_awards"],
+               rule["budget_cents"]//rule["reward_cost_cents"] if rule["reward_cost_cents"] else rule["max_awards"])
+   return {"period_key":key,"game":rule["game"],"already_settled":already,
+           "winners_possible":winners,
+           "estimated_prize_cost_cents":winners*rule["reward_cost_cents"],
+           "candidates":[{"nickname":"Spieler "+row["sid"][-4:],"score":row["best"],
+                          "attempts":row["attempts"]} for row in rows],
+           "warning":"Client-reported scores. Review suspicious results; not independently proven."}
+
  @app.post("/api/brands/{slug}/reward-rules/{rule_id}/settle")
  def settle(slug:str,rule_id:int,data:SettleInput,request:Request):
   throttle(request,"settle",30,3600)
