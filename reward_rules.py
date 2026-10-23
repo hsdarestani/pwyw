@@ -208,6 +208,32 @@ def install(app,db,user_from,owned_brand,public_brand,throttle):
   return {"recommended":preferred,"reason":reason,"games_30d":plays,"live_rules":live,
           "disclaimer":"Rule suggestions are templates, not proven sales uplift."}
 
+ @app.get("/api/brands/{slug}/reward-insights")
+ def reward_insights(slug:str,request:Request):
+  brand=owned_brand(slug,user_from(request))
+  with db() as con:
+   summary=con.execute("""SELECT
+     (SELECT COUNT(*) FROM play_attempts WHERE brand_id=? AND eligible=1
+       AND completed_at>=datetime('now','-30 days')) finished,
+     (SELECT COUNT(DISTINCT sid) FROM play_attempts WHERE brand_id=? AND eligible=1
+       AND completed_at>=datetime('now','-30 days')) players,
+     (SELECT COUNT(*) FROM reward_rules WHERE brand_id=? AND is_active=1) live_rules,
+     (SELECT COUNT(*) FROM rule_awards WHERE brand_id=? AND issued_at>=datetime('now','-30 days')) issued,
+     (SELECT COUNT(*) FROM rule_awards WHERE brand_id=? AND redeemed_at>=datetime('now','-30 days')) redeemed
+   """,(brand["id"],)*5).fetchone()
+   costs=con.execute("""SELECT COALESCE(SUM(r.reward_cost_cents),0) spent
+      FROM rule_awards a JOIN reward_rules r ON r.id=a.rule_id
+      WHERE a.brand_id=? AND a.issued_at>=datetime('now','-30 days')""",(brand["id"],)).fetchone()["spent"]
+   games=con.execute("""SELECT game,COUNT(*) attempts FROM play_attempts
+      WHERE brand_id=? AND eligible=1 AND completed_at>=datetime('now','-30 days')
+      GROUP BY game ORDER BY attempts DESC LIMIT 10""",(brand["id"],)).fetchall()
+   daily=con.execute("""SELECT substr(completed_at,1,10) day,COUNT(*) finishes
+      FROM play_attempts WHERE brand_id=? AND eligible=1 AND completed_at>=datetime('now','-14 days')
+      GROUP BY substr(completed_at,1,10) ORDER BY day""",(brand["id"],)).fetchall()
+  return {**dict(summary),"estimated_prize_liability_cents":costs,
+          "games":[dict(row) for row in games],"days":[dict(row) for row in daily],
+          "note":"Anonymous browser sessions, capped prize liability estimates and merchant-declared redemptions; no proven sales uplift or verified unique customers."}
+
  @app.get("/api/brands/{slug}/reward-rules")
  def list_rules(slug:str,request:Request):
   brand=owned_brand(slug,user_from(request))
