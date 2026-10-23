@@ -525,6 +525,7 @@
     $("post-score").disabled=false;
     $("leaderboard").replaceChildren();
     $("scoreboard-details").open=false;
+    $("scoreboard-details").hidden=portalMode;
     $("scoreboard-details").dataset.loaded="";
     event("complete",{score});
     renderReward();track("finish");
