@@ -91,6 +91,16 @@ class PilotTests(unittest.TestCase):
       self.assertEqual(self.client.post("/api/public/brands/rule-lab/events",json=start).status_code,200)
       response=self.client.post("/api/public/brands/rule-lab/events",json=finish)
       self.assertEqual(response.status_code,200)
+      self.assertEqual(self.client.get("/api/public/brands/rule-lab/rewards",params={"sid":sid}).json(),[])
+      ticket=self.client.post("/api/public/brands/rule-lab/play-attempts/start",json={"sid":sid,"game":"memory"}).json()["ticket"]
+      with self.mod.db() as con:
+        con.execute("UPDATE play_attempts SET started_epoch=started_epoch-10 WHERE ticket_hash=?",
+          (__import__("hashlib").sha256(ticket.encode()).hexdigest(),))
+      valid=self.client.post("/api/public/brands/rule-lab/play-attempts/finish",json={
+        "sid":sid,"game":"memory","ticket":ticket,"score":200+index})
+      self.assertEqual(valid.status_code,200)
+      self.assertEqual(self.client.post("/api/public/brands/rule-lab/play-attempts/finish",json={
+        "sid":sid,"game":"memory","ticket":ticket,"score":200+index}).status_code,409)
       awards=self.client.get("/api/public/brands/rule-lab/rewards",params={"sid":sid}).json()
       self.assertEqual(len(awards),1 if index<2 else 0)
       if index==0:
@@ -142,9 +152,9 @@ class PilotTests(unittest.TestCase):
       brand_id=con.execute("SELECT id FROM brands WHERE slug='contest-lab'").fetchone()["id"]
       for i,score in enumerate([120,340,210]):
         sid=f"contest-player-{i:05}"
-        for kind in ["start","complete"]:
-          con.execute("INSERT INTO events(brand_id,kind,game,sid,score,nickname,created_at) VALUES(?,?,?,?,?,?,?)",
-            (brand_id,kind,"breaker",sid,score if kind=="complete" else None,"",yesterday+" 15:00:00"))
+        con.execute("""INSERT INTO play_attempts(brand_id,sid,game,ticket_hash,started_epoch,created_at,completed_at,score,eligible)
+          VALUES(?,?,?,?,?,?,?,?,1)""",(brand_id,sid,"breaker",f"sample-ticket-{i}",0,
+            yesterday+" 15:00:00",yesterday+" 15:00:10",score))
     outcome=owner.post(f"/api/brands/contest-lab/reward-rules/{rid}/settle",json={"period_key":yesterday})
     self.assertEqual(outcome.status_code,200)
     self.assertEqual(len(outcome.json()["winners"]),2)  # Budget for only two prizes
