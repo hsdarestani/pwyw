@@ -136,8 +136,20 @@ function ruleCard(rule){
   const settle=el("button","reward-secondary",txt("Letzten Zeitraum abrechnen","دوره قبلی را نهایی کن"));
   settle.type="button";
   settle.addEventListener("click",async()=>{
-   if(!confirm(txt("Browser-Punkte sind nicht fälschungssicher. Hast du die Ergebnisse geprüft und möchtest die Preise ausgeben?",
-     "امتیاز مرورگر ضدتقلب قطعی نیست. نتایج را بررسی کرده‌ای و می‌خواهی جایزه‌ها صادر شوند؟")))return;
+   settle.disabled=true;
+   try{
+     const review=await api("/api/brands/"+encodeURIComponent(state.slug)+"/reward-rules/"+rule.id+"/settlement-preview");
+     if(review.already_settled){status(txt("Dieser Zeitraum wurde bereits abgerechnet.","این دوره قبلاً نهایی شده."));return}
+     const rows=review.candidates.map((r,i)=>
+       (i+1)+". "+r.nickname+" · "+r.score+" "+txt("Punkte","امتیاز")+" ("+r.attempts+" "+txt("Versuche","تلاش")+")").join("\n");
+     const messageText=txt("Zeitraum: ","دوره: ")+review.period_key+"\n"+
+       (rows||txt("Keine qualifizierten Ergebnisse","نتیجه معتبری ثبت نشده"))+"\n\n"+
+       txt("Maximale Gewinner: ","حداکثر برنده: ")+review.winners_possible+
+       " · "+txt("Prämienkosten: ","هزینه جوایز: ")+euro(review.estimated_prize_cost_cents)+"\n\n"+
+       txt("Punkte bleiben browserbasiert. Nur nach manueller Prüfung bestätigen?",
+           "امتیازها هنوز از مرورگر ثبت می‌شن. بعد از بررسی دستی تأیید می‌کنی؟");
+     if(!confirm(messageText))return;
+   }catch(err){status(err.message,true);return}finally{settle.disabled=false}
    settle.disabled=true;
    try{const res=await api("/api/brands/"+encodeURIComponent(state.slug)+"/reward-rules/"+rule.id+"/settle","POST",{});
     status(txt("Gewinner: ","برندگان: ")+res.winners.length+" · "+res.period_key);
