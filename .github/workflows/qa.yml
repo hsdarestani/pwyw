@@ -1,7 +1,7 @@
 name: PWYW pilot browser E2E
 on:
   push:
-    branches: [main]
+    branches: [main, feature/portal-reward-rules-v1-20261023]
     paths:
       - 'app.py'
       - 'admin_api.py'
