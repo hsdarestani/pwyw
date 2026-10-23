@@ -41,3 +41,9 @@
  .player-v2 .game-library[open] .game-pick-poster{height:73px!important}
  .player-v2 .game-library[open] .game-pick{min-height:143px!important}
 }
+
+.player-v2 .portal-rank-button{grid-column:1/-1;min-height:39px;border:1px solid var(--calm-border);border-radius:9px;background:transparent;color:var(--world-flare);text-align:center;font:800 12px 'Estedad',Manrope,sans-serif;padding:8px 13px;margin-top:6px}
+.player-v2 .portal-ranks{grid-column:1/-1;padding:10px 11px;border-radius:10px;background:color-mix(in srgb,var(--world-bg),transparent 35%);color:var(--world-ink)}
+.player-v2 .portal-ranks[hidden]{display:none!important}
+.player-v2 .portal-ranks>p{font:600 12px/1.7 'Estedad',Manrope,sans-serif;padding:4px 0;border-bottom:1px solid var(--calm-border)}
+.player-v2 .portal-ranks>small{display:block;font:550 10px/1.6 'Estedad',Manrope,sans-serif;color:var(--world-muted);margin-bottom:5px}
