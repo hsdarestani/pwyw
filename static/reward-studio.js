@@ -148,10 +148,19 @@ function chooseBrand(slug){
  const section=$("reward-hub");section.hidden=!slug;
  if(!slug)return;
  $("reward-portal-link").href="/play/"+encodeURIComponent(slug);
+ const qr="/qr/"+encodeURIComponent(slug)+".svg";
+ $("reward-portal-qr").src=qr;$("reward-qr-download").href=qr;
+ $("reward-portal-share").open=false;
  $("rule-editor").open=false;
  message("rule-form-status","");
  load().catch(e=>message("rule-form-status",e.message,true));
 }
+$("reward-copy-portal").addEventListener("click",async()=>{
+ const link=new URL("/play/"+encodeURIComponent(state.slug),location.origin).href;
+ try{await navigator.clipboard.writeText(link);
+  message("reward-share-status",txt("Link kopiert ✓","لینک کپی شد ✓"));
+ }catch{message("reward-share-status",link)}
+});
 $("rule-type").addEventListener("change",typeChanged);
 $("rule-from-scratch").addEventListener("click",()=>{
  $("rule-form").reset();setForm({id:null,title:"Meine neue Regel",rule_type:"first_play",game:"all",period:"lifetime",
