@@ -1,0 +1,43 @@
+/* Persistent PWYW arcade portal; merchant chooses rewards, visitor chooses games. */
+.player-v2 #game-home:not([hidden]){grid-template-columns:1fr;grid-template-areas:"story" "featured" "goals" "context" "library"}
+.player-v2 .game-library[open]{margin:16px 0 23px!important;border:0}
+.player-v2 .game-library[open]>summary{border:0!important;font:800 16px/1.5 'Estedad',Manrope,sans-serif}
+.player-v2 .game-library[open] .play-game-list{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important;margin-top:10px!important}
+.player-v2 .game-library[open] .game-pick,.player-v2 .game-library[open] .game-pick:nth-child(4n+2){display:flex!important;flex-direction:column!important;align-items:stretch!important;min-height:195px!important;border-radius:17px!important;padding:10px!important;gap:8px!important;background:var(--calm-surface)!important}
+.player-v2 .game-library[open] .game-pick-poster{display:block;width:100%!important;flex-basis:auto!important;height:122px!important;border-radius:11px!important;overflow:hidden}
+.player-v2 .game-library[open] .game-pick-poster img{width:100%;height:100%;object-fit:cover}
+.player-v2 .game-library[open] .game-pick-copy{gap:3px}
+.player-v2 .game-library[open] .game-pick-arrow{display:none}
+.player-v2 .portal-offers{grid-area:offers;margin:5px 0 25px;background:var(--calm-surface);border:1px solid var(--calm-border);border-radius:18px;padding:clamp(16px,3vw,25px)}
+.player-v2 .portal-offers[hidden],.player-v2 .portal-prizes[hidden]{display:none!important}
+.player-v2 #game-home:has(.portal-offers:not([hidden])){grid-template-areas:"story" "featured" "goals" "context" "library" "offers"}
+.player-v2 .portal-offers>h2{font:900 clamp(20px,3vw,27px)/1.4 'Estedad',Manrope,sans-serif;margin:0 0 15px;color:var(--world-ink)}
+.player-v2 #portal-rule-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.player-v2 .portal-rule{display:grid;grid-template-columns:41px 1fr;grid-template-rows:auto 1fr;gap:3px 10px;align-items:center;border-radius:13px;padding:12px;background:color-mix(in srgb,var(--world-card),transparent 17%);border:1px solid var(--calm-border);min-width:0}
+.player-v2 .portal-rule-icon{grid-row:1/3;display:grid;place-items:center;width:40px;height:40px;border-radius:11px;background:color-mix(in srgb,var(--world-flare),transparent 86%);font-size:19px;color:var(--world-flare)}
+.player-v2 .portal-rule strong{font:850 13px/1.5 'Estedad',Manrope,sans-serif;color:var(--world-ink)}
+.player-v2 .portal-rule p{font:500 11px/1.55 'Estedad',Manrope,sans-serif;color:var(--world-muted)}
+.player-v2 .portal-disclaimer{font:500 10px/1.65 'Estedad',Manrope,sans-serif;color:var(--world-muted);margin:13px 0 0}
+.player-v2 .portal-prizes{display:grid;gap:10px;margin:10px 0}
+.player-v2 .portal-prizes>p{font:500 12px/1.8 'Estedad',Manrope,sans-serif;color:var(--world-muted)}
+.player-v2 .portal-earned{display:flex;flex-direction:column;align-items:center;gap:8px;padding:13px;border-radius:12px;border:1px solid var(--calm-border);background:var(--world-card);text-align:center}
+.player-v2 .portal-earned strong{color:var(--world-ink);font:850 16px/1.5 'Estedad',Manrope,sans-serif}
+.player-v2 .portal-earned code{direction:ltr;font:850 19px/1.5 monospace;color:var(--world-flare);letter-spacing:.06em;overflow-wrap:anywhere}
+.player-v2 .portal-earned small{font:500 10px/1.7 'Estedad',Manrope,sans-serif;color:var(--world-muted)}
+.player-v2 .portal-earned img{border:7px solid white;border-radius:10px;background:#fff;object-fit:contain}
+.player-v2 .player-id-details{margin-top:12px;border-top:1px solid var(--calm-border);padding:9px 0;color:var(--world-muted)}
+.player-v2 .player-id-details>summary{font:650 12px/1.8 'Estedad',Manrope,sans-serif;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.player-v2 .player-id-details>summary::-webkit-details-marker{display:none}
+.player-v2 .player-id-details>p{font:500 11px/1.6 'Estedad',Manrope,sans-serif;margin:10px 0}
+.player-v2 .player-id-details>code{display:block;direction:ltr;overflow-wrap:anywhere;font:750 12px/1.8 monospace;color:var(--world-ink);padding:6px}
+.player-v2 .player-id-details>button{min-height:42px;border:1px solid var(--calm-border);border-radius:10px;padding:10px 13px;background:var(--world-card);color:var(--world-ink);font-size:12px}
+@media(max-width:800px){
+ .player-v2 .game-library[open] .play-game-list{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .player-v2 .game-library[open] .game-pick{min-height:155px!important}
+ .player-v2 .game-library[open] .game-pick-poster{height:88px!important}
+ .player-v2 #portal-rule-list{grid-template-columns:1fr}
+}
+@media(max-width:370px){
+ .player-v2 .game-library[open] .game-pick-poster{height:73px!important}
+ .player-v2 .game-library[open] .game-pick{min-height:143px!important}
+}
