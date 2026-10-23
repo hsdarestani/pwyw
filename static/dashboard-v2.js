@@ -282,6 +282,7 @@ document.addEventListener('keydown',e=>{
 });
 function newBrand(){
  state.brand=null;state.campaigns={};state.selectedGoals=new Set();$('brand-form').reset();
+ document.dispatchEvent(new CustomEvent('pwyw:brand-selected',{detail:{slug:''}}));
  $('brand-settings').open=true;$('studio-tools').open=false;
  $('manual-campaign-settings').open=false;$('security-settings').open=false;$('brand-slug').disabled=false;
  $('brand-logo').value='';$('brand-scene').value='';$('brand-token').value='';$('brand-accent').value='#d8ff3e';
@@ -331,6 +332,7 @@ async function selectBrand(b){
  const live=Object.keys(state.campaigns).filter(k=>state.campaigns[k].is_active!==false&&state.campaigns[k].is_active!==0);
  state.selectedGoals=new Set([...draftSelections,...live]);
  objective(state.selectedGoals.has(state.objective)?state.objective:(selectedGoals()[0]||'upsell'));preview();renderBrandList();await refreshStats();
+ document.dispatchEvent(new CustomEvent('pwyw:brand-selected',{detail:{slug:b.slug}}));
 }
 $('brand-form').addEventListener('submit',async e=>{
  e.preventDefault();const btn=$('brand-save');btn.disabled=true;message('save-status','Saving...');
