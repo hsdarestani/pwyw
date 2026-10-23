@@ -155,6 +155,10 @@ class PilotTests(unittest.TestCase):
         con.execute("""INSERT INTO play_attempts(brand_id,sid,game,ticket_hash,started_epoch,created_at,completed_at,score,eligible)
           VALUES(?,?,?,?,?,?,?,?,1)""",(brand_id,sid,"breaker",f"sample-ticket-{i}",0,
             yesterday+" 15:00:00",yesterday+" 15:00:10",score))
+    review=owner.get(f"/api/brands/contest-lab/reward-rules/{rid}/settlement-preview",params={"period_key":yesterday})
+    self.assertEqual(review.status_code,200)
+    self.assertEqual(review.json()["winners_possible"],2)
+    self.assertEqual(review.json()["estimated_prize_cost_cents"],500)
     outcome=owner.post(f"/api/brands/contest-lab/reward-rules/{rid}/settle",json={"period_key":yesterday})
     self.assertEqual(outcome.status_code,200)
     self.assertEqual(len(outcome.json()["winners"]),2)  # Budget for only two prizes
