@@ -6,6 +6,9 @@
   const catalog = new Map();
   // catalog entries are registered below, as explicit reviewed UI translations.
   const entries = [
+    ["So geht’s","So geht’s","این‌طوری انجام می‌شه"],
+    ["Nur drei Schritte","Nur drei Schritte","فقط سه قدم"],
+
     ["PWYW – Spielen. Gewinnen. Wiederkommen.","PWYW – Spielen. Gewinnen. Wiederkommen.","PWYW – بازی کن. جایزه بگیر. دوباره برگرد."],
     ["Deine Gäste spielen, gewinnen kleine Preise und kommen gern wieder.","Deine Gäste spielen, gewinnen kleine Preise und kommen gern wieder.","مشتری‌هات بازی می‌کنن، جایزه می‌گیرن و دوباره برمی‌گردن."],
     ["Kleine Spiele für deine Gäste. Die Preise und Regeln bestimmst du.","Kleine Spiele für deine Gäste. Die Preise und Regeln bestimmst du.","بازی‌های کوتاه برای مشتری‌هات. جایزه‌ها و قانون‌ها رو تو تعیین می‌کنی."],
