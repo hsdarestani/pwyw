@@ -47,7 +47,7 @@ const {chromium}=require('playwright');
   if(!/[\u0600-\u06FF]/.test(await page.locator('.hero h1').textContent()))throw Error('Landing headline did not localize');
 
   const nativeHome=await page.locator('.hero h1').innerText();
-  if(!nativeHome.includes('از زمان انتظار')||!nativeHome.includes('دلیلی برای برگشت دوباره'))
+  if(!nativeHome.includes('بازی کن.')||!nativeHome.includes('دوباره برگرد.'))
     throw Error('Native Persian landing headline is missing: '+nativeHome);
   if(await page.title()!=='PWYW — پورتال بازی کسب‌وکار تو')
     throw Error('Browser title not localized in Persian');
