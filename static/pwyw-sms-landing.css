@@ -147,3 +147,22 @@ html[dir=rtl] .showcase-bottom a,html[dir=rtl] .visual-caption{font-family:inher
  .pwyw-locale-switch button{padding:5px}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.button{transition:none}}
+
+
+/* The commercial reason comes before the feature explanation. */
+.example{padding:34px 0 57px;background:#fff}
+.example-inner{grid-template-columns:minmax(0,1fr) minmax(0,.88fr);background:#251b38;color:#fff;border-color:#251b38;gap:35px;padding:42px 46px}
+.example-label{color:#bbabf6}
+.example-inner h2{max-width:470px;font-size:clamp(28px,3.3vw,39px);line-height:1.18;margin-top:15px}
+.example-inner p{font-size:15px;color:#d9d2e5;line-height:1.8;margin:17px 0 13px}
+.example-intro small{display:block;color:#bdb3cf;font-size:11px;line-height:1.6}
+.journey{display:flex;flex-direction:column;border:1px solid #ffffff20;background:#ffffff0b;border-radius:19px;padding:20px 22px}
+.journey-item{display:flex;align-items:flex-start;gap:14px;min-width:0}
+.journey-icon{display:grid;place-items:center;flex:0 0 42px;height:42px;background:#b6a0fa;color:#26173e;font-size:13px;font-weight:850;border-radius:11px}
+.journey-item>div{min-width:0;display:grid;gap:4px;padding-top:2px}
+.journey-item strong{font-size:15px;color:#fff;line-height:1.4}
+.journey-item>div>span{font-size:12px;line-height:1.65;color:#d8cfe7}
+.journey-connector{height:22px;width:2px;background:#ffffff3a;margin:6px 0 6px 20px}
+.showcase-bottom strong{max-width:220px;font-size:14px;line-height:1.4}
+@media(max-width:850px){.example-inner{grid-template-columns:1fr;gap:22px;padding:33px}.journey{max-width:620px}}
+@media(max-width:600px){.example{padding:0 0 46px}.example-inner{padding:24px 20px;gap:20px}.example-inner h2{font-size:28px}.example-inner p{font-size:14px}.journey{padding:17px 15px}.journey-item strong{font-size:14px}.journey-item>div>span{font-size:12px}.showcase-bottom strong{max-width:205px}}
