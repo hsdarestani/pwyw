@@ -6,7 +6,7 @@
   "use strict";
   const TAU=Math.PI*2,W=380,H=442;
   const tr=value=>window.PWYWI18N?.t(value)||value;
-  const canvasFont=()=>window.PWYWI18N?.locale()==="fa"?"Estedad":"Space Grotesk";
+  const canvasFont=()=>window.PWYWI18N?.locale()==="fa"?"PW Vazir":"PW Manrope";
   const colors={
     atelier:["#e7ddc7","#423427","#ce6b51","#779f8a","#ffc16a"],
     neon:["#090d21","#d4ff4e","#ff47ad","#12d2d9","#f5a623"],
@@ -37,7 +37,7 @@
     const brand=host.brand||{};
     const palette=colors[brand.theme]||colors.atelier;
     const s={ctx,canvas,mode,brand,palette,host,raf:0,listeners:[],time:0,score:0,ended:false,
-      input:{x:W/2,y:H/2,pressed:false},inputEvents:0,keyboardEvents:0,started:false,particles:[],items:[],state:{},stamp:performance.now(),last:performance.now()};
+      input:{x:W/2,y:H/2,pressed:false},inputEvents:0,keyboardEvents:0,started:false,particles:[],scoreLabels:[],items:[],state:{},stamp:performance.now(),last:performance.now()};
     active=s;
     for(const [field,url] of [["sceneImg",brand.sceneUrl],["tokenImg",brand.tokenUrl]]){
       if(url && (url.startsWith("/brand-art/")||url.startsWith("/static/worlds/"))){
@@ -86,7 +86,7 @@
         if(!s.started){s.started=true;s.last=performance.now();}
         s.keyboardEvents++;s.state.key(e.key);
       }});
-    s.addPoints=(n)=>{s.score=Math.max(0,s.score+n);host.onScore(Math.round(s.score))};
+    s.addPoints=(n)=>{s.score=Math.max(0,s.score+n);host.onScore(Math.round(s.score));if(n>0&&!matchMedia("(prefers-reduced-motion: reduce)").matches)s.scoreLabels.push({text:"+"+n,x:s.input.x,y:Math.max(45,s.input.y-22),life:.7})};
     s.finish=(reason)=>{if(s.ended||active!==s)return;s.ended=true;host.onFinish(reason||"Nicely played!")};
     s.emit=(x,y,n=12)=>{for(let i=0;i<n;i++)s.particles.push({x,y,vx:rand(-140,140),vy:rand(-150,100),
       life:rand(.3,.9),max:1,size:rand(2,7),color:palette[2+random(3)]})};
@@ -108,6 +108,8 @@
       }
       s.state.draw(ctx);
       drawParticles(s,s.started?dt:0);
+      s.scoreLabels=s.scoreLabels.filter(label=>label.life>0);
+      for(const label of s.scoreLabels){label.life-=dt;label.y-=dt*35;ctx.save();ctx.globalAlpha=Math.min(1,label.life*3);ctx.textAlign="center";ctx.font=`800 22px ${canvasFont()}`;ctx.strokeStyle=palette[0];ctx.lineWidth=4;ctx.strokeText(label.text,label.x,label.y);ctx.fillStyle=palette[1];ctx.fillText(label.text,label.x,label.y);ctx.restore();}
       if(!s.started&&!s.ended){
         ctx.save();
         ctx.fillStyle="rgba(9,13,25,.67)";
@@ -118,7 +120,7 @@
         ctx.fillText(tr("Your time starts with your first move."),W/2,244,W-80);
         ctx.restore();
       }
-      s.raf=requestAnimationFrame(frame);
+      if(active===s&&!s.ended)s.raf=requestAnimationFrame(frame);
     }
     s.raf=requestAnimationFrame(frame);
   }

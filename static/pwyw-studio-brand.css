@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap');
 :root{--studio-ink:#101727;--studio-lav:#a99bef;--studio-warm:#ff9071;--studio-bg:#f3f3f5;--studio-border:#dfe1ea;--studio-text:#21263b}
 .studio-v2{background:var(--studio-bg);color:var(--studio-text);font-family:Manrope,ui-sans-serif,system-ui,sans-serif}
 .studio-v2 .studio-top{height:86px;background:#0e1526;color:#f7f5ff;border-bottom:1px solid #394362;padding:0 clamp(18px,4vw,68px)}
