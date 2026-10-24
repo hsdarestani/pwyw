@@ -1,5 +1,4 @@
 /* PWYW bilingual art direction: unmistakable display faces, legible writing systems. */
-@import url('https://fonts.googleapis.com/css2?family=Estedad:wght@400;500;600;700;800;900&family=Lalezar&family=Space+Grotesk:wght@400;500;600;700&family=Unbounded:wght@500;600;700;800;900&display=swap');
 :root{--font:'Space Grotesk',Arial,sans-serif;--head:'Unbounded','Space Grotesk',sans-serif;--mono:'Space Grotesk',monospace}
 body{font-family:var(--font)}
 h1,h2,h3,.hero h1,.opening h1,.cr-content h1,.cr-login h2,.cr-panel h2,.goal-title h3,

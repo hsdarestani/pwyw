@@ -31,6 +31,9 @@ const {chromium}=require('playwright');
   if(landing.width>landing.viewport+4)throw Error('Landing overflows mobile: '+JSON.stringify(landing));
   const illustration=await page.locator('.showcase-art').evaluate(img=>({loaded:img.complete&&img.naturalWidth>0}));
   if(!illustration.loaded)throw Error('Landing mini-game illustration did not load');
+  await page.locator('[data-preview=memory]').click();
+  if(!(await page.locator('.showcase-art').getAttribute('src')).endsWith('/memory.svg'))throw Error('Interactive preview does not change artwork');
+  if(await page.locator('[data-preview=memory]').getAttribute('aria-pressed')!=='true')throw Error('Preview selection not announced');
   const signupUrl=await page.locator('.hero-actions .button').getAttribute('href');
   if(!signupUrl?.includes('signup=1'))throw Error('Landing does not lead directly to registration');
   await page.goto(base+signupUrl,{waitUntil:'networkidle'});
@@ -511,6 +514,16 @@ const {chromium}=require('playwright');
   const qr=await page.locator('#qr-image').evaluate(el=>{const r=el.getBoundingClientRect();return {w:r.width,left:r.left,right:r.right}});
   if(qr.w<110||qr.right>page.viewportSize().width+2||qr.left<0)throw Error('Mobile QR sizing is broken: '+JSON.stringify(qr));
 
+  if(await page.locator('#studio-settings-overlay').isVisible())await page.locator('#close-studio-settings').click();
+  await page.locator('.workspace-nav a[href="#rule-redeem-form"]').click();
+  if(!await page.locator('.reward-staff-tools').evaluate(el=>el.open))throw Error('Workspace shortcut does not open redemption tools');
+  if(!await page.locator('#rule-redeem-code').isVisible())throw Error('Redemption shortcut target hidden');
+  await page.locator('#pwyw-language-switch [data-lang=fa]').click();
+  if((await page.locator('.workspace-nav a').first().innerText())!=='نمای کلی')throw Error('Workspace shortcuts did not localize');
+  await page.locator('#pwyw-language-switch [data-lang=de]').click();
+  if((await page.locator('.workspace-nav a').first().innerText())!=='Übersicht')throw Error('Workspace shortcuts did not restore German');
+  const logoutColors=await page.locator('#logout').evaluate(el=>({ink:getComputedStyle(el).color,paper:getComputedStyle(el).backgroundColor}));
+  if(logoutColors.ink===logoutColors.paper)throw Error('Logout text invisible');
   const url=await page.locator('#open-play').getAttribute('href');
   if(new URL(url,base).pathname!=='/play/playwright-garage')throw Error('New brand not saved');
   // Existing customer campaign now comes from the owner-approved suggestion.
