@@ -277,7 +277,7 @@ const {chromium}=require('playwright');
   const studioCss=await page.evaluate(()=>[...document.styleSheets].some(x=>x.href?.includes('pwyw-unified.css')));
   if(!studioCss)throw Error('Merchant login not using shared site design');
   const faStudioHero=(await page.locator('.studio-auth-art h1').innerText()).replace(/\\s+/g,' ');
-  if(!faStudioHero.includes('برای برندت') || !faStudioHero.includes('یه بازی') || !faStudioHero.includes('بساز.'))
+  if(!faStudioHero.includes('پورتال خودت.') || !faStudioHero.includes('قانون‌های خودت.'))
     throw Error('Persian studio headline is grammatically broken: '+faStudioHero);
   await page.locator('#pwyw-language-switch [data-lang=de]').click();
   if((await page.locator('#merchant-goal-title').textContent())!=='Was möchtest du erreichen?')
