@@ -10,13 +10,13 @@ const {chromium}=require('playwright');
   if(!await page.locator('.hero h1').count() || !(await page.locator('.hero h1').innerText()).trim())
     throw Error('Branded landing headline missing');
   const valuePromise=await page.locator('.hero h1').innerText();
-  if(!valuePromise.includes('Spielen.')||!valuePromise.includes('wiederzukommen'))
+  if(!valuePromise.includes('Spielen.')||!valuePromise.includes('Wiederkommen.'))
     throw Error('Landing fails to explain business outcome: '+valuePromise);
   const example=await page.locator('.journey-item').allInnerTexts();
   if(example.length!==3||!example.some(x=>x.includes('Wiederkommen')))
     throw Error('Concrete customer return journey missing: '+JSON.stringify(example));
   const commercialBenefits=await page.locator('.simple-goal-card h3').allInnerTexts();
-  if(!commercialBenefits.some(x=>x.includes('Wiederbesuche'))||!commercialBenefits.some(x=>x.includes('Empfehlungen')))
+  if(!commercialBenefits.some(x=>x.includes('Gäste kommen gern wieder'))||!commercialBenefits.some(x=>x.includes('Freunde empfehlen')))
     throw Error('Landing does not explain why a merchant benefits: '+JSON.stringify(commercialBenefits));
   const landing=await page.evaluate(()=>({
     steps:document.querySelectorAll('.simple-step').length,
