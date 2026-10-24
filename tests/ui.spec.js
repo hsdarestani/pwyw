@@ -10,7 +10,7 @@ const {chromium}=require('playwright');
   if(!await page.locator('.hero h1').count() || !(await page.locator('.hero h1').innerText()).trim())
     throw Error('Branded landing headline missing');
   const valuePromise=await page.locator('.hero h1').innerText();
-  if(!valuePromise.includes('Wartezeit')||!valuePromise.includes('wiederzukommen'))
+  if(!valuePromise.includes('Spielen.')||!valuePromise.includes('wiederzukommen'))
     throw Error('Landing fails to explain business outcome: '+valuePromise);
   const example=await page.locator('.journey-item').allInnerTexts();
   if(example.length!==3||!example.some(x=>x.includes('Wiederkommen')))
