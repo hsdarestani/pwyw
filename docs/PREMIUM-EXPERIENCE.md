@@ -14,10 +14,13 @@ The public landing, business workspace and player share violet, deep plum, lime 
 ## Validation
 
 - 13 API tests pass, including tenant isolation, reward budgets, claims and redemption.
-- Existing browser suite passes on Chromium: German/Persian, mobile/desktop, all ten games, touch controls, signup, brand creation, campaign publishing and claim issuance.
-- Added browser checks for preview selection, workspace shortcut expansion, language switching and logout contrast. The first supplemental run exposed an open settings dialog in the test setup; the test now closes it before using the workspace. Final rerun is pending because the fresh runtime Chromium process exits with SIGSEGV before opening a page. The earlier complete existing browser suite passed before these final localization/contrast/test adjustments.
+- Final GitHub Actions browser run 40126452611 passed on the exact release content: German/Persian, mobile/desktop, all ten games, touch controls, signup, brand creation, campaign publishing and claim issuance.
+- Additional browser checks passed for preview selection, workspace shortcut expansion, language switching and logout contrast.
 - Visual inspection covered landing, signup, merchant workspace, player selection and canvas gameplay.
 
 ## Release
 
-This branch has not been pushed or deployed. When releasing, push the branch, verify CI, integrate into main, and use the existing isolated PWYW Publisher deployment workflow. Do not restart adjacent services.
+Merged through PR #11 as commit 0a36b7b98b1c7522ff7a845395af6afe3181fa6e.
+The isolated PWYW Publisher deployment 40126598780 completed successfully on 24 October 2026, including origin and public HTTPS health checks.
+The deployment workflow is pinned to this tested release commit. Update that pin for future releases.
+
