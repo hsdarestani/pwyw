@@ -43,8 +43,8 @@ function mode(value){
  state.mode=value;
  $('tab-login').classList.toggle('active',value==='login');
  $('tab-signup').classList.toggle('active',value==='register');
- $('auth-title').textContent=value==='login'?'Welcome back.':'Your next idea starts here.';
- $('auth-submit').firstChild.textContent=value==='login'?'SIGN IN ':'CREATE ACCOUNT ';
+ $('auth-title').textContent=value==='login'?'Willkommen zurück.':'Erstelle dein Konto.';
+ $('auth-submit').firstChild.textContent=value==='login'?'Anmelden ':'Konto erstellen ';
  $('auth-form').elements.password.autocomplete=value==='login'?'current-password':'new-password';
  message('auth-error','');
 }
