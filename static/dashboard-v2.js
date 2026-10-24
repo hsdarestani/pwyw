@@ -49,6 +49,8 @@ function mode(value){
  message('auth-error','');
 }
 $('tab-login').onclick=()=>mode('login');$('tab-signup').onclick=()=>mode('register');
+// Marketing landing sends new merchants directly to the sign-up form.
+if(new URLSearchParams(location.search).get('signup')==='1')mode('register');
 $('auth-form').addEventListener('submit',async e=>{
  e.preventDefault();const btn=$('auth-submit');btn.disabled=true;
  try{const fd=new FormData(e.currentTarget);
