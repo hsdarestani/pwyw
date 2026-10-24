@@ -1,0 +1,147 @@
+/* PWYW conversion landing. Isolated from studio and game presentation. */
+:root{color-scheme:light;--ink:#211b2c;--sub:#696474;--accent:#6b50d2;--accentDeep:#543ac0;--paper:#f7f7f7;--stroke:#e9e5ed;--font:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:#fff;color:var(--ink);font-family:var(--font);font-size:16px;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button,a{-webkit-tap-highlight-color:transparent}
+img{max-width:100%;display:block}
+.sr-only{position:absolute;width:1px;height:1px;clip:rect(0,0,0,0);overflow:hidden;white-space:nowrap}
+.container{width:min(1140px,calc(100% - 48px));margin-inline:auto}
+.site-nav{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.96);backdrop-filter:blur(18px);border-bottom:1px solid #efecf0}
+.nav-inner{min-height:74px;display:flex;align-items:center;gap:25px}
+.brand-sign{display:inline-flex;align-items:center;gap:9px;white-space:nowrap}
+.brand-glyph{color:var(--ink);width:37px;height:37px;display:inline-flex}
+.brand-glyph svg{width:100%;height:100%}
+.brand-type{font-size:29px;letter-spacing:-.08em;font-weight:850;line-height:1}
+.brand-type span{color:#f2836f}
+.header-spacer{flex:1}
+.header-how{font-size:13px;font-weight:700;color:#5e566a}
+.header-how:hover{color:var(--accent)}
+.pwyw-locale-switch{display:flex;align-items:center;gap:3px;border:1px solid var(--stroke);border-radius:50px;padding:3px;background:#faf9fc}
+.pwyw-locale-switch button{cursor:pointer;padding:6px 9px;border:0;border-radius:20px;background:transparent;font:700 12px var(--font);color:#736d79}
+.pwyw-locale-switch button.is-current{background:#e9e2ff;color:#4c31a9}
+.button{display:inline-flex;justify-content:center;align-items:center;gap:13px;min-height:56px;padding:15px 24px;border-radius:12px;background:var(--accent);color:white;font-size:15px;font-weight:760;box-shadow:0 9px 22px #664bd126;transition:background .2s,transform .2s}
+.button:hover{background:var(--accentDeep);transform:translateY(-1px)}
+.button:focus-visible,.header-how:focus-visible,.demo-link:focus-visible,.brand-sign:focus-visible{outline:3px solid #b39bff;outline-offset:4px}
+.button .arrow{font-size:20px;line-height:1}
+.button-small{min-height:42px;padding:10px 17px;font-size:13px;border-radius:10px;box-shadow:none}
+.hero{padding:92px 0 88px;background:radial-gradient(circle at 93% 23%,#efeaff 0%,#fff 41%)}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);align-items:center;gap:68px}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;color:#6854b5;text-transform:uppercase;font-size:12px;font-weight:800;letter-spacing:.1em}
+.eyebrow::before{content:"";height:8px;width:8px;border-radius:50%;background:#a48ff4}
+.hero h1{font-size:clamp(43px,5.5vw,70px);line-height:1.1;letter-spacing:-.065em;font-weight:820;margin:22px 0 23px;max-width:780px}
+.hero h1 span{color:var(--accent)}
+.hero-description{font-size:18px;line-height:1.75;color:var(--sub);max-width:570px;margin:0}
+.hero-actions{margin-top:30px;display:flex;flex-wrap:wrap;align-items:center;gap:15px}
+.demo-link{font-size:14px;color:#534797;font-weight:750;padding:9px 4px}
+.demo-link:hover{text-decoration:underline}
+.hero-note{color:#85808e;font-size:13px;margin:18px 0 0}
+.hero-note strong{font-weight:650;color:#5d5866}
+.hero-visual{position:relative;max-width:475px;width:100%;justify-self:end}
+.hero-visual::before{content:"";position:absolute;inset:9% -6% -6%;background:linear-gradient(145deg,#ece7fa,#faf3ef);border-radius:50px;transform:rotate(-5deg)}
+.hero-showcase{isolation:isolate;position:relative;overflow:hidden;border:1px solid #e8e3ef;border-radius:25px;box-shadow:0 29px 62px #291c4d1a;background:white;transform:rotate(2deg)}
+.showcase-bar{display:flex;align-items:center;justify-content:space-between;padding:17px 19px;border-bottom:1px solid #efeaf0;color:#726a7b;font-size:11px;font-weight:800}
+.showcase-bar b{font-weight:850;color:#47365c;letter-spacing:-.04em;font-size:17px}
+.showcase-screen{padding:18px;background:linear-gradient(160deg,#16142b,#322055)}
+.showcase-screen-top{display:flex;justify-content:space-between;align-items:center;color:#fff;font-size:12px;margin-bottom:13px;gap:8px}
+.showcase-screen-top span:last-child{background:#ffffff1c;border:1px solid #ffffff2c;border-radius:30px;padding:5px 9px;font-size:10px}
+.showcase-art{width:100%;aspect-ratio:1.55;object-fit:cover;background:#281d43;border-radius:13px}
+.showcase-bottom{padding:17px 18px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.showcase-bottom div{display:grid;gap:4px}
+.showcase-bottom small{font-size:11px;color:#767082}
+.showcase-bottom strong{font-size:16px}
+.showcase-bottom a{font-size:12px;font-weight:750;color:var(--accent);white-space:nowrap}
+.visual-caption{position:absolute;z-index:2;right:-10px;bottom:16px;color:#fff;background:#2d233c;padding:11px 15px;border-radius:11px;font-weight:760;font-size:12px;box-shadow:0 10px 25px #0002;transform:rotate(-4deg)}
+.section{padding:80px 0}
+.section-center{text-align:center;margin-inline:auto}
+.section-heading{font-size:clamp(30px,3.7vw,43px);line-height:1.2;font-weight:820;letter-spacing:-.045em;margin:11px 0 15px}
+.section-description{color:var(--sub);font-size:16px;line-height:1.7;margin:0 auto;max-width:590px}
+.benefits{background:#faf9fc;border-block:1px solid #f1eef5}
+.simple-goal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:38px}
+.simple-goal-card{background:#fff;border:1px solid #eeebf2;border-radius:17px;padding:26px 25px;min-height:175px}
+.benefit-icon{display:grid;place-items:center;width:42px;height:42px;background:#efeafd;border-radius:13px;font-size:23px;color:#674bd1}
+.simple-goal-card h3{font-size:18px;line-height:1.35;letter-spacing:-.02em;margin:19px 0 8px}
+.simple-goal-card p{font-size:14px;color:var(--sub);margin:0;line-height:1.7}
+.simple-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:27px;margin-top:43px}
+.simple-step{position:relative}
+.simple-step>span{display:inline-grid;place-items:center;width:47px;height:47px;border-radius:13px;background:#ede8fd;color:var(--accentDeep);font-weight:850;font-size:16px}
+.simple-step h3{font-size:19px;line-height:1.3;letter-spacing:-.03em;margin:20px 0 10px}
+.simple-step p{font-size:14px;line-height:1.7;color:var(--sub);margin:0;max-width:300px}
+.example{padding:35px 0 78px}
+.example-inner{display:grid;grid-template-columns:.8fr 1.2fr;align-items:center;gap:32px;padding:36px 42px;border:1px solid #eee8f6;background:#f7f4fd;border-radius:24px}
+.example-label{font-weight:820;color:#6b54b2;font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+.example-inner h2{font-size:clamp(25px,3vw,33px);line-height:1.25;letter-spacing:-.04em;margin:10px 0 0}
+.example-inner p{font-size:16px;line-height:1.7;color:#605969;margin:0}
+.closing{background:#211a31;color:white;text-align:center;padding:76px 0 79px}
+.closing h2{font-size:clamp(31px,4.3vw,49px);line-height:1.17;letter-spacing:-.055em;margin:0 auto 16px;max-width:730px}
+.closing p{font-size:16px;color:#c8c2d5;margin:0 auto 27px;max-width:530px;line-height:1.7}
+.closing .button{background:#a895ff;color:#211a31;box-shadow:none}
+.closing .button:hover{background:#c0b1ff}
+.closing small{display:block;margin-top:14px;color:#aaa3b8;font-size:12px}
+.site-footer{padding:22px 0;background:#1a1525;color:#b6aec3;font-size:12px}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.footer-inner strong{color:#fff;font-size:16px;letter-spacing:-.07em}
+html[dir=rtl] body{font-family:Vazirmatn,"Noto Sans Arabic",Tahoma,var(--font)}
+html[dir=rtl] .hero h1,html[dir=rtl] .section-heading,html[dir=rtl] .closing h2{letter-spacing:0;line-height:1.45}
+html[dir=rtl] .eyebrow{letter-spacing:0}
+html[dir=rtl] .showcase-bottom a,html[dir=rtl] .visual-caption{font-family:inherit}
+@media(max-width:850px){
+ .hero{padding:66px 0 66px}
+ .hero-grid{grid-template-columns:1fr;gap:42px}
+ .hero-visual{justify-self:center;max-width:440px}
+ .hero h1{max-width:670px}
+ .simple-goal-grid{gap:10px}
+ .simple-goal-card{padding:20px}
+ .example-inner{padding:30px}
+}
+@media(max-width:600px){
+ .container{width:calc(100% - 36px)}
+ .nav-inner{min-height:64px;gap:10px}
+ .brand-glyph{width:30px;height:30px}
+ .brand-type{font-size:24px}
+ .header-how{display:none}
+ .button-small{font-size:12px;padding:9px 12px;min-height:40px}
+ .pwyw-locale-switch{padding:2px;gap:0}
+ .pwyw-locale-switch button{padding:7px 6px;font-size:11px}
+ .hero{padding:47px 0 52px}
+ .hero h1{font-size:clamp(39px,10.2vw,53px);line-height:1.18;margin:17px 0 17px;letter-spacing:-.056em}
+ .hero-description{font-size:15px;line-height:1.75}
+ .eyebrow{font-size:10px}
+ .hero-actions{margin-top:24px;gap:12px}
+ .hero-actions .button{width:100%}
+ .demo-link{margin-inline:auto;font-size:13px}
+ .hero-note{text-align:center;font-size:12px;margin-top:8px}
+ .hero-visual{max-width:365px}
+ .hero-showcase{transform:rotate(1deg)}
+ .visual-caption{right:-3px;bottom:6px}
+ .section{padding:58px 0}
+ .section-heading{font-size:29px}
+ .section-description{font-size:14px}
+ .simple-goal-grid{grid-template-columns:1fr;gap:10px;margin-top:27px}
+ .simple-goal-card{min-height:auto;padding:19px;display:grid;grid-template-columns:42px 1fr;gap:2px 15px}
+ .benefit-icon{grid-row:1/3}
+ .simple-goal-card h3{margin:0;font-size:16px}
+ .simple-goal-card p{font-size:13px}
+ .simple-steps{grid-template-columns:1fr;gap:24px;margin-top:32px}
+ .simple-step{display:grid;grid-template-columns:46px 1fr;gap:3px 14px}
+ .simple-step>span{grid-row:1/3}
+ .simple-step h3{margin:0;font-size:17px}
+ .simple-step p{font-size:13px}
+ .example{padding:0 0 56px}
+ .example-inner{grid-template-columns:1fr;gap:14px;padding:25px;border-radius:19px}
+ .example-inner h2{font-size:26px}
+ .example-inner p{font-size:14px}
+ .closing{padding:60px 0}
+ .closing p{font-size:14px}
+ .closing .button{width:100%}
+ .footer-inner{font-size:11px}
+}
+@media(max-width:350px){
+ .brand-glyph{width:25px;height:25px}
+ .brand-type{font-size:21px}
+ .nav-inner{gap:6px}
+ .button-small{padding:8px 9px;font-size:11px}
+ .pwyw-locale-switch button{padding:5px}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.button{transition:none}}
