@@ -9,6 +9,15 @@ const {chromium}=require('playwright');
   await page.goto(base+'/',{waitUntil:'networkidle'});
   if(!await page.locator('.hero h1').count() || !(await page.locator('.hero h1').innerText()).trim())
     throw Error('Branded landing headline missing');
+  const valuePromise=await page.locator('.hero h1').innerText();
+  if(!valuePromise.includes('Wartezeit')||!valuePromise.includes('wiederzukommen'))
+    throw Error('Landing fails to explain business outcome: '+valuePromise);
+  const example=await page.locator('.journey-item').allInnerTexts();
+  if(example.length!==3||!example.some(x=>x.includes('Wiederkommen')))
+    throw Error('Concrete customer return journey missing: '+JSON.stringify(example));
+  const commercialBenefits=await page.locator('.simple-goal-card h3').allInnerTexts();
+  if(!commercialBenefits.some(x=>x.includes('Wiederbesuche'))||!commercialBenefits.some(x=>x.includes('Empfehlungen')))
+    throw Error('Landing does not explain why a merchant benefits: '+JSON.stringify(commercialBenefits));
   const landing=await page.evaluate(()=>({
     steps:document.querySelectorAll('.simple-step').length,
     goals:document.querySelectorAll('.simple-goal-card').length,
@@ -38,7 +47,7 @@ const {chromium}=require('playwright');
   if(!/[\u0600-\u06FF]/.test(await page.locator('.hero h1').textContent()))throw Error('Landing headline did not localize');
 
   const nativeHome=await page.locator('.hero h1').innerText();
-  if(!nativeHome.includes('مشتری‌هات بازی می‌کنن')||!nativeHome.includes('جایزه رو تو تعیین می‌کنی'))
+  if(!nativeHome.includes('از زمان انتظار')||!nativeHome.includes('دلیلی برای برگشت دوباره'))
     throw Error('Native Persian landing headline is missing: '+nativeHome);
   if(await page.title()!=='PWYW — پورتال بازی کسب‌وکار تو')
     throw Error('Browser title not localized in Persian');
