@@ -6,6 +6,19 @@
   const catalog = new Map();
   // catalog entries are registered below, as explicit reviewed UI translations.
   const entries = [
+    ["DEIN SPIELEPORTAL / PWYW®","DEIN SPIELEPORTAL / PWYW®","پورتال بازی تو / PWYW"],
+    ["DEIN PORTAL.","DEIN PORTAL.","پورتال خودت."],
+    ["DEINE REGELN.","DEINE REGELN.","قانون‌های خودت."],
+    ["Einmal einrichten. QR-Code teilen. Fertig.","Einmal einrichten. QR-Code teilen. Fertig.","یه بار تنظیمش کن، QR رو به اشتراک بذار و تموم."],
+    ["Anmelden","Anmelden","ورود"],
+    ["Konto erstellen","Konto erstellen","ساخت حساب"],
+    ["Willkommen zurück.","Willkommen zurück.","خوش اومدی."],
+    ["Erstelle dein Konto.","Erstelle dein Konto.","حساب خودت رو بساز."],
+    ["Spielportal erstellen, Belohnung festlegen und QR-Code teilen.","Spielportal erstellen, Belohnung festlegen und QR-Code teilen.","پورتال بازی بساز، جایزه تعیین کن و کد QR رو به اشتراک بذار."],
+    ["E-Mail","E-Mail","ایمیل"],
+    ["Passwort","Passwort","رمز عبور"],
+    ["Mindestens 10 Zeichen","Mindestens 10 Zeichen","حداقل ۱۰ کاراکتر"],
+    ["Pilotversion. Keine Kreditkarte erforderlich.","Pilotversion. Keine Kreditkarte erforderlich.","نسخه آزمایشی. بدون نیاز به کارت بانکی."],
     ["Für Cafés, Salons, Studios und mehr","Für Cafés, Salons, Studios und mehr","برای کافه‌ها، سالن‌ها، باشگاه‌ها و کسب‌وکارهای دیگر"],
     ["Deine Kunden spielen.","Deine Kunden spielen.","مشتری‌هات بازی می‌کنن."],
     ["Du bestimmst die Belohnung.","Du bestimmst die Belohnung.","جایزه رو تو تعیین می‌کنی."],
