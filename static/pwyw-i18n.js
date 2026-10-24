@@ -1006,7 +1006,7 @@
     const header=document.querySelector('.site-nav,.studio-top,.cr-top,.play-header,.masthead');
     if(header){
       const anchor=header.querySelector('.nav-link,.studio-top-right,.cr-quiet,.play-nav:last-child,.nav-enter');
-      if(anchor&&anchor.parentElement===header)header.insertBefore(holder,anchor);else header.append(holder);
+      if(anchor&&anchor.parentElement)anchor.parentElement.insertBefore(holder,anchor);else header.append(holder);
     }else document.body.prepend(holder);
   }
   document.addEventListener('DOMContentLoaded',()=>{
