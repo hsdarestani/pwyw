@@ -1,81 +1,104 @@
 <!doctype html>
-<html lang="de"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#12192b">
-<meta name="description" content="Dein eigenes Spieleportal: zehn Spiele für Gäste, flexible Preisregeln für dein Geschäft und ein QR-Code für alle.">
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<meta name="description" content="Dein eigenes Spieleportal für dein Geschäft. Ein QR-Code, zehn Minispiele und Belohnungen nach deinen Regeln. Jetzt im Pilot starten.">
+<meta property="og:title" content="PWYW – Deine Kunden spielen. Du bestimmst die Belohnung.">
+<meta property="og:description" content="Mach dein Geschäft spielbar. Erstelle ein Spieleportal, lege Belohnungen fest und teile einen QR-Code.">
 <title>PWYW — Dein Spieleportal.</title>
-<link rel="stylesheet" href="/static/pwyw-brand.css?v=3">
 <link rel="stylesheet" href="/static/pwyw-locale.css?v=20261016">
-<link rel="stylesheet" href="/static/pwyw-experience.css?v=20261016-02">
-<link rel="stylesheet" href="/static/pwyw-simple.css?v=ux20261018">
-<link rel="stylesheet" href="/static/pwyw-unified.css?v=site20261021-01"><link rel="stylesheet" href="/static/pwyw-next.css?v=20261023-final">
-</head><body class="site-simplified">
+<link rel="stylesheet" href="/static/pwyw-sms-landing.css?v=20261024-01">
+</head>
+<body class="sms-landing">
 <header class="site-nav">
-<a href="/" class="brand-sign" aria-label="PWYW home">
-<span class="brand-glyph" aria-hidden="true"><svg viewBox="0 0 50 50" fill="none"><circle cx="25" cy="25" r="22" stroke="currentColor" stroke-width="2"/><path d="M13 20L19 33L25 23L31 33L38 17" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="37.8" cy="17" r="4.5" fill="#ff8c6c"/></svg></span>
-<span class="brand-type">pwyw<span class="brand-dot">.</span><small>Spielen mit Ziel</small></span></a>
-<nav aria-label="Main navigation"><a href="#how">So funktioniert es</a><a href="#solutions">Für dein Geschäft</a></nav>
-<a class="nav-link" href="/dashboard">Jetzt starten <span aria-hidden="true">↗</span></a>
+  <div class="container nav-inner">
+    <a href="/" class="brand-sign" aria-label="PWYW Startseite">
+      <span class="brand-glyph" aria-hidden="true"><svg viewBox="0 0 50 50" fill="none"><circle cx="25" cy="25" r="22" stroke="currentColor" stroke-width="2"/><path d="M13 20L19 33L25 23L31 33L38 17" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="37.8" cy="17" r="4.5" fill="#f2836f"/></svg></span>
+      <span class="brand-type">pwyw<span>.</span></span>
+    </a>
+    <div class="header-spacer"></div>
+    <a class="header-how" href="#how">So funktioniert es</a>
+    <a class="button button-small nav-link" href="/dashboard?signup=1&amp;src=sms">Jetzt starten <span class="arrow" aria-hidden="true">↗</span></a>
+  </div>
 </header>
 <main>
-<section class="hero" id="top">
-<div class="hero-grid">
-<div class="hero-copy">
-<p class="micro overline">Kleine Spiele. Echte Kundenaktionen.</p>
-<h1>Ein Portal.<br><em>Zehn Spiele.<br>Deine Regeln.</em></h1>
-<p class="hero-description">Deine Gäste wählen ihr Lieblingsspiel. Du legst fest, wann sie einen Preis bekommen – mit eigenen Regeln und einem festen QR-Code.</p>
-<div class="hero-actions"><a href="/dashboard" class="btn-main">Mein Spielportal erstellen <span aria-hidden="true">↗</span></a><a href="/play/luna-cafe" class="btn-text">Demo spielen <span aria-hidden="true">↗</span></a></div>
-<p class="hero-simple-note">Keine App nötig. Zehn Spiele. Ein QR-Code.</p>
-</div>
-<div class="hero-visual">
-<div class="hero-showcase">
-<div class="showcase-top"><span class="showcase-dot" aria-hidden="true"></span><span>So sieht dein Spieleportal aus</span><span class="showcase-badge">PWYW</span></div>
-<img class="showcase-art" src="/static/game-art/orbit.svg" alt="Vorschau eines interaktiven Minispiels mit einer leuchtenden Umlaufbahn" width="640" height="420">
-<div class="showcase-info"><span>Einfach spielen</span><strong>Orbit Catch</strong><a href="/play/luna-cafe?game=orbit" aria-label="Orbit Catch ausprobieren">Spiel ausprobieren <span aria-hidden="true">↗</span></a></div>
-</div>
-</div>
-</div></section>
+  <section class="hero" id="top">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <span class="eyebrow">Für Cafés, Salons, Studios und mehr</span>
+        <h1>Deine Kunden spielen.<br><span>Du bestimmst die Belohnung.</span></h1>
+        <p class="hero-description">Dein eigenes Spieleportal für dein Geschäft. Deine Gäste scannen einen QR-Code, wählen ein Spiel und können Belohnungen nach deinen Regeln erhalten.</p>
+        <div class="hero-actions">
+          <a class="button" href="/dashboard?signup=1&amp;src=sms">Mein Spieleportal erstellen <span class="arrow" aria-hidden="true">↗</span></a>
+          <a class="demo-link" href="/play/luna-cafe">Demo ausprobieren ↗</a>
+        </div>
+        <p class="hero-note"><strong>10 Spiele · 1 QR-Code · keine App für Gäste</strong></p>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-showcase">
+          <div class="showcase-bar"><b>Luna Coffee</b><span>Beispielansicht</span></div>
+          <div class="showcase-screen">
+            <div class="showcase-screen-top"><strong>Wähle dein Spiel</strong><span>10 Spiele</span></div>
+            <img class="showcase-art" src="/static/game-art/orbit.svg" width="640" height="420" alt="Vorschau des Minispiels Orbit Catch">
+          </div>
+          <div class="showcase-bottom">
+            <div><small>Zum Spielen</small><strong>Orbit Catch</strong></div>
+            <a href="/play/luna-cafe">Demo öffnen ↗</a>
+          </div>
+        </div>
+        <span class="visual-caption">Ein QR-Code für alle Spiele</span>
+      </div>
+    </div>
+  </section>
 
-<section class="simple-how" id="how" aria-labelledby="how-heading">
-<div class="simple-section-head"><span>01 / So funktioniert es</span><h2 id="how-heading">Drei Schritte. Fertig.</h2><p>Einmal einrichten und dauerhaft mit deinen Gästen spielen.</p></div>
-<div class="simple-steps">
-<div class="simple-step"><span>01</span><h3>Portal gestalten</h3><p>Dein Logo, deine Farben, alle zehn Spiele.</p></div>
-<div class="simple-step"><span>02</span><h3>Preisregeln festlegen</h3><p>Vorlage wählen, Budget setzen, jederzeit ändern.</p></div>
-<div class="simple-step"><span>03</span><h3>QR-Code teilen</h3><p>Ein Link für alle Spiele und aktiven Preise.</p></div>
-</div>
-</section>
+  <section class="section benefits" id="benefits" aria-labelledby="benefits-heading">
+    <div class="container">
+      <div class="section-center">
+        <span class="eyebrow">Das bringt es dir</span>
+        <h2 class="section-heading" id="benefits-heading">Mehr als nur ein Spiel.</h2>
+        <p class="section-description">Du gibst deinen Gästen einen kleinen Spielmoment und entscheidest selbst, wofür es Belohnungen gibt.</p>
+      </div>
+      <div class="simple-goal-grid">
+        <article class="simple-goal-card"><span class="benefit-icon" aria-hidden="true">✦</span><h3>Gäste begeistern</h3><p>Ein kurzer Spielspaß, während sie warten oder vor Ort sind.</p></article>
+        <article class="simple-goal-card"><span class="benefit-icon" aria-hidden="true">↻</span><h3>Wiederkommen belohnen</h3><p>Lege einen Anreiz für den nächsten Besuch fest.</p></article>
+        <article class="simple-goal-card"><span class="benefit-icon" aria-hidden="true">✓</span><h3>Alles selbst bestimmen</h3><p>Du entscheidest über Preise, Regeln und dein Budget.</p></article>
+      </div>
+    </div>
+  </section>
 
-<section class="simple-goals" id="solutions" aria-labelledby="goals-heading">
-<div class="simple-section-head"><span>02 / Für dein Geschäft</span><h2 id="goals-heading">Was möchtest du erreichen?</h2><p>Du kannst auch mehrere Ziele kombinieren.</p></div>
-<div class="simple-goal-grid">
-<a href="/dashboard" class="simple-goal-card"><span class="simple-goal-icon" aria-hidden="true">↗</span><h3>Mehr verkaufen</h3><p>Zum Beispiel Kaffee und Kuchen zusammen anbieten.</p><span class="goal-action">Ausprobieren ↗</span></a>
-<a href="/dashboard" class="simple-goal-card"><span class="simple-goal-icon" aria-hidden="true">↺</span><h3>Gäste zurückholen</h3><p>Mit einem Code zum nächsten Besuch einladen.</p><span class="goal-action">Ausprobieren ↗</span></a>
-<a href="/dashboard" class="simple-goal-card"><span class="simple-goal-icon" aria-hidden="true">✳</span><h3>Neue Gäste gewinnen</h3><p>Das Spiel einfach mit Freunden teilen lassen.</p><span class="goal-action">Ausprobieren ↗</span></a>
-<a href="/dashboard" class="simple-goal-card"><span class="simple-goal-icon" aria-hidden="true">?</span><h3>Fragen beantworten</h3><p>Praktisch, wenn Gäste oft dasselbe fragen.</p><span class="goal-action">Ausprobieren ↗</span></a>
-</div>
-</section>
+  <section class="section" id="how" aria-labelledby="how-heading">
+    <div class="container">
+      <div class="section-center">
+        <span class="eyebrow">So einfach geht's</span>
+        <h2 class="section-heading" id="how-heading">In drei Schritten startklar.</h2>
+        <p class="section-description">Keine technische Einrichtung. Du brauchst nur dein Geschäft und eine Idee für eine Belohnung.</p>
+      </div>
+      <div class="simple-steps">
+        <div class="simple-step"><span>01</span><h3>Konto erstellen</h3><p>Melde dich an und lege dein Geschäft an.</p></div>
+        <div class="simple-step"><span>02</span><h3>Belohnung festlegen</h3><p>Wähle eine Regel, passe den Preis und das Budget an.</p></div>
+        <div class="simple-step"><span>03</span><h3>QR-Code teilen</h3><p>Platziere ihn im Geschäft. Deine Gäste können direkt spielen.</p></div>
+      </div>
+    </div>
+  </section>
 
-<section class="simple-demo" id="arcade" aria-labelledby="game-heading">
-<div class="simple-demo-copy">
-<span class="simple-index">03 / Zum Ausprobieren</span><h2 id="game-heading">Probiere das Spieleportal aus.</h2>
-<p>Wähle eines von zehn Spielen. Für Wettbewerbe und kleine Belohnungen bestimmst du die Regeln.</p>
-<a class="btn-main" href="/play/luna-cafe">Demo spielen <span aria-hidden="true">↗</span></a>
-<small>Beispiel mit Testdaten. Kein echtes Angebot.</small>
-</div>
-<div class="simple-demo-art">
-<img src="/static/game-art/breaker.svg" alt="Illustration eines Arcade-Spiels mit bunten Blöcken" width="640" height="420" loading="lazy">
-<div class="simple-demo-tile"><b>10</b><span>Minispiele zur Auswahl</span></div>
-</div>
-</section>
+  <section class="example" aria-labelledby="example-heading">
+    <div class="container example-inner">
+      <div><span class="example-label">Zum Beispiel im Café</span><h2 id="example-heading">Ein Spiel. Ein kleiner Bonus.</h2></div>
+      <p>Ein Gast scannt den QR-Code und spielt. Du kannst zum Beispiel festlegen, dass es nach dem ersten Spiel einen kleinen Bonus gibt. Wie oft und wie viel du ausgibst, bestimmst du.</p>
+    </div>
+  </section>
 
-<section class="simple-closing">
-<h2>Bereit für dein eigenes Spieleportal?</h2>
-<p>Gestalte dein Portal, lege Belohnungen fest und teile einen einzigen Link.</p>
-<a href="/dashboard" class="btn-main">Jetzt starten <span aria-hidden="true">↗</span></a>
-</section>
+  <section class="closing" aria-labelledby="closing-heading">
+    <div class="container">
+      <h2 id="closing-heading">Bereit für dein eigenes Spieleportal?</h2>
+      <p>Erstelle dein Konto, lege deine erste Belohnung fest und teile deinen QR-Code.</p>
+      <a href="/dashboard?signup=1&amp;src=sms" class="button">Jetzt Spielportal erstellen <span class="arrow" aria-hidden="true">↗</span></a>
+      <small>Pilotversion · Keine Kreditkarte erforderlich</small>
+    </div>
+  </section>
 </main>
-<footer class="site-footer"><a href="/" class="footer-word">pwyw<span>.</span></a><span>Spielen. Begeistern. Verbinden.</span><span>BY A+ SOLUTION · PILOT 2026</span></footer>
-<script src="/static/pwyw-brand.js?v=3" defer></script>
-<script defer src="/static/pwyw-native-fa.js?v=20261016-native01"></script>
-<script defer src="/static/pwyw-i18n.js?v=20261023-portal-home"></script>
+<footer class="site-footer"><div class="container footer-inner"><strong>pwyw.</strong><span>BY A+ SOLUTION · 2026</span></div></footer>
+<script defer src="/static/pwyw-i18n.js?v=20261024-sms01"></script>
 </body></html>
