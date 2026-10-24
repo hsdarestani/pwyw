@@ -15,13 +15,19 @@ const {chromium}=require('playwright');
     width:document.documentElement.scrollWidth,
     viewport:document.documentElement.clientWidth,
     actualDemo:document.querySelector('.hero-showcase a')?.getAttribute('href'),
-    styles:[...document.styleSheets].some(x=>x.href?.includes('pwyw-unified.css'))
+    styles:[...document.styleSheets].some(x=>x.href?.includes('pwyw-sms-landing.css'))
   }));
-  if(landing.steps!==3||landing.goals!==4||!landing.actualDemo?.startsWith('/play/')||!landing.styles)
+  if(landing.steps!==3||landing.goals!==3||!landing.actualDemo?.startsWith('/play/')||!landing.styles)
     throw Error('Simplified landing structure missing: '+JSON.stringify(landing));
   if(landing.width>landing.viewport+4)throw Error('Landing overflows mobile: '+JSON.stringify(landing));
   const illustration=await page.locator('.showcase-art').evaluate(img=>({loaded:img.complete&&img.naturalWidth>0}));
   if(!illustration.loaded)throw Error('Landing mini-game illustration did not load');
+  const signupUrl=await page.locator('.hero-actions .button').getAttribute('href');
+  if(!signupUrl?.includes('signup=1'))throw Error('Landing does not lead directly to registration');
+  await page.goto(base+signupUrl,{waitUntil:'networkidle'});
+  if(!await page.locator('#tab-signup').evaluate(el=>el.classList.contains('active')))
+    throw Error('SMS traffic lands on sign-in instead of sign-up');
+  await page.goto(base+'/',{waitUntil:'networkidle'});
   await page.screenshot({path:'/tmp/pwyw-landing-mobile.png',fullPage:true});
   await page.locator('#pwyw-language-switch [data-lang=fa]').click();
   if(await page.locator('html').getAttribute('dir')!=='rtl')throw Error('Persian landing RTL missing');
@@ -32,7 +38,7 @@ const {chromium}=require('playwright');
   if(!/[\u0600-\u06FF]/.test(await page.locator('.hero h1').textContent()))throw Error('Landing headline did not localize');
 
   const nativeHome=await page.locator('.hero h1').innerText();
-  if(!nativeHome.includes('یک پورتال')||!nativeHome.includes('قانون‌های خودت'))
+  if(!nativeHome.includes('مشتری‌هات بازی می‌کنن')||!nativeHome.includes('جایزه رو تو تعیین می‌کنی'))
     throw Error('Native Persian landing headline is missing: '+nativeHome);
   if(await page.title()!=='PWYW — پورتال بازی کسب‌وکار تو')
     throw Error('Browser title not localized in Persian');
