@@ -1,8 +1,8 @@
 /* PWYW conversion landing. Isolated from studio and game presentation. */
 :root{color-scheme:light;--ink:#211b2c;--sub:#696474;--accent:#6b50d2;--accentDeep:#543ac0;--paper:#f7f7f7;--stroke:#e9e5ed;--font:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
 *,*::before,*::after{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;background:#fff;color:var(--ink);font-family:var(--font);font-size:16px;-webkit-font-smoothing:antialiased}
+html{scroll-behavior:smooth;overflow-x:clip}
+body{overflow-x:clip;margin:0;background:#fff;color:var(--ink);font-family:var(--font);font-size:16px;-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
 button,a{-webkit-tap-highlight-color:transparent}
 img{max-width:100%;display:block}
@@ -113,7 +113,9 @@ html[dir=rtl] .showcase-bottom a,html[dir=rtl] .visual-caption{font-family:inher
  .demo-link{margin-inline:auto;font-size:13px}
  .hero-note{text-align:center;font-size:12px;margin-top:8px}
  .hero-visual{max-width:365px}
- .hero-showcase{transform:rotate(1deg)}
+ .hero-showcase{transform:none}
+ .hero-visual::before{inset:8% 0 0;transform:none}
+ .visual-caption{transform:none;right:8px}
  .visual-caption{right:-3px;bottom:6px}
  .section{padding:58px 0}
  .section-heading{font-size:29px}
