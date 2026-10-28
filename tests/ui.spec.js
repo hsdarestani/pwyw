@@ -1,7 +1,8 @@
 const {chromium}=require('playwright');
 (async()=>{
   const browser=await chromium.launch({headless:true});
-  const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+  const merchantContext=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+  const page=await merchantContext.newPage();
   const errors=[];
   page.on('pageerror',e=>errors.push('PAGE '+(e.stack||e.message)));
   page.on('console',m=>{if(m.type()==='error' && !m.text().includes('401 (Unauthorized)'))errors.push('CONSOLE '+m.text())});
