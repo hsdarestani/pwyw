@@ -240,3 +240,16 @@
  .studio-v2 .reward-hub.mc-ready .mc-bottom-nav button{font:760 11px/1.4 "PW Vazir","Estedad",sans-serif;gap:4px;min-height:55px}
  .studio-v2 .reward-hub.mc-ready .mc-bottom-nav button.is-current{color:#4f3182;background:#f2edf9}
 }
+
+/* Final legibility pass verified against 390px Playwright mobile screenshot. */
+.studio-v2 .reward-hub.mc-ready .mc-status-eyebrow{font-size:12px;color:#654b8c}
+.studio-v2 .reward-hub.mc-ready .mc-sectionhead>span{font-size:12px;color:#625a70}
+.studio-v2 .reward-hub.mc-ready #mc-metrics-slot .reward-overview span{color:#5e566b;font-weight:670}
+.studio-v2 .reward-hub.mc-ready .mc-goals small{color:#655c71;font-size:12.5px}
+.studio-v2 .reward-hub.mc-ready .mc-shortcuts small{color:#655c71;font-size:12.5px}
+@media(max-width:640px){
+ .studio-v2 .reward-hub.mc-ready .mc-status p{font-size:13px;color:#655e71}
+ .studio-v2 .reward-hub.mc-ready #mc-metrics-slot .reward-overview span{font-size:12.5px}
+ .studio-v2 .reward-hub.mc-ready .mc-goals small{font-size:12px}
+ .studio-v2 .reward-hub.mc-ready .mc-bottom-nav button{font-size:12px}
+}
