@@ -24,6 +24,10 @@
   if(note)scope('mc-rewards-slot').append(note);
   relocate('reward-trends','mc-report-slot');
   relocate('reward-portal-share','mc-share-slot');
+  const actions=document.createElement('div');actions.className='mc-head-actions';
+  const settings=$('open-studio-settings');
+  $('mc-headrow')?.append(actions);
+  actions.append($('mc-portal-link'));if(settings)actions.append(settings);
   root.classList.add('mc-ready');
   shell.hidden=false;
   bind();
@@ -53,6 +57,7 @@
  function updateBrand(){
   const brand=window.PWYWStudio?.getBrand?.();
   slug=brand?.slug||'';
+  document.body.classList.toggle('mc-active',Boolean(slug));
   $('mc-brand-name').textContent=brand?.name||'';
   const path=slug?'/play/'+encodeURIComponent(slug):'/demo';
   const url=new URL(path,location.origin);
