@@ -46,6 +46,10 @@ const fs=require('fs');
      const item={page:entry.label,locale:language,width:size.width,metrics,accessibility:severe,accessibilityScanned:size.width===390,errors};
      report.pages.push(item);
      if(metrics.overflow>4)report.failures.push(entry.label+' '+language+' '+size.width+'px: horizontal overflow '+metrics.overflow+'px');
+     if(entry.label==='signup'&&size.width===390){
+      const submit=await page.locator('#auth-submit').evaluate(el=>el.getBoundingClientRect().bottom);
+      if(submit>size.height-15)report.failures.push('signup '+language+': primary create-account CTA below first phone viewport ('+Math.round(submit)+'px)');
+     }
      if(errors.length)report.failures.push(entry.label+' '+language+' '+size.width+'px: runtime '+errors.slice(0,2).join(' | '));
      if(metrics.brokenImages.length)report.failures.push(entry.label+' '+language+' '+size.width+'px: broken '+metrics.brokenImages.join(','));
      if(metrics.locale!==language||metrics.dir!==(language==='fa'?'rtl':'ltr'))report.failures.push(entry.label+' '+size.width+'px: locale/dir mismatch');
