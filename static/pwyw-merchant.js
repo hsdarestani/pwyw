@@ -4,7 +4,8 @@
  const root=$('reward-hub'),shell=$('mc-shell');
  if(!root||!shell)return;
  const views=['home','rewards','report','share'];
- const fa=()=>document.documentElement.lang==='fa';
+ // Respect chosen locale before the DOMContentLoaded i18n render.
+ const fa=()=>window.PWYWI18N?.locale?.()==='fa'||(!window.PWYWI18N&&document.documentElement.lang==='fa');
  const tr=(f,d)=>fa()?f:d;
  const norm=value=>String(value||'').replace(/[۰-۹]/g,c=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(c)).replace(/[٠-٩]/g,c=>'٠١٢٣٤٥٦٧٨٩'.indexOf(c));
  const count=id=>Number(norm($(id)?.textContent).replace(/[^0-9]/g,''))||0;
@@ -15,7 +16,23 @@
  function mount(){
   if(root.classList.contains('mc-ready'))return;
   relocate('reward-overview','mc-metrics-slot');
-  relocate('reward-hub-main','mc-rewards-slot');
+  // The original node is a CLASS, not an ID: move the entire legacy block.
+  const legacyMain=root.querySelector('.reward-hub-main');
+  if(legacyMain){
+   const panels=[...legacyMain.querySelectorAll(':scope > .reward-panel')];
+   if(panels.length===2){
+    const [templatesPanel,livePanel]=panels;
+    const disclosure=document.createElement('details');
+    disclosure.id='mc-template-panel';disclosure.className='mc-template-panel';
+    const label=document.createElement('summary');
+    label.dataset.fa='دیدن پیشنهادهای آماده';
+    label.dataset.de='Belohnungsvorlagen ansehen';
+    label.textContent='دیدن پیشنهادهای آماده';
+    disclosure.append(label,templatesPanel);
+    legacyMain.replaceChildren(livePanel,disclosure);
+   }
+   $('mc-rewards-slot').append(legacyMain);
+  }
   relocate('reward-action-status','mc-rewards-slot');
   relocate('rule-editor','mc-rewards-slot');
   const staff=root.querySelector('.reward-staff-tools');
@@ -31,10 +48,13 @@
   root.classList.add('mc-ready');
   shell.hidden=false;
   bind();
+  // Sharing belongs to the QR tab; don't duplicate it as another home card.
+  shell.querySelector('.mc-shortcuts [data-mc-go="share"]')?.remove();
   setView('home',false);
   updateBrand();
   updateStatus();
   applyLocale();
+  document.addEventListener('DOMContentLoaded',applyLocale,{once:true});
   const metrics=['reward-stat-plays','reward-stat-rules','reward-stat-issued','reward-stat-liability'].map($).filter(Boolean);
   const observer=new MutationObserver(()=>{updateStatus()});
   for(const el of metrics)observer.observe(el,{childList:true,characterData:true,subtree:true});
@@ -65,6 +85,7 @@
    else if(!slug){const original=document.querySelector('.studio-intro .studio-top-actions');if(original&&settings.parentElement!==original)original.append(settings)}
   }
   $('mc-brand-name').textContent=brand?.name||'';
+  if(brand?.name)$('mc-heading').textContent=tr('داشبورد '+brand.name,'Dashboard · '+brand.name);
   const path=slug?'/play/'+encodeURIComponent(slug):'/demo';
   const url=new URL(path,location.origin);
   if(fa())url.searchParams.set('lang','fa');
@@ -180,6 +201,7 @@
  }
  function openAdvanced(){
   setView('rewards');
+  const disclosure=$('mc-template-panel');if(disclosure)disclosure.open=true;
   const btn=$('rule-templates')?.querySelector('[data-template="'+(selectedTemplate?.key||'welcome')+'"]');
   if(btn)btn.click();
   else $('rule-from-scratch')?.click();
@@ -211,7 +233,11 @@
   $('mc-wizard-form').addEventListener('input',renderEstimate);
   $('mc-wizard-close').addEventListener('click',()=>{$('mc-quick-create').hidden=true;selectedTemplate=null});
   $('mc-wizard-advanced').addEventListener('click',openAdvanced);
-  $('mc-new-rule').addEventListener('click',()=>{$('rule-from-scratch').click()});
+  $('mc-new-rule').addEventListener('click',()=>{
+   const disclosure=$('mc-template-panel');if(disclosure)disclosure.open=true;
+   $('rule-from-scratch').click();
+   $('rule-editor')?.scrollIntoView({behavior:'smooth',block:'start'});
+  });
   $('mc-advanced-campaigns').addEventListener('click',openLegacy);
   document.addEventListener('pwyw:brand-selected',e=>{
    slug=e.detail?.slug||'';templates=null;selectedTemplate=null;
