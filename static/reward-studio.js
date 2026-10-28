@@ -266,7 +266,19 @@ $("rule-redeem-form").addEventListener("submit",async e=>{
  }catch(err){message("rule-staff-status",err.message,true)}
 });
 document.addEventListener("pwyw:brand-selected",e=>chooseBrand(e.detail?.slug||""));
-document.addEventListener("pwyw:language-changed",()=>{if(state.slug)load().catch(()=>{});else renderTemplates()});
+function refreshTemplateFormLocale(){
+ const form=$("rule-form");
+ for(const field of ["title","reward_title"]){
+  const input=form.elements.namedItem(field);
+  const template=state.templates.find(t=>t[field]===input.value||t[field+"_fa"]===input.value);
+  if(template)input.value=fa()?template[field+"_fa"]:template[field];
+ }
+ updateRulePreview();
+}
+document.addEventListener("pwyw:language-changed",()=>{
+ refreshTemplateFormLocale();
+ if(state.slug)load().catch(()=>{});else renderTemplates();
+});
 api("/api/reward-rule-templates").then(templates=>{
  state.templates=templates;renderTemplates();
 }).catch(e=>message("rule-recommendation",e.message,true));
