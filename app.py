@@ -468,5 +468,7 @@ import admin_api
 admin_api.install(app, db, user_from)
 import reward_rules
 reward_rules.install(app, db, user_from, owned_brand, public_brand, throttle)
+import merchant_autopilot
+merchant_autopilot.install(app, db, user_from, owned_brand, throttle)
 
 app.mount("/static",StaticFiles(directory=BASE/"static"),name="static")
