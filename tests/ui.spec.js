@@ -12,8 +12,11 @@ const {chromium}=require('playwright');
   if(!await page.locator('.hero h1').count() || !(await page.locator('.hero h1').innerText()).trim())
     throw Error('Branded landing headline missing');
   const valuePromise=await page.locator('.hero h1').innerText();
-  if(!valuePromise.includes('Spielen.')||!valuePromise.includes('Wiederkommen.'))
-    throw Error('Landing fails to explain business outcome: '+valuePromise);
+  if(!valuePromise.includes('Mehr Gäste.')||!valuePromise.includes('Spielen, die zu deinem Geschäft passen.'))
+    throw Error('Landing fails to explain new budget/expert positioning: '+valuePromise);
+  const paths=await page.locator('.operating-card .mode-action').all();
+  if(paths.length!==2||!(await paths[0].getAttribute('href')).includes('mode=managed')||!(await paths[1].getAttribute('href')).includes('mode=expert'))
+    throw Error('Merchant must be able to choose between the simple and professional path');
   const example=await page.locator('.journey-item').allInnerTexts();
   if(example.length!==3||!example.some(x=>x.includes('Wiederkommen')))
     throw Error('Concrete customer return journey missing: '+JSON.stringify(example));
