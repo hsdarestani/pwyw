@@ -341,6 +341,22 @@ const {chromium}=require('playwright');
   await page.locator('#brand-save').click();
   await page.locator('#reward-hub').waitFor({state:'visible',timeout:16000});
   await page.locator('#mc-view-home').waitFor({state:'visible'});
+  await page.locator('#mc-autopilot').waitFor({state:'visible'});
+  if(await page.locator('#mc-mode-managed').getAttribute('aria-pressed')!=='true')
+    throw Error('Novice merchant should start with budget-first mode');
+  if(!await page.locator('#mc-budget-range').isVisible())throw Error('No-skill budget gauge is missing');
+  await page.locator('[data-mc-budget="1000000"]').click();
+  await page.waitForFunction(()=>{
+    const v=document.querySelector('#mc-est-awards')?.textContent||'';
+    const ascii=v.replace(/[۰-۹]/g,c=>String('۰۱۲۳۴۵۶۷۸۹'.indexOf(c))).replace(/[^0-9]/g,'');
+    return Number(ascii)===40;
+  },null,{timeout:10000});
+  if(!await page.locator('#mc-est-assumptions-note').textContent().then(x=>x.includes('Beispiel')||x.includes('تخمین')))
+    throw Error('Forecast is missing its non-guarantee notice');
+  if(await page.locator('#mc-auto-activate').isEnabled())throw Error('Plan must require explicit estimate acknowledgement');
+  await page.screenshot({path:'/tmp/pwyw-budget-autopilot-mobile.png',fullPage:true});
+  await page.locator('#mc-mode-expert').click();
+  if(!await page.locator('#reward-overview').isVisible())throw Error('Expert cannot access original real metrics');
   if(await page.locator('#mc-view-home .reward-hub-main').count())
     throw Error('Legacy reward template panels leaked into merchant home');
   if(await page.locator('#mc-rewards-slot .reward-hub-main').count()!==1)
@@ -579,6 +595,22 @@ const {chromium}=require('playwright');
   const campaignLive=await page.evaluate(async()=>{const r=await fetch('/api/brands/playwright-garage/campaigns');return await r.json()});
   if(!campaignLive.some(c=>c.objective==='return'&&c.title))throw Error('Approval did not persist actual campaign');
   if(!['bloom','merge','hop'].includes(campaignLive.find(c=>c.objective==='return').game))throw Error('Unexpected suggested game');
+  await page.locator('#mc-bottom-nav [data-mc-view="home"]').click();
+  await page.locator('#mc-mode-managed').click();
+  await page.locator('[data-mc-budget="500000"]').click();
+  await page.waitForFunction(()=>document.querySelector('#mc-est-revenue')?.textContent!=='—');
+  await page.locator('#mc-auto-confirm').check();
+  await page.locator('#mc-auto-replace').check();
+  if(!await page.locator('#mc-auto-activate').isEnabled())throw Error('Explicitly approved beginner plan cannot activate');
+  await page.locator('#mc-auto-activate').click();
+  await page.waitForFunction(()=>!document.querySelector('#mc-auto-live').hidden,{timeout:15000});
+  const managed=await page.evaluate(async()=>await (await fetch('/api/brands/playwright-garage/managed-program')).json());
+  if(managed.program?.effective_status!=='active'||managed.program.budget_toman!==500000)
+    throw Error('Managed 30-day budget plan was not saved');
+  await page.locator('#mc-auto-pause').click();
+  await page.waitForFunction(()=>document.querySelector('#mc-auto-pause').hidden,{timeout:15000});
+  if(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)>4)
+    throw Error('Budget gauge causes horizontal scrolling');
   const campaignUrl=new URL(url,base);campaignUrl.searchParams.set('objective','return');
   await page.goto(campaignUrl.href,{waitUntil:'networkidle'});
   await page.locator('#load-overlay').waitFor({state:'hidden'});

@@ -22,6 +22,53 @@ class PilotTests(unittest.TestCase):
   @classmethod
   def tearDownClass(cls):
     cls.client.close();cls.tmp.cleanup()
+  def test_managed_budget_plan_owner_limits_and_expiry(self):
+    owner=TestClient(self.mod.app)
+    outsider=TestClient(self.mod.app)
+    self.assertEqual(owner.post("/api/register",json={"email":"managed-owner@sample.de","password":"safePassword123"}).status_code,200)
+    self.assertEqual(outsider.post("/api/register",json={"email":"managed-outsider@sample.de","password":"safePassword123"}).status_code,200)
+    slug="managed-test-shop"
+    brand={"name":"Managed Test Shop","slug":slug,"industry":"cafe","theme":"atelier","accent":"#8654b4","tagline":"Rewards!"}
+    self.assertEqual(owner.post("/api/brands",json=brand).status_code,200)
+    path="/api/brands/"+slug+"/managed-program"
+    data={"goal":"welcome","budget_toman":500000}
+    self.assertNotEqual(outsider.post(path+"/preview",json=data).status_code,200)
+    preview=owner.post(path+"/preview",json=data)
+    self.assertEqual(preview.status_code,200,preview.text)
+    p=preview.json()
+    self.assertEqual(p["award_cap"],20)
+    self.assertEqual(p["reward_cost_toman"],25000)
+    self.assertEqual(p["currency"],"IRT")
+    self.assertTrue(p["no_automatic_renewal"])
+    self.assertGreaterEqual(p["scenario_data"]["optimistic"]["illustrative_revenue_toman"],
+                            p["scenario_data"]["base"]["illustrative_revenue_toman"])
+    self.assertGreaterEqual(p["scenario_data"]["base"]["illustrative_revenue_toman"],
+                            p["scenario_data"]["conservative"]["illustrative_revenue_toman"])
+    self.assertEqual(owner.post(path+"/activate",json=data).status_code,422)
+    created=owner.post(path+"/activate",json={**data,"confirm_estimate":True})
+    self.assertEqual(created.status_code,200,created.text)
+    rule_id=created.json()["rule_id"]
+    self.assertEqual(owner.get(path).json()["program"]["effective_status"],"active")
+    self.assertEqual(owner.post(path+"/activate",json={**data,"confirm_estimate":True}).status_code,409)
+    switched=owner.post(path+"/activate",json={**data,"goal":"refer","confirm_estimate":True,"replace_active_rules":True})
+    self.assertEqual(switched.status_code,200,switched.text)
+    self.assertEqual(len(owner.get("/api/public/brands/"+slug+"/reward-rules").json()),1)
+    with self.mod.db() as con:
+      row=con.execute("SELECT * FROM reward_rules WHERE id=?",(rule_id,)).fetchone()
+      self.assertEqual(row["is_active"],0)
+      newer=switched.json()["rule_id"]
+      con.execute("UPDATE reward_rules SET expires_at='2000-01-01 00:00:00' WHERE id=?",(newer,))
+    self.assertEqual(len(owner.get("/api/public/brands/"+slug+"/reward-rules").json()),0)
+    with self.mod.db() as con:
+      con.execute("BEGIN IMMEDIATE")
+      rule=con.execute("SELECT * FROM reward_rules WHERE id=?",(newer,)).fetchone()
+      self.assertIsNone(self.mod.reward_rules.award(con,rule,"player1234567890","lifetime"))
+    self.assertEqual(owner.get(path).json()["program"]["effective_status"],"expired")
+    self.assertEqual(owner.post(path+"/pause").status_code,200)
+    self.assertEqual(owner.get(path).json()["program"]["effective_status"],"expired")
+    self.assertEqual(owner.post(path+"/preview",json={**data,"budget_toman":100000000}).json()["award_cap"],100)
+    owner.close();outsider.close()
+
   def test_site_and_public_demo(self):
     self.assertEqual(self.client.get("/api/health").status_code,200)
     self.assertEqual(self.client.get("/").status_code,200)

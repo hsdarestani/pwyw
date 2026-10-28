@@ -1,0 +1,119 @@
+/* PWYW Budget Pilot · compact merchant-first experience · mobile and RTL accessible. */
+.studio-v2 .mc-mode-switch{display:flex;align-items:center;gap:5px;padding:5px;border-radius:15px;border:1px solid #e9e5f0;background:#f1eef7;width:fit-content;max-width:100%;margin:0 0 16px}
+.studio-v2 .mc-mode-switch button{background:transparent;border:0;min-height:43px;padding:10px 17px;color:#686078;cursor:pointer;border-radius:11px;font:760 13px/1.5 "PW Vazir",system-ui,sans-serif}
+.studio-v2 .mc-mode-switch button[aria-pressed="true"]{background:#31244f;color:#fff;box-shadow:0 2px 9px #24183d24}
+.studio-v2.mc-managed-on #mc-view-home>:not(.mc-mode-switch):not(#mc-autopilot){display:none!important}
+.studio-v2 .reward-hub.mc-ready #mc-autopilot[hidden]{display:none!important}
+.studio-v2 .mc-autopilot{color:#2c223d;max-width:100%;font-family:"PW Vazir",system-ui,sans-serif}
+.studio-v2 .mc-autopilot .mc-auto-top{display:flex;justify-content:space-between;align-items:start;gap:12px;margin-bottom:19px}
+.studio-v2 .mc-auto-eyebrow{display:block;color:#70579f;font-size:12px;font-weight:750;margin-bottom:6px}
+.studio-v2 .mc-auto-top h3{font:850 clamp(22px,3.2vw,31px)/1.5 "PW Vazir",system-ui,sans-serif;color:#2b203c;margin:0 0 5px}
+.studio-v2 .mc-auto-top p{font-size:13px;line-height:1.9;color:#655c71;max-width:710px}
+.studio-v2 .mc-auto-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:15px;align-items:stretch}
+.studio-v2 .mc-budget-area{min-width:0;background:linear-gradient(145deg,#2b204b,#211936);border:1px solid #2e234c;border-radius:22px;padding:24px;color:#fff;overflow:hidden}
+.studio-v2 .mc-budget-heading{display:flex;flex-direction:column;gap:4px;text-align:start}
+.studio-v2 .mc-budget-heading strong{font-size:17px;font-weight:810}
+.studio-v2 .mc-budget-heading span{font-size:11px;color:#d2c8df}
+.studio-v2 .mc-gauge-shell{position:relative;width:min(100%,330px);margin:5px auto 0;aspect-ratio:320/170}
+.studio-v2 .mc-budget-gauge{width:100%;height:100%;overflow:visible}
+.studio-v2 #mc-gauge-fill{transition:stroke-dasharray .3s ease;stroke:#d8fb80}
+.studio-v2 .mc-gauge-value{position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;gap:0;text-align:center;color:#fff}
+.studio-v2 .mc-gauge-value strong{font-size:clamp(28px,3.7vw,39px);letter-spacing:-.035em;line-height:1.3;font-weight:860;color:#fff;direction:ltr;font-variant-numeric:tabular-nums}
+.studio-v2 .mc-gauge-value span{font-size:12px;color:#daceea}
+.studio-v2 .mc-slider-label{display:block;font-size:12px;font-weight:650;color:#eee7fa;margin:18px 0 6px}
+.studio-v2 #mc-budget-range{display:block;appearance:none;-webkit-appearance:none;width:100%;height:8px;border-radius:99px;background:#8e7da9;cursor:pointer;margin:12px 0}
+.studio-v2 #mc-budget-range::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border:5px solid #d8fb80;background:#fff;border-radius:50%;box-shadow:0 0 0 3px #382b5a}
+.studio-v2 #mc-budget-range::-moz-range-thumb{width:18px;height:18px;border:5px solid #d8fb80;background:#fff;border-radius:50%}
+.studio-v2 .mc-budget-presets{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:15px 0 0}
+.studio-v2 .mc-budget-presets button{border:1px solid #ffffff30;background:#ffffff16;color:#eae1f8;border-radius:10px;padding:11px 5px;cursor:pointer;font:730 12px/1.5 "PW Vazir",sans-serif;white-space:nowrap}
+.studio-v2 .mc-budget-presets button[aria-pressed="true"]{background:#d8fb80;color:#251a3e;border-color:#d8fb80}
+.studio-v2 .mc-custom-budget{margin-top:13px;color:#e9defa}
+.studio-v2 .mc-custom-budget summary{font-size:12px;cursor:pointer;list-style-position:inside;min-height:29px}
+.studio-v2 .mc-custom-budget label{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;margin-top:8px}
+.studio-v2 .mc-custom-budget input{width:170px;max-width:60%;height:42px;background:#fff;border:1px solid #c8bddb;border-radius:10px;color:#241934;font-size:15px;padding:8px}
+.studio-v2 .mc-forecast-area{background:#fff;border:1px solid #e8e3ef;border-radius:22px;padding:23px;min-width:0;box-shadow:0 4px 23px #2718420a}
+.studio-v2 .mc-forecast-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;font-size:12px;font-weight:750;color:#4a3b66}
+.studio-v2 .mc-forecast-flag{font-size:11px;color:#895c49;background:#fbf2ed;padding:6px 9px;border-radius:30px}
+.studio-v2 .mc-forecast-main{display:flex;flex-direction:column;gap:4px;margin:25px 0}
+.studio-v2 .mc-forecast-main>span{font-size:12px;color:#675d74}
+.studio-v2 .mc-forecast-main strong{font-size:clamp(32px,4.5vw,47px);font-weight:850;color:#33234f;line-height:1.3;letter-spacing:-.025em;direction:ltr;text-align:start}
+.studio-v2 .mc-forecast-main small{font-size:11px;color:#7c718b}
+.studio-v2 .mc-forecast-range,.studio-v2 .mc-forecast-facts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.studio-v2 .mc-forecast-range>div,.studio-v2 .mc-forecast-facts>div{border-radius:13px;background:#f6f3fa;padding:13px;display:flex;flex-direction:column;gap:6px}
+.studio-v2 .mc-forecast-range span,.studio-v2 .mc-forecast-facts span{font-size:11px;color:#70667f;line-height:1.6}
+.studio-v2 .mc-forecast-range strong,.studio-v2 .mc-forecast-facts strong{font-size:19px;color:#3a275b;font-weight:800}
+.studio-v2 .mc-forecast-facts{margin-top:10px}
+.studio-v2 .mc-forecast-facts>div{background:#fff;border:1px solid #eae6ee}
+.studio-v2 .mc-forecast-warning{border-top:1px solid #ebe5f0;margin:15px 0 0;padding-top:14px;font-size:11px;line-height:1.85;color:#756a83}
+.studio-v2 .mc-goal-row{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:19px 0 12px;flex-wrap:wrap}
+.studio-v2 .mc-goal-row>span{font-size:13px;font-weight:800}
+.studio-v2 .mc-goal-row>div{display:flex;gap:7px;flex-wrap:wrap}
+.studio-v2 .mc-goal-row button{border:1px solid #e5e0ec;background:#fff;color:#5a4f6b;padding:9px 14px;min-height:39px;border-radius:11px;cursor:pointer;font:720 12px "PW Vazir",sans-serif}
+.studio-v2 .mc-goal-row button[aria-pressed=true]{background:#f0eafa;color:#3a255b;border-color:#886cbd}
+.studio-v2 .mc-auto-details{border-top:1px solid #e8e3ed;padding:8px 0}
+.studio-v2 .mc-auto-details summary{font:740 13px/1.7 "PW Vazir",sans-serif;color:#48345f;cursor:pointer;min-height:42px;padding:10px 0}
+.studio-v2 .mc-auto-details li,.studio-v2 .mc-auto-details p{font-size:12px;line-height:1.95;color:#60586d}
+.studio-v2 .mc-auto-details ol{padding-inline-start:23px;margin:5px 0 12px}
+.studio-v2 .mc-assumptions-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:12px 0 14px}
+.studio-v2 .mc-assumptions-grid label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:#564b65}
+.studio-v2 .mc-assumptions-grid input{width:100%;min-height:45px;padding:10px 12px;border:1px solid #d8d0e4;border-radius:11px;background:#fff;color:#291a3d;font-size:15px}
+.studio-v2 .mc-auto-submit{margin-top:12px;border:1px solid #e7e1ed;background:#fff;border-radius:18px;padding:19px;display:flex;flex-direction:column;gap:13px}
+.studio-v2 .mc-auto-check{display:flex;align-items:flex-start;gap:10px;color:#63586d;font-size:12px;line-height:1.8;cursor:pointer}
+.studio-v2 .mc-auto-check input{width:18px;height:18px;flex:0 0 auto;accent-color:#59409b;margin-top:4px}
+.studio-v2 .mc-auto-check[hidden],.studio-v2 .mc-auto-live[hidden]{display:none!important}
+.studio-v2 .mc-auto-submit #mc-auto-activate{width:100%;background:#d8fb80;color:#24183a;font-size:15px;min-height:54px}
+.studio-v2 .mc-auto-submit button:disabled{opacity:.5;cursor:not-allowed}
+.studio-v2 .mc-auto-micro{color:#71667d;font-size:11px;line-height:1.7;margin:0;text-align:center}
+.studio-v2 .mc-auto-message{font-size:12px;color:#4e3378;line-height:1.8;margin:0}
+.studio-v2 .mc-auto-message:empty{display:none}
+.studio-v2 .mc-auto-live{background:#eef8e5;border:1px solid #cce8ae;border-radius:16px;margin:17px 0;padding:16px}
+.studio-v2 .mc-auto-live strong{color:#315b27;font-size:15px}
+.studio-v2 .mc-auto-live p{font-size:12px;color:#48643c;margin:7px 0}
+.studio-v2 .mc-auto-live div{display:flex;gap:9px;flex-wrap:wrap}
+.studio-v2 .mc-auto-live button{border:1px solid #bed6aa;border-radius:10px;background:#fff;min-height:42px;padding:9px 15px;font:740 12px "PW Vazir",sans-serif;cursor:pointer}
+.studio-v2 .mc-autopilot button:focus-visible,.studio-v2 .mc-autopilot input:focus-visible,.studio-v2 .mc-mode-switch button:focus-visible{outline:3px solid #8e6ac3;outline-offset:2px}
+.studio-v2 .mc-autopilot :is(#mc-est-low,#mc-est-high,#mc-est-revenue,#mc-est-awards){font-variant-numeric:tabular-nums}
+@media(max-width:800px){.studio-v2 .mc-auto-body{grid-template-columns:1fr}.studio-v2 .mc-forecast-main{margin:13px 0 18px}.studio-v2 .mc-budget-area,.studio-v2 .mc-forecast-area{padding:20px}}
+@media(max-width:640px){
+ .studio-v2.mc-active.mc-managed-on .studio-content{padding-top:10px!important}
+ .studio-v2 .mc-mode-switch{width:100%;margin-bottom:13px}
+ .studio-v2 .mc-mode-switch button{flex:1;font-size:13px;padding:9px 11px}
+ .studio-v2 .mc-auto-top{margin-bottom:13px}
+ .studio-v2 .mc-auto-top h3{font-size:23px}
+ .studio-v2 .mc-auto-top p{font-size:12px;line-height:1.8}
+ .studio-v2 .mc-auto-body{gap:10px}
+ .studio-v2 .mc-budget-area,.studio-v2 .mc-forecast-area{padding:18px;border-radius:17px}
+ .studio-v2 .mc-gauge-shell{width:min(100%,300px);margin:0 auto}
+ .studio-v2 .mc-gauge-value strong{font-size:35px}
+ .studio-v2 .mc-budget-presets{gap:5px}
+ .studio-v2 .mc-budget-presets button{font-size:11px;padding:9px 2px}
+ .studio-v2 .mc-forecast-main strong{font-size:34px}
+ .studio-v2 .mc-forecast-range strong,.studio-v2 .mc-forecast-facts strong{font-size:17px}
+ .studio-v2 .mc-goal-row{align-items:flex-start;flex-direction:column}
+ .studio-v2 .mc-goal-row>div{width:100%}
+ .studio-v2 .mc-goal-row button{flex:1;padding:9px 5px;font-size:11px}
+ .studio-v2 .mc-assumptions-grid{grid-template-columns:1fr}
+ .studio-v2 .mc-auto-submit{padding:15px}
+}
+@media(prefers-reduced-motion:reduce){.studio-v2 #mc-gauge-fill{transition:none}}
+
+/* One true mobile app bar: brand, add, language, logout. No stacked empty global header. */
+.studio-v2.mc-active.mc-streamlined .studio-top{display:none!important}
+.studio-v2.mc-active.mc-streamlined .studio-menu{display:flex;flex-direction:row;align-items:center;gap:9px;min-height:60px!important;background:#fff!important;border-bottom:1px solid #e8e3ec!important;padding:10px 16px!important}
+.studio-v2.mc-active.mc-streamlined .studio-menu .brand-list{flex:1;min-width:0;overflow-x:auto;order:1}
+.studio-v2.mc-active.mc-streamlined .studio-menu .menu-title{order:2;flex:0 0 auto}
+.studio-v2.mc-active.mc-streamlined .studio-menu>.pwyw-locale-switch{order:3;border-color:#c3b9d1;color:#382b55!important;background:#f8f6fa}
+.studio-v2.mc-active.mc-streamlined .studio-menu>#logout{order:4;display:block!important;background:#fff;color:#3b2e53;border:1px solid #d9d1e2;border-radius:10px;min-height:41px;padding:9px 12px;font:760 12px "PW Vazir",sans-serif}
+.studio-v2.mc-active.mc-streamlined .studio-menu>#platform-admin-link{order:5}
+.studio-v2.mc-active.mc-streamlined .studio-content{padding-top:13px!important}
+.studio-v2.mc-active.mc-streamlined .mc-head-actions #open-studio-settings{display:flex;align-items:center;justify-content:center}
+@media(max-width:640px){
+ .studio-v2.mc-active.mc-streamlined .studio-menu{gap:6px;min-height:54px!important;padding:7px 12px!important}
+ .studio-v2.mc-active.mc-streamlined .studio-menu .menu-title button{width:37px;height:37px}
+ .studio-v2.mc-active.mc-streamlined .studio-menu>.pwyw-locale-switch{padding:2px;border-radius:999px}
+ .studio-v2.mc-active.mc-streamlined .studio-menu>.pwyw-locale-switch button{min-width:29px;min-height:30px;padding:5px}
+ .studio-v2.mc-active.mc-streamlined .studio-menu>#logout{min-height:37px;padding:7px 9px;font-size:11px}
+ .studio-v2.mc-active.mc-streamlined .studio-content{padding:12px 14px 90px!important}
+ .studio-v2.mc-active.mc-streamlined .mc-headrow h2{font-size:21px!important}
+ .studio-v2.mc-active.mc-streamlined .mc-head-actions{max-width:127px}
+}

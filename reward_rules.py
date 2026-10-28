@@ -92,6 +92,7 @@ def bounds(period,key):
 def award(con,rule,sid,period_key,score=None):
  # Must be called in a write transaction. Idempotent and bound by cap and budget.
  if not SID_RE.fullmatch(sid):return None
+ if rule["expires_at"] and rule["expires_at"]<=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"):return None
  existing=con.execute("SELECT * FROM rule_awards WHERE rule_id=? AND sid=? AND period_key=?",
                       (rule["id"],sid,period_key)).fetchone()
  if existing:return dict(existing)
@@ -110,6 +111,7 @@ def issue_for_completion(con,brand_id,sid,game,score):
  if not started:return []
  result=[]
  rows=con.execute("""SELECT * FROM reward_rules WHERE brand_id=? AND is_active=1
+              AND (expires_at IS NULL OR expires_at>CURRENT_TIMESTAMP)
               AND rule_type IN ('first_play','repeat_days') AND (game='all' OR game=?)""",(brand_id,game)).fetchall()
  for rule in rows:
   if rule["rule_type"]=="repeat_days":
@@ -159,6 +161,8 @@ def install(app,db,user_from,owned_brand,public_brand,throttle):
   if "currency" not in cols:
    con.execute("ALTER TABLE reward_rules ADD COLUMN currency TEXT NOT NULL DEFAULT 'EUR'")
    con.execute("UPDATE reward_rules SET is_active=0 WHERE currency='EUR'")
+  if "expires_at" not in cols:
+   con.execute("ALTER TABLE reward_rules ADD COLUMN expires_at TEXT")
 
  @app.post("/api/public/brands/{slug}/play-attempts/start")
  def play_start(slug:str,data:PlayStart,request:Request):
@@ -226,7 +230,7 @@ def install(app,db,user_from,owned_brand,public_brand,throttle):
        AND completed_at>=datetime('now','-30 days')) finished,
      (SELECT COUNT(DISTINCT sid) FROM play_attempts WHERE brand_id=? AND eligible=1
        AND completed_at>=datetime('now','-30 days')) players,
-     (SELECT COUNT(*) FROM reward_rules WHERE brand_id=? AND is_active=1) live_rules,
+     (SELECT COUNT(*) FROM reward_rules WHERE brand_id=? AND is_active=1 AND (expires_at IS NULL OR expires_at>CURRENT_TIMESTAMP)) live_rules,
      (SELECT COUNT(*) FROM rule_awards WHERE brand_id=? AND issued_at>=datetime('now','-30 days')) issued,
      (SELECT COUNT(*) FROM rule_awards WHERE brand_id=? AND redeemed_at>=datetime('now','-30 days')) redeemed
    """,(brand["id"],)*5).fetchone()
@@ -286,7 +290,7 @@ def install(app,db,user_from,owned_brand,public_brand,throttle):
   with db() as con:
    bid=con.execute("SELECT id FROM brands WHERE slug=?",(slug,)).fetchone()["id"]
    rows=con.execute("""SELECT id,title,rule_type,game,period,target_count,reward_title,delivery,max_awards
-                     FROM reward_rules WHERE brand_id=? AND is_active=1 ORDER BY id DESC""",(bid,)).fetchall()
+                     FROM reward_rules WHERE brand_id=? AND is_active=1 AND (expires_at IS NULL OR expires_at>CURRENT_TIMESTAMP) ORDER BY id DESC""",(bid,)).fetchall()
   return [dict(x) for x in rows]
 
  @app.get("/api/public/brands/{slug}/rule-leaderboard/{rule_id}")
@@ -294,7 +298,7 @@ def install(app,db,user_from,owned_brand,public_brand,throttle):
   public_brand(slug)
   with db() as con:
    rule=con.execute("""SELECT r.* FROM reward_rules r JOIN brands b ON b.id=r.brand_id
-                  WHERE b.slug=? AND r.id=? AND r.is_active=1""",(slug,rule_id)).fetchone()
+                  WHERE b.slug=? AND r.id=? AND r.is_active=1 AND (r.expires_at IS NULL OR r.expires_at>CURRENT_TIMESTAMP)""",(slug,rule_id)).fetchone()
    if not rule:raise HTTPException(404,"Rule not found")
    if rule["rule_type"] not in ("leaderboard_daily","leaderboard_weekly"):
     raise HTTPException(422,"Not a leaderboard rule")
@@ -329,7 +333,7 @@ def install(app,db,user_from,owned_brand,public_brand,throttle):
   if not SID_RE.fullmatch(data.sid):raise HTTPException(422,"Invalid session")
   with db() as con:
    con.execute("BEGIN IMMEDIATE")
-   row=con.execute("SELECT * FROM reward_rules WHERE id=? AND brand_id=? AND is_active=1",(rule_id,brand["id"])).fetchone()
+   row=con.execute("SELECT * FROM reward_rules WHERE id=? AND brand_id=? AND is_active=1 AND (expires_at IS NULL OR expires_at>CURRENT_TIMESTAMP)",(rule_id,brand["id"])).fetchone()
    if not row:raise HTTPException(404,"Active rule not found")
    if row["rule_type"] not in ("verified_visit","verified_referral","score_threshold"):
     raise HTTPException(422,"This rule cannot be staff verified")
