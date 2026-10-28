@@ -187,7 +187,7 @@
   }
  }
  function applyLocale(){
-  shell.querySelectorAll('[data-fa][data-de]').forEach(el=>{
+  root.querySelectorAll('[data-fa][data-de]').forEach(el=>{
    const value=el.dataset[fa()?'fa':'de'];
    if(el.textContent!==value)el.textContent=value;
   });
