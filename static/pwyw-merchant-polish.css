@@ -1,0 +1,64 @@
+/* PWYW Merchant OS v3: contextual screens, small-business tasks before decoration. */
+.studio-v2 .reward-hub.mc-ready .mc-head{padding:4px 0 14px}
+.studio-v2 .reward-hub.mc-ready .mc-headrow h2{font-size:clamp(22px,2.8vw,28px);margin:0;line-height:1.45}
+.studio-v2 .reward-hub.mc-ready .mc-headrow p{margin:2px 0 0;font-size:12px;line-height:1.5}
+.studio-v2 .reward-hub.mc-ready #mc-view-rewards>.mc-view-heading{justify-content:flex-end;margin-bottom:12px}
+.studio-v2 .reward-hub.mc-ready #mc-view-rewards>.mc-view-heading>div{display:none}
+.studio-v2 .reward-hub.mc-ready #mc-view-rewards #mc-new-rule{background:#32234f;color:#fff;border:1px solid #32234f;padding-inline:18px}
+.studio-v2 .reward-hub.mc-ready #mc-view-report>.mc-view-heading,
+.studio-v2 .reward-hub.mc-ready #mc-view-share>.mc-view-heading{margin:0 0 16px}
+.studio-v2 .reward-hub.mc-ready :is(#mc-view-report,#mc-view-share)>.mc-view-heading h3{display:none}
+.studio-v2 .reward-hub.mc-ready :is(#mc-view-report,#mc-view-share)>.mc-view-heading p{font-size:12px;color:#696374;line-height:1.85;max-width:590px;margin:0}
+.studio-v2 .reward-hub.mc-ready #mc-view-report>.mc-view-heading{max-width:720px}
+.studio-v2 .reward-hub.mc-ready #mc-report-slot .reward-trends{margin:10px 0 0}
+.studio-v2 .reward-hub.mc-ready #mc-report-slot .reward-trends-inner{padding:16px}
+.studio-v2 .reward-hub.mc-ready #mc-report-slot .reward-trend-caption{font-size:12px}
+.studio-v2 .reward-hub.mc-ready .mc-report-insight{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:15px;padding:16px 18px;border:1px solid #e6e1ec;background:#fff;border-radius:14px;color:#4d445d;font:580 12px/1.85 "PW Vazir","Estedad",sans-serif}
+.studio-v2 .reward-hub.mc-ready .mc-report-insight[hidden]{display:none!important}
+.studio-v2 .reward-hub.mc-ready .mc-report-insight button{flex:0 0 auto;min-height:41px;border:1px solid #362550;color:#362550;border-radius:10px;padding:9px 16px;background:#f6f1fc;cursor:pointer;font:760 12px "PW Vazir","Estedad",sans-serif}
+.studio-v2 .reward-hub.mc-ready #mc-share-slot .reward-portal-share>summary{display:none}
+.studio-v2 .reward-hub.mc-ready #mc-share-slot .reward-portal-share{border:1px solid #e7e2eb;box-shadow:0 6px 24px #291e4009}
+.studio-v2 .reward-hub.mc-ready #mc-share-slot .reward-portal-share-body{padding:24px 22px;gap:22px}
+.studio-v2 .reward-hub.mc-ready #mc-share-slot #reward-portal-qr{min-width:166px;width:166px;height:166px;max-width:166px;padding:7px;background:#fff;border:1px solid #ebe7f0;border-radius:16px}
+.studio-v2 .reward-hub.mc-ready #mc-share-slot .reward-portal-share-actions button,
+.studio-v2 .reward-hub.mc-ready #mc-share-slot .reward-portal-share-actions a{border-radius:12px;min-height:45px;font-size:13px}
+.studio-v2 .reward-hub.mc-ready .mc-shortcuts button[hidden]{display:none!important}
+.studio-v2 .reward-hub.mc-ready #mc-rewards-slot .reward-panel{box-shadow:none}
+.studio-v2 .reward-hub.mc-ready #mc-rewards-slot .reward-rule-list{grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr))}
+.studio-v2 .reward-hub.mc-ready #mc-rewards-slot .reward-empty{font-size:13px;padding:18px 5px}
+.studio-v2 .reward-hub.mc-ready #mc-rewards-slot .reward-footnote{font-size:11px;line-height:1.8}
+.studio-v2 .reward-hub.mc-ready .mc-view{min-height:0}
+.studio-v2 .mc-wizard-backdrop{position:fixed;inset:0;z-index:2901;background:#17112483;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.studio-v2 .mc-wizard-backdrop[hidden]{display:none!important}
+body.mc-dialog-open{overflow:hidden!important}
+.studio-v2 .reward-hub.mc-ready .mc-wizard{position:fixed!important;z-index:2902;left:50%;top:50%;bottom:auto;width:min(590px,calc(100vw - 36px));max-width:none;max-height:calc(100dvh - 50px);overflow-y:auto;margin:0!important;padding:24px!important;transform:translate(-50%,-50%);box-shadow:0 25px 100px #130a2b4d!important;background:#fff!important;border-radius:23px!important;overscroll-behavior:contain}
+.studio-v2 .reward-hub.mc-ready .mc-wizard[hidden]{display:none!important}
+.studio-v2 .reward-hub.mc-ready .mc-wizard .mc-wizard-fields{grid-template-columns:1fr;gap:14px}
+.studio-v2 .reward-hub.mc-ready .mc-wizard .mc-wizard-heading{margin-bottom:14px}
+.studio-v2 .reward-hub.mc-ready .mc-wizard .mc-wizard-heading h3{font-size:20px}
+.studio-v2 .reward-hub.mc-ready .mc-wizard .mc-wizard-fields label{font-size:13px}
+.studio-v2 .reward-hub.mc-ready .mc-wizard .mc-wizard-fields input{height:49px;font-size:15px}
+.studio-v2 .reward-hub.mc-ready .mc-wizard .mc-wizard-actions{display:flex;gap:9px;flex-wrap:nowrap}
+.studio-v2 .reward-hub.mc-ready .mc-wizard .mc-wizard-actions .mc-primary{flex:1}
+@media(max-width:640px){
+ .studio-v2.mc-active .studio-top{height:55px!important;min-height:55px!important}
+ .studio-v2.mc-active .studio-top .identity-word small{display:none}
+ .studio-v2.mc-active .studio-menu{min-height:49px!important;padding:6px 14px!important}
+ .studio-v2.mc-active .studio-content{padding:11px 14px 90px!important}
+ .studio-v2 .reward-hub.mc-ready .mc-head{padding:4px 0 12px!important}
+ .studio-v2 .reward-hub.mc-ready .mc-headrow h2{font-size:22px!important}
+ .studio-v2 .reward-hub.mc-ready .mc-headrow p{font-size:12px}
+ .studio-v2 .reward-hub.mc-ready #mc-view-rewards>.mc-view-heading{margin-bottom:9px}
+ .studio-v2 .reward-hub.mc-ready .mc-report-summary>div{min-height:93px}
+ .studio-v2 .reward-hub.mc-ready .mc-report-insight{display:flex;flex-direction:column;align-items:stretch;gap:11px}
+ .studio-v2 .reward-hub.mc-ready .mc-report-insight button{width:100%}
+ .studio-v2 .reward-hub.mc-ready #mc-share-slot .reward-portal-share-body{padding:22px 15px;gap:16px;align-items:center}
+ .studio-v2 .reward-hub.mc-ready #mc-share-slot #reward-portal-qr{min-width:180px;width:180px;height:180px;max-width:180px}
+ .studio-v2 .reward-hub.mc-ready #mc-share-slot .reward-portal-share-body p{font-size:12.5px;text-align:center}
+ .studio-v2 .reward-hub.mc-ready #mc-share-slot .reward-portal-share-actions{justify-content:center;gap:8px}
+ .studio-v2 .reward-hub.mc-ready #mc-share-slot .reward-portal-share-actions :is(a,button){padding:11px 13px}
+ .studio-v2 .reward-hub.mc-ready .mc-wizard{top:auto;bottom:0;left:0;transform:none;width:100vw;max-height:calc(100dvh - 18px);border-radius:24px 24px 0 0!important;padding:22px 18px calc(20px + env(safe-area-inset-bottom))!important}
+ .studio-v2 .reward-hub.mc-ready .mc-wizard .mc-wizard-actions{flex-direction:column}
+ .studio-v2 .reward-hub.mc-ready .mc-wizard .mc-wizard-actions button{width:100%}
+}
+@media(prefers-reduced-motion:reduce){.studio-v2 .mc-wizard-backdrop{backdrop-filter:none;-webkit-backdrop-filter:none}}
