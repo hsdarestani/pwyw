@@ -66,6 +66,7 @@ async function load(){
  ]);
  $("admin-user").textContent=me.email;
  $("cr-login").hidden=true;$("cr-app").hidden=false;
+ const skip=document.querySelector('.pw4-skip');if(skip)skip.href='#cr-app';
  renderStats(overview);
  table("cr-brands",[
   {de:"Geschäft",fa:"کسب‌وکار",key:"name"},
@@ -97,7 +98,8 @@ $("refresh-admin").addEventListener("click",async()=>{
 });
 $("admin-logout").onclick=async()=>{
  await api("/api/logout",{method:"POST",body:"{}"});
- $("cr-login").hidden=false;$("cr-app").hidden=true;$("admin-login").reset();
+ $("cr-login").hidden=false;$("cr-app").hidden=true;
+ const skip=document.querySelector('.pw4-skip');if(skip)skip.href='#cr-login';$("admin-login").reset();
 };
 $("change-password").addEventListener("submit",async event=>{
  event.preventDefault();
@@ -107,7 +109,8 @@ $("change-password").addEventListener("submit",async event=>{
   await api("/api/account/change-password",{method:"POST",body:JSON.stringify(Object.fromEntries(data))});
   $("change-status").textContent=wording("Passwort geändert. Bitte erneut anmelden.","رمز تغییر کرد. دوباره وارد شو.");
   await api("/api/logout",{method:"POST",body:"{}"});
-  $("cr-login").hidden=false;$("cr-app").hidden=true;$("change-password").reset();
+  $("cr-login").hidden=false;$("cr-app").hidden=true;
+ const skip=document.querySelector('.pw4-skip');if(skip)skip.href='#cr-login';$("change-password").reset();
  }catch(error){$("change-status").textContent=error.message}
  finally{btn.disabled=false}
 });
