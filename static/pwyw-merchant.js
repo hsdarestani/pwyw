@@ -164,6 +164,17 @@
    [tr('قانون فعال','Aktive Regeln'),$('reward-stat-rules')?.textContent||'۰'],
    [tr('هزینه تخمینی جایزه','Geschätzte Prämienkosten'),$('reward-stat-liability')?.textContent||'۰']
   ];
+  const insight=$('mc-report-insight'),copy=$('mc-report-insight-copy');
+  if(insight&&copy){
+   insight.hidden=live>0&&issued>0;
+   copy.textContent=live===0?tr(
+    readable(plays)+' بازی ثبت شده اما هنوز جایزه فعالی وجود نداره. برای سنجش بازگشت مشتری، اول یک جایزه مشخص کن.',
+    readable(plays)+' Spiele registriert, aber noch keine aktive Belohnung. Starte mit einer Belohnung, um Rückkehr messbar zu machen.'):
+    tr('قانون فعال داری؛ وقتی اولین جایزه صادر بشه، استفاده از جایزه هم قابل بررسی می‌شه.',
+    'Du hast aktive Regeln. Sobald die erste Prämie ausgegeben wurde, wird die Einlösung messbar.');
+  }
+  const redeem=shell.querySelector('.mc-shortcuts [data-mc-go="redeem"]');
+  if(redeem)redeem.hidden=live===0;
   const summary=$('mc-report-numbers');
   if(summary){
    summary.replaceChildren();
@@ -287,6 +298,7 @@
   $('mc-wizard-close').addEventListener('click',closeWizard);
   $('mc-wizard-advanced').addEventListener('click',openAdvanced);
   $('mc-new-rule').addEventListener('click',()=>openTemplate('welcome'));
+  $('mc-report-insight-cta').addEventListener('click',()=>openTemplate('welcome'));
   $('mc-advanced-campaigns').addEventListener('click',openLegacy);
   document.addEventListener('pwyw:brand-selected',e=>{
    slug=e.detail?.slug||'';templates=null;selectedTemplate=null;
