@@ -340,42 +340,56 @@ const {chromium}=require('playwright');
   await page.screenshot({path:'/tmp/pwyw-studio-mobile.png',fullPage:true});
   await page.locator('#brand-save').click();
   await page.locator('#reward-hub').waitFor({state:'visible',timeout:16000});
+  await page.locator('#mc-view-home').waitFor({state:'visible'});
+  if(!await page.locator('#reward-overview').isVisible())throw Error('Real 30-day metrics should be visible on merchant home');
+  if(await page.locator('.mc-goals button').count()!==3)throw Error('Merchant home needs three practical reward goals');
+  if(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)>4)throw Error('New merchant home overflows mobile');
+  await page.locator('[data-mc-template="return"]').click();
+  await page.locator('#mc-quick-create').waitFor({state:'visible'});
+  if(await page.locator('#mc-wizard-form input').count()!==3)throw Error('Quick reward flow is not a three-field form');
+  if(await page.locator('#mc-wizard-form input[name="budget"]').inputValue()!=='600000')
+    throw Error('Quick reward budget is not whole toman');
+  await page.locator('#mc-wizard-close').click();
+  await page.locator('#mc-bottom-nav [data-mc-view="rewards"]').click();
   await page.locator('#rule-templates .reward-template').first().waitFor({state:'visible'});
-  if(await page.locator('#rule-templates .reward-template').count()<5)
-    throw Error('Rule templates are missing');
-  if(!await page.locator('#reward-portal-link').getAttribute('href').then(x=>x.endsWith('/play/playwright-garage')))
-    throw Error('Business cannot open its permanent portal');
+  if(await page.locator('#rule-templates .reward-template').count()<5)throw Error('Reward templates missing');
+  if(!await page.locator('#mc-portal-link').getAttribute('href').then(x=>x.includes('/play/playwright-garage')))
+    throw Error('New merchant cannot open the customer portal');
   await page.locator('#rule-templates [data-template="welcome"]').click();
-  if(await page.locator('#rule-advanced').evaluate(x=>x.open))throw Error('Advanced rule controls must be initially collapsed');
+  if(await page.locator('#rule-advanced').evaluate(x=>x.open))throw Error('Advanced controls should start collapsed');
   if(!(await page.locator('#rule-preview-copy').textContent()).includes('Überraschung'))
-    throw Error('Reward rule preview does not explain the selected prize');
+    throw Error('Selected reward template preview is not meaningful');
   if(await page.locator('#rule-form input[name=reward_cost]').inputValue()!=='25000')
     throw Error('Reward cost should be whole toman');
   if(await page.locator('#rule-form input[name=budget]').inputValue()!=='500000')
     throw Error('Reward budget should be whole toman');
   await page.locator('#pwyw-language-switch [data-lang=fa]').click();
-  if((await page.locator('.workspace-nav a').first().innerText())!=='نمای کلی')
-    throw Error('Reward navigation not localized into Persian');
+  if((await page.locator('#mc-bottom-nav [data-mc-view="home"] span').innerText())!=='خانه')
+    throw Error('Merchant navigation not localized into Persian');
   if(!(await page.locator('#rule-preview-copy').textContent()).includes('هدیه'))
     throw Error('Reward preview lacks Persian prize name');
   await page.locator('#pwyw-language-switch [data-lang=de]').click();
-  if(!await page.locator('#reward-overview').isVisible())
-    throw Error('Merchant overview is missing real reward metrics');
-  if(!await page.locator('#rule-editor').evaluate(x=>x.open))
-    throw Error('Editable reward template did not open');
   await page.locator('#rule-form input[name=is_active]').check();
   await page.locator('#rule-save').click();
   await page.waitForFunction(()=>document.querySelector('#rule-list .reward-on')?.textContent.includes('Aktiv'));
   await page.waitForFunction(()=>document.querySelector('#reward-stat-rules')?.textContent?.trim()==='1');
-  if(!await page.locator('#reward-trends').isVisible())throw Error('Merchant activity chart disclosure missing');
-  await page.locator('#reward-trends summary').click();
+  await page.locator('#mc-view-home').waitFor({state:'visible'});
+  await page.locator('#mc-bottom-nav [data-mc-view="report"]').click();
+  await page.locator('#reward-trends').waitFor({state:'visible'});
   if(await page.locator('#reward-trend-bars .reward-trend-day').count()!==14)
-    throw Error('Merchant activity chart must show fourteen days');
+    throw Error('Merchant activity report must show 14 days');
+  await page.locator('#mc-bottom-nav [data-mc-view="home"]').click();
+  await page.locator('[data-mc-template="return"]').click();
+  await page.locator('#mc-quick-create').waitFor({state:'visible'});
+  await page.locator('#mc-wizard-save').click();
+  await page.waitForFunction(()=>document.querySelector('#reward-stat-rules')?.textContent?.trim()==='2');
   const publishedRules=await page.evaluate(async()=>{
     const r=await fetch('/api/public/brands/playwright-garage/reward-rules');return await r.json();
   });
-  if(publishedRules.length!==1||publishedRules[0].rule_type!=='first_play')
-    throw Error('Merchant rule was not persisted or published');
+  if(publishedRules.length!==2||!publishedRules.some(r=>r.rule_type==='first_play')||!publishedRules.some(r=>r.rule_type==='repeat_days'))
+    throw Error('Both advanced and quick reward creation must persist');
+  await page.locator('#mc-bottom-nav [data-mc-view="rewards"]').click();
+  await page.locator('#mc-advanced-campaigns').click();
   await page.locator('#proposal-card').waitFor({state:'visible',timeout:18000});
   if(await page.locator('.purpose-option small').first().isHidden())
     throw Error('Merchant goal explanations are hidden again');
@@ -451,13 +465,10 @@ const {chromium}=require('playwright');
   await page.locator('#proposal-published').waitFor({state:'visible',timeout:14000});
   const currentQuick=await page.locator('#quick-open').getAttribute('href');
   if(!currentQuick.includes('objective=return'))throw Error('Quick play link points to wrong campaign');
-  if(!await page.locator('#studio-quick').isVisible())throw Error('Share controls missing after publish');
-  if(await page.locator('#quick-more').evaluate(x=>x.open))throw Error('Extra actions must start collapsed');
-  await page.locator('#quick-more summary').click();
-  if(!await page.locator('#quick-verify').isVisible())throw Error('Merchant code verification is inaccessible');
-  if(!await page.locator('#quick-copy').isEnabled())throw Error('Publishing did not enable sharing');
-  if(!/veröffentlicht|منتشر شده/.test(await page.locator('#quick-status').textContent()))
-    throw Error('Merchant cannot see that the campaign is published');
+  if(!await page.locator('#mc-portal-link').isVisible())throw Error('New always-visible portal link is missing');
+  await page.locator('#mc-bottom-nav [data-mc-view="share"]').click();
+  if(!await page.locator('#reward-portal-share').isVisible())throw Error('QR sharing view is inaccessible');
+  await page.locator('#mc-bottom-nav [data-mc-view="rewards"]').click();
   if(!await page.locator('#proposal-open').getAttribute('href'))
     throw Error('Approved campaign has no share link');
   // The same business may select and publish another goal without losing the first.
@@ -527,13 +538,14 @@ const {chromium}=require('playwright');
   if(qr.w<110||qr.right>page.viewportSize().width+2||qr.left<0)throw Error('Mobile QR sizing is broken: '+JSON.stringify(qr));
 
   if(await page.locator('#studio-settings-overlay').isVisible())await page.locator('#close-studio-settings').click();
-  await page.locator('.workspace-nav a[href="#rule-redeem-form"]').click();
-  if(!await page.locator('.reward-staff-tools').evaluate(el=>el.open))throw Error('Workspace shortcut does not open redemption tools');
-  if(!await page.locator('#rule-redeem-code').isVisible())throw Error('Redemption shortcut target hidden');
+  await page.locator('#mc-bottom-nav [data-mc-view="home"]').click();
+  await page.locator('[data-mc-go="redeem"]').click();
+  if(!await page.locator('.reward-staff-tools').evaluate(el=>el.open))throw Error('Redemption shortcut must open the verification tool');
+  if(!await page.locator('#rule-redeem-code').isVisible())throw Error('Redemption must be usable on mobile');
   await page.locator('#pwyw-language-switch [data-lang=fa]').click();
-  if((await page.locator('.workspace-nav a').first().innerText())!=='نمای کلی')throw Error('Workspace shortcuts did not localize');
+  if((await page.locator('#mc-bottom-nav [data-mc-view="home"] span').innerText())!=='خانه')throw Error('Navigation not localized');
   await page.locator('#pwyw-language-switch [data-lang=de]').click();
-  if((await page.locator('.workspace-nav a').first().innerText())!=='Übersicht')throw Error('Workspace shortcuts did not restore German');
+  if((await page.locator('#mc-bottom-nav [data-mc-view="home"] span').innerText())!=='Start')throw Error('German navigation not restored');
   const logoutColors=await page.locator('#logout').evaluate(el=>({ink:getComputedStyle(el).color,paper:getComputedStyle(el).backgroundColor}));
   if(logoutColors.ink===logoutColors.paper)throw Error('Logout text invisible');
   const url=await page.locator('#open-play').getAttribute('href');

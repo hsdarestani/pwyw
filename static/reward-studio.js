@@ -246,6 +246,7 @@ $("rule-form").addEventListener("submit",async e=>{
   if(state.editing)await api("/api/brands/"+encodeURIComponent(state.slug)+"/reward-rules/"+state.editing,"PUT",data);
   else await api("/api/brands/"+encodeURIComponent(state.slug)+"/reward-rules","POST",data);
   $("rule-editor").open=false;state.editing=null;await load();
+  document.dispatchEvent(new CustomEvent("pwyw:reward-saved"));
   status(txt("Regel gespeichert. Du kannst das Portal direkt testen.","قانون ذخیره شد. حالا می‌تونی پورتال رو تست کنی."));
  }catch(err){message("rule-form-status",err.message,true);status(err.message,true)}finally{button.disabled=false}
 });
@@ -275,6 +276,7 @@ function refreshTemplateFormLocale(){
  }
  updateRulePreview();
 }
+window.PWYWRewardStudio={refresh:()=>state.slug?load():Promise.resolve(),getTemplates:()=>state.templates.slice()};
 document.addEventListener("pwyw:language-changed",()=>{
  refreshTemplateFormLocale();
  if(state.slug)load().catch(()=>{});else renderTemplates();
