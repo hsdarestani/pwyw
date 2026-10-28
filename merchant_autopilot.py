@@ -97,13 +97,13 @@ def install(app,db,user_from,owned_brand,throttle):
  def get_program(slug:str,request:Request):
   brand=owned_brand(slug,user_from(request))
   with db() as con:
-   row=con.execute("""SELECT p.*,r.is_active,r.currency,r.reward_title,
+   row=con.execute("""SELECT p.*,r.is_active,r.currency,r.reward_title,r.expires_at rule_expires_at,
      (SELECT COUNT(*) FROM rule_awards a WHERE a.rule_id=p.rule_id) issued
      FROM managed_programs p JOIN reward_rules r ON r.id=p.rule_id
      WHERE p.brand_id=?""",(brand["id"],)).fetchone()
   if not row:return {"program":None}
   state=dict(row)
-  state["effective_status"]=("expired" if state["expires_at"]<=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+  state["effective_status"]=("expired" if min(state["expires_at"],state["rule_expires_at"] or state["expires_at"])<=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
           else "paused" if state["status"]!="active" or not state["is_active"] else "active")
   state["assumptions"]=json.loads(state.pop("assumptions_json"))
   return {"program":state}
