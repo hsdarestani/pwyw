@@ -30,7 +30,7 @@
 .player-v2 .game-library[open] .game-pick-copy{display:flex;flex-direction:column;flex:0 1 auto!important;gap:3px!important;min-height:0!important}
 .player-v2 .game-library[open] .game-pick-copy b{font-size:13px!important;line-height:1.55!important;min-height:0!important}
 .player-v2 .game-library[open] .game-pick-copy small{font-size:11px!important;line-height:1.6!important;opacity:.85}
-.player-v2 .game-library[open] .game-pick.is-featured-duplicate{display:none!important}
+.player-v2 .game-library[open] .game-pick.is-featured-duplicate{border-color:var(--world-flare)!important}
 .player-v2 .game-library[open] .game-pick:focus-visible,.player-v2 .featured-start:focus-visible{outline:3px solid var(--world-flare);outline-offset:3px}
 @media(max-width:800px){
  .player-v2 .play-area{padding-inline:16px!important}
