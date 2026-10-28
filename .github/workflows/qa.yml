@@ -34,7 +34,7 @@ jobs:
       - name: Install test dependencies
         run: |
           python -m pip install -q -r requirements.txt httpx==0.28.1
-          npm install --no-save playwright@1.56.1
+          npm install --no-save playwright@1.56.1 @axe-core/playwright@4.10.2
           npx playwright install --with-deps chromium
       - name: Smoke test the actual production Docker image
         run: |
@@ -63,11 +63,14 @@ jobs:
           uvicorn app:app --port 8080 > /tmp/pwyw-e2e.log 2>&1 &
           for i in $(seq 1 30); do curl -fsS http://127.0.0.1:8080/api/health && break; sleep 1; done
           node tests/ui.spec.js
+          node tests/experience-audit.spec.js
       - name: Save visual QA screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: pwyw-browser-screenshots
-          path: /tmp/pwyw-*-mobile.png
+          path: |
+            /tmp/pwyw-*-mobile.png
+            /tmp/pwyw-experience-audit.json
           if-no-files-found: ignore
           retention-days: 7
