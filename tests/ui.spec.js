@@ -341,6 +341,10 @@ const {chromium}=require('playwright');
   await page.locator('#brand-save').click();
   await page.locator('#reward-hub').waitFor({state:'visible',timeout:16000});
   await page.locator('#mc-view-home').waitFor({state:'visible'});
+  if(await page.locator('#mc-view-home .reward-hub-main').count())
+    throw Error('Legacy reward template panels leaked into merchant home');
+  if(await page.locator('#mc-rewards-slot .reward-hub-main').count()!==1)
+    throw Error('Reward management panels were not relocated into rewards tab');
   if(!await page.locator('#reward-overview').isVisible())throw Error('Real 30-day metrics should be visible on merchant home');
   if(await page.locator('.mc-goals button').count()!==3)throw Error('Merchant home needs three practical reward goals');
   if(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)>4)throw Error('New merchant home overflows mobile');
@@ -351,6 +355,9 @@ const {chromium}=require('playwright');
     throw Error('Quick reward budget is not whole toman');
   await page.locator('#mc-wizard-close').click();
   await page.locator('#mc-bottom-nav [data-mc-view="rewards"]').click();
+  if(await page.locator('#mc-template-panel').evaluate(el=>el.open))
+    throw Error('Six reward templates must not all be expanded by default');
+  await page.locator('#mc-template-panel summary').click();
   await page.locator('#rule-templates .reward-template').first().waitFor({state:'visible'});
   if(await page.locator('#rule-templates .reward-template').count()<5)throw Error('Reward templates missing');
   if(!await page.locator('#mc-portal-link').getAttribute('href').then(x=>x.includes('/play/playwright-garage')))
@@ -364,6 +371,12 @@ const {chromium}=require('playwright');
   if(await page.locator('#rule-form input[name=budget]').inputValue()!=='500000')
     throw Error('Reward budget should be whole toman');
   await page.locator('#pwyw-language-switch [data-lang=fa]').click();
+  await page.locator('#mc-bottom-nav [data-mc-view="home"]').click();
+  const faHome=(await page.locator('#mc-shell').innerText());
+  if(/Geschäftszentrale|Dein Geschäft heute|Dein nächster Schritt|Letzte 30 Tage|Details anzeigen|Wähle einen Einstieg|Mehr Gäste zum Spielen bringen|Spielportal ansehen/.test(faHome))
+    throw Error('Persian merchant view still contains untranslated German interface: '+faHome.slice(0,500));
+  await page.screenshot({path:'/tmp/pwyw-command-home-fa-mobile.png',fullPage:true});
+  await page.locator('#mc-bottom-nav [data-mc-view="rewards"]').click();
   if((await page.locator('#mc-bottom-nav [data-mc-view="home"] span').innerText())!=='خانه')
     throw Error('Merchant navigation not localized into Persian');
   if(!(await page.locator('#rule-preview-copy').textContent()).includes('هدیه'))
