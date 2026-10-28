@@ -187,7 +187,10 @@
  function brandChange(e){
   slug=e.detail?.slug||window.PWYWStudio?.getBrand?.()?.slug||'';
   if(!slug)return;
-  try{mode=localStorage.getItem('pwyw.merchant.mode.'+slug)||'managed'}catch{mode='managed'}
+  // A selected onboarding track takes precedence only for a newly seen business.
+  const requested=new URLSearchParams(location.search).get('mode');
+  const initial=(requested==='expert'||requested==='managed')?requested:'managed';
+  try{mode=localStorage.getItem('pwyw.merchant.mode.'+slug)||initial}catch{mode=initial}
   if(mode!=='expert')mode='managed';
   modeSet(mode);
   program=null;preview=null;$('mc-auto-confirm').checked=false;$('mc-auto-replace').checked=false;
