@@ -1,9 +1,71 @@
-<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#11111b"><title>PWYW® Brand Lab — Build games with a purpose</title><link rel="stylesheet" href="/static/pwyw-v2.css"><link rel="stylesheet" href="/static/pwyw-studio-brand.css?v=1"><link rel="stylesheet" href="/static/pwyw-locale.css?v=20261016"><link rel="stylesheet" href="/static/pwyw-experience.css?v=20261016-02"><link rel="stylesheet" href="/static/pwyw-studio-mobile.css?v=20261016-v1"><link rel="stylesheet" href="/static/pwyw-campaign-wizard.css?v=20261016-u3"><link rel="stylesheet" href="/static/pwyw-studio-dialog.css?v=20261016-u3"><link rel="stylesheet" href="/static/pwyw-customer-preview.css?v=20261016-02"><link rel="stylesheet" href="/static/pwyw-simple.css?v=multi-goal-20261019"><link rel="stylesheet" href="/static/pwyw-unified.css?v=site20261021-01"><link rel="stylesheet" href="/static/pwyw-reward-hub.css?v=20261023-2"><link rel="stylesheet" href="/static/pwyw-next.css?v=20261023-final"><link rel="stylesheet" href="/static/pwyw-premium.css?v=20261024-1"></head>
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#11111b"><title>PWYW® Brand Lab — Build games with a purpose</title><link rel="stylesheet" href="/static/pwyw-v2.css"><link rel="stylesheet" href="/static/pwyw-studio-brand.css?v=1"><link rel="stylesheet" href="/static/pwyw-locale.css?v=20261016"><link rel="stylesheet" href="/static/pwyw-experience.css?v=20261016-02"><link rel="stylesheet" href="/static/pwyw-studio-mobile.css?v=20261016-v1"><link rel="stylesheet" href="/static/pwyw-campaign-wizard.css?v=20261016-u3"><link rel="stylesheet" href="/static/pwyw-studio-dialog.css?v=20261016-u3"><link rel="stylesheet" href="/static/pwyw-customer-preview.css?v=20261016-02"><link rel="stylesheet" href="/static/pwyw-simple.css?v=multi-goal-20261019"><link rel="stylesheet" href="/static/pwyw-unified.css?v=site20261021-01"><link rel="stylesheet" href="/static/pwyw-reward-hub.css?v=20261023-2"><link rel="stylesheet" href="/static/pwyw-next.css?v=20261023-final"><link rel="stylesheet" href="/static/pwyw-premium.css?v=20261024-1"><link rel="stylesheet" href="/static/pwyw-merchant.css?v=20261028-01"></head>
 <body class="studio-v2"><header class="studio-top"><a class="identity" href="/"><span class="identity-symbol"><svg viewBox="0 0 50 50" fill="none" aria-hidden="true"><circle cx="25" cy="25" r="22" stroke="currentColor" stroke-width="2"/><path d="M13 20L19 33L25 23L31 33L38 17" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="37.8" cy="17" r="4.5" fill="#ff8c6c"/></svg></span><span class="identity-word">PWYW<small>BRAND LAB / 01</small></span></a><div class="studio-top-right"><span class="pilot-label">● PRIVATE PILOT / NO BILLING</span><span id="user-email"></span><a href="/admin" id="platform-admin-link" hidden>CONTROL ROOM ↗</a><button id="logout" hidden>LOG OUT ↗</button></div></header>
 <main id="auth-shell" class="studio-auth"><section class="studio-auth-art"><span>DEIN SPIELEPORTAL / PWYW®</span><h1>DEIN PORTAL.<br><em>DEINE REGELN.</em></h1><p>Einmal einrichten. QR-Code teilen. Fertig.</p></section><section class="studio-auth-box"><div class="mode-toggle"><button id="tab-login" class="active" type="button">Anmelden</button><button id="tab-signup" type="button">Konto erstellen</button></div><h2 id="auth-title">Willkommen zurück.</h2><p>Spielportal erstellen, Belohnung festlegen und QR-Code teilen.</p><form id="auth-form"><label>E-Mail<input type="email" name="email" autocomplete="email" placeholder="you@yourbusiness.de" required></label><label>Passwort<input type="password" name="password" autocomplete="current-password" minlength="10" placeholder="Mindestens 10 Zeichen" required></label><button class="solid-btn" id="auth-submit" type="submit">Anmelden <span>↗</span></button><div id="auth-error" class="notice error" role="alert" hidden></div></form><p class="helper">Pilotversion. Keine Kreditkarte erforderlich.</p></section></main>
 <main id="app-shell" class="studio-shell" hidden><aside class="studio-menu"><div class="menu-title"><span>MY BRAND WORLDS</span><button id="new-brand" type="button" aria-label="Create a new brand">+</button></div><div id="brand-list" class="brand-list"></div><div class="menu-end">✳ PWYW BRAND LAB / BETA<a href="/" target="_blank" rel="noopener">EXPLORE THE WEBSITE ↗</a></div></aside>
 <section class="studio-content"><div class="studio-intro"><div><span class="overline">THE EXPERIENCE BUILDER / GOAL FIRST</span><h1 id="workspace-title">First, pick an outcome.</h1><p id="workspace-subtitle">Not the game. The action you want your customers to take.</p></div><div class="studio-top-actions"><a class="mini-link" id="open-play" href="/demo" target="_blank" rel="noopener" hidden>OPEN LIVE LOUNGE ↗</a><button type="button" id="open-studio-settings" class="studio-settings-trigger" aria-haspopup="dialog" aria-controls="studio-settings-overlay">Weitere Einstellungen</button></div></div>
 <section id="reward-hub" class="reward-hub" hidden aria-labelledby="reward-hub-title">
+<div id="mc-shell" class="mc-shell" hidden>
+ <header class="mc-head">
+  <div class="mc-overline" data-fa="پنل مدیریت / PWYW" data-de="Geschäftszentrale / PWYW">پنل مدیریت / PWYW</div>
+  <div class="mc-headrow"><div><h2 id="mc-heading" data-fa="امروز چطور پیش می‌ره؟" data-de="Dein Geschäft heute">امروز چطور پیش می‌ره؟</h2><p id="mc-brand-name"></p></div><a id="mc-portal-link" class="mc-portal-link" href="#" target="_blank" rel="noopener" data-fa="دیدن پورتال بازی" data-de="Spielportal ansehen">دیدن پورتال بازی</a></div>
+ </header>
+ <nav class="mc-tabs" aria-label="بخش‌های مدیریت">
+  <button type="button" data-mc-view="home" aria-pressed="true"><span data-fa="خانه" data-de="Start">خانه</span></button>
+  <button type="button" data-mc-view="rewards" aria-pressed="false"><span data-fa="جایزه‌ها" data-de="Belohnungen">جایزه‌ها</span></button>
+  <button type="button" data-mc-view="report" aria-pressed="false"><span data-fa="گزارش" data-de="Berichte">گزارش</span></button>
+  <button type="button" data-mc-view="share" aria-pressed="false"><span data-fa="لینک و QR" data-de="Link & QR">لینک و QR</span></button>
+ </nav>
+ <section id="mc-view-home" class="mc-view" aria-label="داشبورد روزانه">
+  <div class="mc-status" id="mc-status">
+   <div class="mc-status-copy"><span class="mc-status-eyebrow" data-fa="پیشنهاد امروز" data-de="Dein nächster Schritt">پیشنهاد امروز</span><h3 id="mc-status-title">بازی‌هات آماده‌ان، جایزه‌ها رو فعال کن</h3><p id="mc-status-description">با یک جایزه ساده شروع کن تا مشتری‌ها انگیزه بازی کردن داشته باشن.</p></div>
+   <button id="mc-main-cta" type="button" class="mc-primary" data-fa="ساخت اولین جایزه" data-de="Erste Belohnung erstellen">ساخت اولین جایزه</button>
+  </div>
+  <div class="mc-sectionhead"><h3 data-fa="وضعیت ۳۰ روز گذشته" data-de="Letzte 30 Tage">وضعیت ۳۰ روز گذشته</h3><button type="button" data-mc-go="report" data-fa="دیدن جزئیات" data-de="Details anzeigen">دیدن جزئیات</button></div>
+  <div id="mc-metrics-slot"></div>
+  <div class="mc-sectionhead"><h3 data-fa="چه نتیجه‌ای می‌خوای؟" data-de="Was möchtest du erreichen?">چه نتیجه‌ای می‌خوای؟</h3><span data-fa="یک پیشنهاد انتخاب کن" data-de="Wähle einen Einstieg">یک پیشنهاد انتخاب کن</span></div>
+  <div class="mc-goals" role="group" aria-label="هدف جایزه">
+   <button type="button" data-mc-template="return"><span class="mc-goal-id">۰۱</span><span><strong data-fa="مشتری دوباره برگرده" data-de="Gäste zurückholen">مشتری دوباره برگرده</strong><small data-fa="برای چند روز بازی جایزه بده" data-de="Wiederkehr belohnen">برای چند روز بازی جایزه بده</small></span><span class="mc-goal-open" aria-hidden="true">+</span></button>
+   <button type="button" data-mc-template="refer"><span class="mc-goal-id">۰۲</span><span><strong data-fa="مشتری جدید جذب کنم" data-de="Neue Gäste gewinnen">مشتری جدید جذب کنم</strong><small data-fa="برای معرفی تأییدشده پاداش بده" data-de="Bestätigte Empfehlung belohnen">برای معرفی تأییدشده پاداش بده</small></span><span class="mc-goal-open" aria-hidden="true">+</span></button>
+   <button type="button" data-mc-template="welcome"><span class="mc-goal-id">۰۳</span><span><strong data-fa="مشتری‌ها بیشتر بازی کنن" data-de="Mehr Gäste zum Spielen bringen">مشتری‌ها بیشتر بازی کنن</strong><small data-fa="برای اولین بازی هدیه بذار" data-de="Erstes Spiel belohnen">برای اولین بازی هدیه بذار</small></span><span class="mc-goal-open" aria-hidden="true">+</span></button>
+  </div>
+  <section id="mc-quick-create" class="mc-wizard" hidden aria-labelledby="mc-wizard-title">
+   <div class="mc-wizard-heading"><div><span class="mc-status-eyebrow" data-fa="تنظیم سریع" data-de="Schnell einrichten">تنظیم سریع</span><h3 id="mc-wizard-title">جایزه برای مشتری</h3></div><button id="mc-wizard-close" type="button" aria-label="بستن" class="mc-quiet">✕</button></div>
+   <form id="mc-wizard-form">
+    <div class="mc-wizard-fields">
+     <label><span data-fa="۱. مشتری چی بگیره؟" data-de="1. Was gewinnt der Gast?">۱. مشتری چی بگیره؟</span><input name="prize" maxlength="150" required placeholder="مثلاً یک نوشیدنی رایگان"></label>
+     <label><span data-fa="۲. هزینه تقریبی هر جایزه (تومان)" data-de="2. Kosten je Preis (Toman)">۲. هزینه تقریبی هر جایزه (تومان)</span><input name="cost" inputmode="numeric" type="number" min="0" max="1000000000" step="1" required></label>
+     <label><span data-fa="۳. سقف کل هزینه (تومان)" data-de="3. Gesamtes Budget (Toman)">۳. سقف کل هزینه (تومان)</span><input name="budget" inputmode="numeric" type="number" min="1" max="1000000000000" step="1" required></label>
+    </div>
+    <p id="mc-prize-estimate" class="mc-estimate"></p>
+    <p id="mc-wizard-error" class="mc-error" role="alert"></p>
+    <div class="mc-wizard-actions"><button type="submit" id="mc-wizard-save" class="mc-primary" data-fa="فعال‌سازی جایزه" data-de="Belohnung aktivieren">فعال‌سازی جایزه</button><button type="button" id="mc-wizard-advanced" class="mc-quiet" data-fa="تنظیمات بیشتر" data-de="Weitere Einstellungen">تنظیمات بیشتر</button></div>
+   </form>
+  </section>
+  <div class="mc-shortcuts">
+   <button type="button" data-mc-go="share"><span class="mc-shortcut-symbol">▦</span><span><strong data-fa="QR و لینک بازی" data-de="QR und Spiellink">QR و لینک بازی</strong><small data-fa="برای نصب روی میز یا اشتراک‌گذاری" data-de="Zum Teilen oder Aufstellen">برای نصب روی میز یا اشتراک‌گذاری</small></span></button>
+   <button type="button" data-mc-go="redeem"><span class="mc-shortcut-symbol">✓</span><span><strong data-fa="تحویل جایزه" data-de="Preis einlösen">تحویل جایزه</strong><small data-fa="کد مشتری رو بررسی کن" data-de="Kundencode prüfen">کد مشتری رو بررسی کن</small></span></button>
+  </div>
+ </section>
+ <section id="mc-view-rewards" class="mc-view" hidden aria-label="مدیریت جایزه‌ها">
+  <div class="mc-sectionhead mc-view-heading"><div><h3 data-fa="جایزه‌ها و قوانین" data-de="Belohnungen & Regeln">جایزه‌ها و قوانین</h3><p data-fa="جایزه‌های فعال رو مدیریت کن یا یکی جدید بساز." data-de="Verwalte deine Belohnungen oder erstelle neue.">جایزه‌های فعال رو مدیریت کن یا یکی جدید بساز.</p></div><button type="button" id="mc-new-rule" class="mc-quiet" data-fa="جایزه جدید +" data-de="Neue Belohnung +">جایزه جدید +</button></div>
+  <div id="mc-rewards-slot"></div>
+  <button id="mc-advanced-campaigns" type="button" class="mc-quiet mc-legacy-link" data-fa="مدیریت کمپین‌های قدیمی" data-de="Frühere Kampagnen verwalten">مدیریت کمپین‌های قدیمی</button>
+ </section>
+ <section id="mc-view-report" class="mc-view" hidden aria-label="گزارش عملکرد">
+  <div class="mc-view-heading"><h3 data-fa="گزارش فعالیت" data-de="Aktivitätsbericht">گزارش فعالیت</h3><p data-fa="بازی‌ها و جایزه‌های ثبت‌شده رو ببین. افزایش فروش فقط با اطلاعات واقعی فروش قابل اثباته." data-de="Spiele und Prämien. Umsatzsteigerung braucht echte Verkaufsdaten.">بازی‌ها و جایزه‌های ثبت‌شده رو ببین. افزایش فروش فقط با اطلاعات واقعی فروش قابل اثباته.</p></div>
+  <div id="mc-report-numbers" class="mc-report-summary"></div><div id="mc-report-slot"></div>
+ </section>
+ <section id="mc-view-share" class="mc-view" hidden aria-label="اشتراک پورتال بازی">
+  <div class="mc-view-heading"><h3 data-fa="مشتری چطور بازی کنه؟" data-de="Wie können Gäste spielen?">مشتری چطور بازی کنه؟</h3><p data-fa="کد QR رو روی میز یا پیشخوان بذار یا لینک رو برای مشتری بفرست." data-de="Stelle den QR-Code auf oder teile deinen Spiellink.">کد QR رو روی میز یا پیشخوان بذار یا لینک رو برای مشتری بفرست.</p></div>
+  <div id="mc-share-slot"></div>
+ </section>
+ <nav id="mc-bottom-nav" class="mc-bottom-nav" aria-label="ناوبری اصلی موبایل">
+  <button data-mc-view="home" aria-pressed="true" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10H3zM9 20v-7h6v7"/></svg><span data-fa="خانه" data-de="Start">خانه</span></button>
+  <button data-mc-view="rewards" aria-pressed="false" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M3 10h18M12 10v11M12 10c-7 0-8-6-4-7 3-1 4 3 4 7zm0 0c7 0 8-6 4-7-3-1-4 3-4 7z"/></svg><span data-fa="جایزه‌ها" data-de="Prämien">جایزه‌ها</span></button>
+  <button data-mc-view="report" aria-pressed="false" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V12m8 8V4m8 16v-9"/></svg><span data-fa="گزارش" data-de="Berichte">گزارش</span></button>
+  <button data-mc-view="share" aria-pressed="false" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h7v7H3zm11 0h7v7h-7zM3 14h7v7H3zm11 0h3m4 0v7m-7-3h7"/></svg><span data-fa="QR و لینک" data-de="QR & Link">QR و لینک</span></button>
+ </nav>
+</div>
  <div class="reward-hub-header">
    <div><span class="reward-kicker">PWYW / DEIN SPIELPORTAL</span><h2 id="reward-hub-title">Deine Spiele. Deine Regeln.</h2>
    <p>Deine Gäste wählen selbst ein Spiel. Du entscheidest, wann es etwas zu gewinnen gibt.</p></div>
@@ -201,4 +263,4 @@
  </section>
 </div>
 <footer class="studio-footer">PWYW® BY A+SOLUTION · PURPOSE FIRST · THE ARCADE FOLLOWS.</footer></section></main>
-<script defer src="/static/dashboard-v2.js?v=irt20261028-1"></script><script defer src="/static/reward-studio.js?v=irt20261028-1"></script><script defer src="/static/campaign-assistant.js?v=multi-goal-20261019"></script><script defer src="/static/pwyw-native-fa.js?v=irt20261028-1"></script><script defer src="/static/pwyw-i18n.js?v=irt20261028-1"></script><script defer src="/static/pwyw-premium.js?v=20261024-1"></script></body></html>
+<script defer src="/static/dashboard-v2.js?v=irt20261028-1"></script><script defer src="/static/reward-studio.js?v=irt20261028-1"></script><script defer src="/static/campaign-assistant.js?v=multi-goal-20261019"></script><script defer src="/static/pwyw-native-fa.js?v=irt20261028-1"></script><script defer src="/static/pwyw-i18n.js?v=irt20261028-1"></script><script defer src="/static/pwyw-premium.js?v=20261024-1"></script><script defer src="/static/pwyw-merchant.js?v=20261028-01"></script></body></html>
