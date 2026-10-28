@@ -191,3 +191,10 @@ button:disabled{cursor:not-allowed}
  .studio-v2.mc-active.mc-streamlined .studio-menu>#logout{min-width:48px}
  .studio-v2 #auth-shell .mode-toggle button{min-width:90px!important;min-height:44px!important}
 }
+
+/* WCAG audit remediations from exact 390px targets; overrides older theme !important rules. */
+.studio-v2 #auth-shell .mode-toggle button:not(.active){color:#33244f!important}
+.studio-v2 .studio-top .identity-word>small{color:#554b62!important}
+.studio-v2 #auth-shell .studio-auth-box>.helper{color:#51465e!important;font-size:12px}
+.control .cr-lead{color:#344b56!important}
+.sms-landing .showcase-bottom a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:8px 10px;border-radius:9px}
