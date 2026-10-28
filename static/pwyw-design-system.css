@@ -175,3 +175,19 @@ button:disabled{cursor:not-allowed}
  .studio-v2 #auth-shell .studio-auth-box{padding:16px 17px 25px!important}
  .studio-v2 #auth-shell .studio-auth-box h2{margin-top:11px}
 }
+
+/* Minimum finger-target pass: applies even when legacy locale CSS uses smaller chips. */
+#pwyw-language-switch{display:flex;align-items:center;gap:1px;max-width:100%}
+#pwyw-language-switch button{display:grid!important;place-items:center;flex:0 0 auto;min-width:40px!important;min-height:44px!important;padding:8px 9px!important;font-size:12px!important;line-height:1.2!important}
+.sms-landing .brand-sign{display:inline-flex;align-items:center;min-height:44px}
+.sms-landing .header-how{display:inline-flex;align-items:center;min-height:44px}
+.player-v2 .play-footer a{display:inline-flex;align-items:center;justify-content:center;min-width:58px;min-height:44px;padding:8px 6px}
+.studio-v2 #auth-shell .mode-toggle button{min-width:91px}
+.control .cr-top :is(a,button){min-height:44px;display:inline-flex;align-items:center}
+.control .cr-top #pwyw-language-switch button{min-height:44px!important}
+@media(max-width:720px){
+ .studio-v2.mc-active.mc-streamlined .studio-menu>.pwyw-locale-switch button{min-width:36px!important;min-height:42px!important;padding:7px!important}
+ .studio-v2.mc-active.mc-streamlined .studio-menu{gap:5px!important}
+ .studio-v2.mc-active.mc-streamlined .studio-menu>#logout{min-width:48px}
+ .studio-v2 #auth-shell .mode-toggle button{min-width:90px!important;min-height:44px!important}
+}
