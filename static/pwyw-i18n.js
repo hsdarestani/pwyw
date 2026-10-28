@@ -1079,7 +1079,8 @@
     document.documentElement.dir=selected==='fa'?'rtl':'ltr';
     document.documentElement.dataset.locale=selected;
      document.querySelectorAll('.workspace-nav [data-de][data-fa]').forEach(el=>{
-       el.textContent=el.getAttribute('data-'+selected);
+       const value=el.getAttribute('data-'+selected);
+       if(el.textContent!==value)el.textContent=value;
      });
     // Page titles are part of the localized experience too. Do not overwrite dynamic tenant titles.
     if(!document.body?.classList.contains('player-v2')){
