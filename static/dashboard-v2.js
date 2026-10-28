@@ -210,8 +210,8 @@ function objective(value){
  $('campaign-product').value=c.product_name||'';
  $('campaign-game').value=c.game||'orbit';
  $('campaign-destination').value=c.destination||'';
- $('campaign-margin').value=Number(c.margin_per_sale||0);
- $('campaign-reward').value=Number(c.reward_cost||0);
+ $('campaign-margin').value=c.currency==='EUR'?'':Math.round(Number(c.margin_per_sale||0));
+ $('campaign-reward').value=c.currency==='EUR'?'':Math.round(Number(c.reward_cost||0));
  $('learning-builder').hidden=value!=='learn';
  $('quiz-question').value=c.quiz_question||'';
  const options=Array.isArray(c.quiz_options)?c.quiz_options:[];
@@ -366,7 +366,7 @@ $('campaign-form').addEventListener('submit',async e=>{
    description:$('campaign-description').value.trim(),cta:$('campaign-cta').value.trim(),
    offer:$('campaign-offer').value.trim(),product_name:$('campaign-product').value.trim(),
    destination:$('campaign-destination').value.trim(),game:$('campaign-game').value,
-   margin_per_sale:Number($('campaign-margin').value||0),reward_cost:Number($('campaign-reward').value||0),is_active:true,
+   margin_per_sale:Math.round(Number($('campaign-margin').value||0)),reward_cost:Math.round(Number($('campaign-reward').value||0)),currency:'IRT',is_active:true,
    quiz_question:state.objective==='learn'?$('quiz-question').value.trim():'',
    quiz_options:state.objective==='learn'?[0,1,2].map(i=>$('quiz-option-'+i).value.trim()).filter(Boolean):[],
    quiz_correct_index:Number($('quiz-correct').value||0),
@@ -390,9 +390,13 @@ async function refreshStats(){
      const card=document.createElement('div');card.className='outcome-item';
      const title=document.createElement('b');title.textContent=window.PWYWI18N?.t('PLAY TO '+c.objective.toUpperCase())||'PLAY TO '+c.objective.toUpperCase();
      const count=document.createElement('strong');count.textContent=formatCount(c.redeemed)+(locale()==='fa'?' استفاده‌شده':' eingelöst');
-     const note=document.createElement('span');note.textContent=locale()==='fa'?
-       formatCount(c.issued)+' کد صادرشده · '+formatCount(c.actions)+' کلیک روی پیشنهاد · '+Number(c.net_claimed_contribution).toLocaleString('fa-IR',{maximumFractionDigits:2})+' یورو مبلغ اعلام‌شده':
-       formatCount(c.issued)+' Codes · '+formatCount(c.actions)+' Klicks · '+Number(c.net_claimed_contribution).toLocaleString('de-DE',{maximumFractionDigits:2})+' € gemeldeter Nettobetrag';
+     const note=document.createElement('span');
+      const money=c.net_claimed_contribution===null?
+        (locale()==='fa'?'مبالغ کمپین قدیمی باید دوباره به تومان ثبت بشن':'Frühere Beträge bitte in Toman neu festlegen'):
+        Math.round(Number(c.net_claimed_contribution||0)).toLocaleString('fa-IR')+' تومان';
+      note.textContent=locale()==='fa'?
+        formatCount(c.issued)+' کد صادرشده · '+formatCount(c.actions)+' کلیک روی پیشنهاد · '+money:
+        formatCount(c.issued)+' Codes · '+formatCount(c.actions)+' Klicks · '+money;
      card.append(title,count,note);list.append(card);
    }
    if(!results.campaigns.length)list.textContent='Publish a campaign to begin tracking real customer actions.';
