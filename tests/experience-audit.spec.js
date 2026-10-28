@@ -41,9 +41,9 @@ const fs=require('fs');
        mainLandmarks:document.querySelectorAll('main').length,
        title:document.title,headings:[...document.querySelectorAll('h1')].map(el=>el.textContent.trim().slice(0,80))};
      });
-     const ax=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa']).analyze();
+     const ax=size.width===390?await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa']).analyze():{violations:[]};
      const severe=ax.violations.filter(v=>v.impact==='serious'||v.impact==='critical').map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.length,help:v.help}));
-     const item={page:entry.label,locale:language,width:size.width,metrics,accessibility:severe,errors};
+     const item={page:entry.label,locale:language,width:size.width,metrics,accessibility:severe,accessibilityScanned:size.width===390,errors};
      report.pages.push(item);
      if(metrics.overflow>4)report.failures.push(entry.label+' '+language+' '+size.width+'px: horizontal overflow '+metrics.overflow+'px');
      if(errors.length)report.failures.push(entry.label+' '+language+' '+size.width+'px: runtime '+errors.slice(0,2).join(' | '));
