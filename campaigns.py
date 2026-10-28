@@ -22,8 +22,9 @@ class CampaignInput(BaseModel):
     cta: str = Field(default="",max_length=90)
     offer: str = Field(default="",max_length=180)
     product_name: str = Field(default="",max_length=90)
-    reward_cost: float = Field(default=0,ge=0,le=9999)
-    margin_per_sale: float = Field(default=0,ge=0,le=99999)
+    reward_cost: float = Field(default=0,ge=0,le=1000000000)
+    margin_per_sale: float = Field(default=0,ge=0,le=1000000000)
+    currency: str = "IRT"
     destination: str = Field(default="",max_length=500)
     game: str = "orbit"
     is_active: bool = True
@@ -38,7 +39,7 @@ class ClaimInput(BaseModel):
 
 class RedeemInput(BaseModel):
     code: str = Field(min_length=8,max_length=24)
-    verified_value: float = Field(default=0,ge=0,le=99999)
+    verified_value: float = Field(default=0,ge=0,le=1000000000)
     note: str = Field(default="",max_length=160)
 
 class AnswerInput(BaseModel):
@@ -61,6 +62,7 @@ def install(app, db, user_from, owned_brand, public_brand, throttle):
           product_name TEXT NOT NULL DEFAULT '', reward_cost REAL NOT NULL DEFAULT 0,
           margin_per_sale REAL NOT NULL DEFAULT 0, destination TEXT NOT NULL DEFAULT '',
           game TEXT NOT NULL DEFAULT 'orbit', is_active INTEGER NOT NULL DEFAULT 1,
+          currency TEXT NOT NULL DEFAULT 'IRT',
           created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
           UNIQUE(brand_id,objective)
         );
@@ -95,6 +97,10 @@ def install(app, db, user_from, owned_brand, public_brand, throttle):
         cols={row["name"] for row in con.execute("PRAGMA table_info(campaigns)").fetchall()}
         if "translations_json" not in cols:
             con.execute("ALTER TABLE campaigns ADD COLUMN translations_json TEXT NOT NULL DEFAULT '{}'")
+        if "currency" not in cols:
+            con.execute("ALTER TABLE campaigns ADD COLUMN currency TEXT NOT NULL DEFAULT 'EUR'")
+            # No guesswork FX conversions: keep old figures separately and inactive.
+            con.execute("UPDATE campaigns SET is_active=0 WHERE currency='EUR'")
 
     def lookup_campaign(slug, objective):
         if objective not in OBJECTIVES: raise HTTPException(404,"Unknown campaign")
@@ -145,6 +151,7 @@ def install(app, db, user_from, owned_brand, public_brand, throttle):
         user=user_from(request)
         brand=owned_brand(slug,user)
         if objective not in OBJECTIVES or objective!=data.objective: raise HTTPException(422,"Invalid objective")
+        if data.currency!="IRT":raise HTTPException(422,"Campaign monetary values must be in toman")
         if data.game not in GAMES: raise HTTPException(422,"Invalid game")
         if data.destination and not re.fullmatch(r"https://[A-Za-z0-9.-]+(?::[0-9]+)?(?:/[^\s]*)?",data.destination):
             raise HTTPException(422,"Only HTTPS destination links are supported")
@@ -165,20 +172,23 @@ def install(app, db, user_from, owned_brand, public_brand, throttle):
                     clean[key]=value.strip()
             translations[lang]=clean
         with db() as con:
+            legacy=con.execute("SELECT id FROM campaigns WHERE brand_id=? AND objective=? AND currency='EUR'",(brand["id"],objective)).fetchone()
+            if legacy and con.execute("SELECT 1 FROM claims WHERE campaign_id=? LIMIT 1",(legacy["id"],)).fetchone():
+                raise HTTPException(409,"Old currency campaign has claims; archive and reconcile before replacing its budget")
             con.execute("""INSERT INTO campaigns(
                 brand_id,objective,title,description,cta,offer,product_name,reward_cost,
-                margin_per_sale,destination,game,is_active,translations_json)
-              VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
+                margin_per_sale,destination,game,is_active,translations_json,currency)
+              VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
               ON CONFLICT(brand_id,objective) DO UPDATE SET
                 title=excluded.title,description=excluded.description,cta=excluded.cta,
                 offer=excluded.offer,product_name=excluded.product_name,
                 reward_cost=excluded.reward_cost,margin_per_sale=excluded.margin_per_sale,
                 destination=excluded.destination,game=excluded.game,is_active=excluded.is_active,
-                 translations_json=excluded.translations_json
+                 translations_json=excluded.translations_json,currency=excluded.currency
             """,(brand["id"],objective,data.title.strip(),data.description.strip(),
                   data.cta.strip(),data.offer.strip(),data.product_name.strip(),
                   data.reward_cost,data.margin_per_sale,data.destination.strip(),
-                  data.game,int(data.is_active),json.dumps(translations,ensure_ascii=False)))
+                  data.game,int(data.is_active),json.dumps(translations,ensure_ascii=False),data.currency))
         if objective=="learn":
             if data.quiz_question.strip():
                 options=[str(x).strip() for x in data.quiz_options]
@@ -323,7 +333,7 @@ def install(app, db, user_from, owned_brand, public_brand, throttle):
         user=user_from(request)
         brand=owned_brand(slug,user)
         with db() as con:
-            rows=con.execute("""SELECT c.objective,c.title,c.reward_cost,c.margin_per_sale,
+            rows=con.execute("""SELECT c.objective,c.title,c.reward_cost,c.margin_per_sale,c.currency,
                 (SELECT COUNT(*) FROM campaign_events e WHERE e.campaign_id=c.id AND e.kind='view') views,
                 (SELECT COUNT(*) FROM campaign_events e WHERE e.campaign_id=c.id AND e.kind='finish') finishes,
                 (SELECT COUNT(*) FROM campaign_events e WHERE e.campaign_id=c.id AND e.kind='cta') actions,
@@ -340,7 +350,7 @@ def install(app, db, user_from, owned_brand, public_brand, throttle):
         for row in rows:
             x=dict(row)
             # x.declared_total is merchant-entered gross contribution, NOT a causal uplift measure.
-            x["net_claimed_contribution"]=round(float(x["declared_total"])-float(x["reward_cost"])*int(x["redeemed"]),2)
+            x["net_claimed_contribution"]=(round(float(x["declared_total"])-float(x["reward_cost"])*int(x["redeemed"])) if x["currency"]=="IRT" else None)
             result.append(x)
         return {"campaigns":result,"disclaimer":
             "Only manually merchant-verified redemptions and merchant-declared values. No POS confirmation, A/B incrementality or causality; do not call these incremental profits."}

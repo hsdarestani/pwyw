@@ -16,12 +16,12 @@ METHODS={"code","staff","qr"}
 SID_RE=re.compile(r"^[A-Za-z0-9_-]{12,80}$")
 CODE_RE=re.compile(r"^RW[A-F0-9]{24}$")
 TEMPLATES=[
- {"key":"welcome","label":"Erstes Spiel belohnen","label_fa":"جایزه اولین بازی","reason":"Kleine Belohnung, begrenztes Budget.","reason_fa":"جایزه کوچک با بودجه محدود.","rule_type":"first_play","period":"lifetime","game":"all","title":"Willkommen im Spielportal","reward_title":"Überraschung beim nächsten Besuch","delivery":"code","reward_cost_cents":100,"budget_cents":2000,"max_awards":20,"target_count":1},
- {"key":"return","label":"Wiederkommen fördern","label_fa":"تشویق به بازگشت","reason":"Nach drei unterschiedlichen Spieltagen.","reason_fa":"بعد از بازی در سه روز متفاوت.","rule_type":"repeat_days","period":"lifetime","game":"all","title":"Drei Tage gespielt","reward_title":"Extra beim nächsten Besuch","delivery":"staff","reward_cost_cents":150,"budget_cents":3000,"max_awards":20,"target_count":3},
- {"key":"weekly","label":"Wochen-Challenge","label_fa":"مسابقه هفتگی","reason":"Top 3 eines Spiels; Freigabe durch das Geschäft.","reason_fa":"سه نفر برتر یک بازی با تأیید کسب‌وکار.","rule_type":"leaderboard_weekly","period":"weekly","game":"breaker","title":"Top 3 der Woche","reward_title":"Gratis Getränk","delivery":"qr","reward_cost_cents":300,"budget_cents":900,"max_awards":3,"target_count":3},
- {"key":"daily","label":"Tages-Challenge","label_fa":"مسابقه روزانه","reason":"Ein Spiel, ein Tag, manuell bestätigen.","reason_fa":"یک بازی، یک روز، با تأیید کسب‌وکار.","rule_type":"leaderboard_daily","period":"daily","game":"memory","title":"Heute ganz oben","reward_title":"Tagespreis","delivery":"code","reward_cost_cents":200,"budget_cents":600,"max_awards":3,"target_count":3},
- {"key":"refer","label":"Echte Empfehlung","label_fa":"معرفی واقعی دوست","reason":"Erst nach Bestätigung durch das Personal.","reason_fa":"بعد از تأیید واقعی توسط کارکنان.","rule_type":"verified_referral","period":"lifetime","game":"all","title":"Freunde bringen Freunde","reward_title":"Dankeschön für deine Empfehlung","delivery":"staff","reward_cost_cents":300,"budget_cents":3000,"max_awards":10,"target_count":1},
- {"key":"visit","label":"Bestätigter Besuch","label_fa":"جایزه مراجعه تأییدشده","reason":"Ein Besuch wird von Personal bestätigt.","reason_fa":"مراجعه توسط کارکنان تأیید می‌شود.","rule_type":"verified_visit","period":"lifetime","game":"all","title":"Schön, dass du da bist","reward_title":"Treue-Bonus","delivery":"code","reward_cost_cents":150,"budget_cents":1500,"max_awards":10,"target_count":1}
+ {"key":"welcome","label":"Erstes Spiel belohnen","label_fa":"جایزه اولین بازی","reason":"Kleine Belohnung, begrenztes Budget.","reason_fa":"جایزه کوچک با بودجه محدود.","rule_type":"first_play","period":"lifetime","game":"all","title":"Willkommen im Spielportal","title_fa":"به پورتال بازی خوش اومدی","reward_title_fa":"یک هدیه برای مراجعه بعدی","reward_title":"Überraschung beim nächsten Besuch","delivery":"code","reward_cost_cents":25000,"budget_cents":500000,"max_awards":20,"target_count":1},
+ {"key":"return","label":"Wiederkommen fördern","label_fa":"تشویق به بازگشت","reason":"Nach drei unterschiedlichen Spieltagen.","reason_fa":"بعد از بازی در سه روز متفاوت.","rule_type":"repeat_days","period":"lifetime","game":"all","title":"Drei Tage gespielt","title_fa":"سه روز بازی کردی","reward_title_fa":"جایزه مراجعه بعدی","reward_title":"Extra beim nächsten Besuch","delivery":"staff","reward_cost_cents":30000,"budget_cents":600000,"max_awards":20,"target_count":3},
+ {"key":"weekly","label":"Wochen-Challenge","label_fa":"مسابقه هفتگی","reason":"Top 3 eines Spiels; Freigabe durch das Geschäft.","reason_fa":"سه نفر برتر یک بازی با تأیید کسب‌وکار.","rule_type":"leaderboard_weekly","period":"weekly","game":"breaker","title":"Top 3 der Woche","title_fa":"سه نفر برتر هفته","reward_title_fa":"نوشیدنی رایگان","reward_title":"Gratis Getränk","delivery":"qr","reward_cost_cents":45000,"budget_cents":135000,"max_awards":3,"target_count":3},
+ {"key":"daily","label":"Tages-Challenge","label_fa":"مسابقه روزانه","reason":"Ein Spiel, ein Tag, manuell bestätigen.","reason_fa":"یک بازی، یک روز، با تأیید کسب‌وکار.","rule_type":"leaderboard_daily","period":"daily","game":"memory","title":"Heute ganz oben","title_fa":"برنده‌های امروز","reward_title_fa":"جایزه امروز","reward_title":"Tagespreis","delivery":"code","reward_cost_cents":30000,"budget_cents":90000,"max_awards":3,"target_count":3},
+ {"key":"refer","label":"Echte Empfehlung","label_fa":"معرفی واقعی دوست","reason":"Erst nach Bestätigung durch das Personal.","reason_fa":"بعد از تأیید واقعی توسط کارکنان.","rule_type":"verified_referral","period":"lifetime","game":"all","title":"Freunde bringen Freunde","title_fa":"معرفی دوست به دوست","reward_title_fa":"هدیه معرفی دوست","reward_title":"Dankeschön für deine Empfehlung","delivery":"staff","reward_cost_cents":50000,"budget_cents":500000,"max_awards":10,"target_count":1},
+ {"key":"visit","label":"Bestätigter Besuch","label_fa":"جایزه مراجعه تأییدشده","reason":"Ein Besuch wird von Personal bestätigt.","reason_fa":"مراجعه توسط کارکنان تأیید می‌شود.","rule_type":"verified_visit","period":"lifetime","game":"all","title":"Schön, dass du da bist","title_fa":"خوش اومدی","reward_title_fa":"امتیاز مشتری وفادار","reward_title":"Treue-Bonus","delivery":"code","reward_cost_cents":30000,"budget_cents":300000,"max_awards":10,"target_count":1}
 ]
 
 class PlayStart(BaseModel):
@@ -42,8 +42,9 @@ class RuleInput(BaseModel):
  target_count:int=Field(default=1,ge=1,le=100000)
  reward_title:str=Field(min_length=3,max_length=150)
  delivery:str="code"
- reward_cost_cents:int=Field(default=0,ge=0,le=100000)
- budget_cents:int=Field(default=0,ge=0,le=10000000)
+ reward_cost_cents:int=Field(default=0,ge=0,le=1000000000) # integer toman for IRT; historical transport key
+ budget_cents:int=Field(default=0,ge=0,le=1000000000000)
+ currency:str="IRT"
  max_awards:int=Field(default=20,ge=1,le=100)
  is_active:bool=False
 
@@ -59,6 +60,7 @@ class SettleInput(BaseModel):
  period_key:str=Field(default="",max_length=12)
 
 def validate(d):
+ if d.currency!="IRT":raise HTTPException(422,"New reward budgets must be in toman (IRT)")
  if d.rule_type not in TYPES:raise HTTPException(422,"Unknown rule type")
  if d.game!="all" and d.game not in GAMES:raise HTTPException(422,"Unknown game")
  if d.delivery not in METHODS:raise HTTPException(422,"Unknown delivery")
@@ -135,6 +137,7 @@ def install(app,db,user_from,owned_brand,public_brand,throttle):
     target_count INTEGER NOT NULL DEFAULT 1,reward_title TEXT NOT NULL,delivery TEXT NOT NULL DEFAULT 'code',
     reward_cost_cents INTEGER NOT NULL DEFAULT 0,budget_cents INTEGER NOT NULL DEFAULT 0,
     max_awards INTEGER NOT NULL DEFAULT 20,is_active INTEGER NOT NULL DEFAULT 0,
+     currency TEXT NOT NULL DEFAULT 'IRT',
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP);
    CREATE INDEX IF NOT EXISTS reward_rules_brand ON reward_rules(brand_id,is_active);
    CREATE TABLE IF NOT EXISTS rule_awards(
@@ -150,6 +153,12 @@ def install(app,db,user_from,owned_brand,public_brand,throttle):
     period_key TEXT NOT NULL,settled_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY(rule_id,period_key));
   """)
+  # Existing EUR-cent figures cannot be converted at a guessed exchange rate.
+  # Pause legacy rules until the merchant chooses a new toman budget.
+  cols={row["name"] for row in con.execute("PRAGMA table_info(reward_rules)")}
+  if "currency" not in cols:
+   con.execute("ALTER TABLE reward_rules ADD COLUMN currency TEXT NOT NULL DEFAULT 'EUR'")
+   con.execute("UPDATE reward_rules SET is_active=0 WHERE currency='EUR'")
 
  @app.post("/api/public/brands/{slug}/play-attempts/start")
  def play_start(slug:str,data:PlayStart,request:Request):
@@ -223,7 +232,7 @@ def install(app,db,user_from,owned_brand,public_brand,throttle):
    """,(brand["id"],)*5).fetchone()
    costs=con.execute("""SELECT COALESCE(SUM(r.reward_cost_cents),0) spent
       FROM rule_awards a JOIN reward_rules r ON r.id=a.rule_id
-      WHERE a.brand_id=? AND a.issued_at>=datetime('now','-30 days')""",(brand["id"],)).fetchone()["spent"]
+      WHERE a.brand_id=? AND r.currency='IRT' AND a.issued_at>=datetime('now','-30 days')""",(brand["id"],)).fetchone()["spent"]
    games=con.execute("""SELECT game,COUNT(*) attempts FROM play_attempts
       WHERE brand_id=? AND eligible=1 AND completed_at>=datetime('now','-30 days')
       GROUP BY game ORDER BY attempts DESC LIMIT 10""",(brand["id"],)).fetchall()
@@ -250,9 +259,9 @@ def install(app,db,user_from,owned_brand,public_brand,throttle):
   brand=owned_brand(slug,user_from(request));validate(data)
   with db() as con:
    con.execute("""INSERT INTO reward_rules(brand_id,title,rule_type,game,period,target_count,reward_title,
-     delivery,reward_cost_cents,budget_cents,max_awards,is_active) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)""",
+     delivery,reward_cost_cents,budget_cents,max_awards,is_active,currency) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)""",
      (brand["id"],data.title.strip(),data.rule_type,data.game,data.period,data.target_count,
-      data.reward_title.strip(),data.delivery,data.reward_cost_cents,data.budget_cents,data.max_awards,int(data.is_active)))
+      data.reward_title.strip(),data.delivery,data.reward_cost_cents,data.budget_cents,data.max_awards,int(data.is_active),data.currency))
    key=con.execute("SELECT last_insert_rowid()").fetchone()[0]
   return {"id":key,"ok":True}
 
@@ -263,12 +272,12 @@ def install(app,db,user_from,owned_brand,public_brand,throttle):
    row=con.execute("SELECT * FROM reward_rules WHERE id=? AND brand_id=?",(rule_id,brand["id"])).fetchone()
    if not row:raise HTTPException(404,"Rule not found")
    issued=con.execute("SELECT 1 FROM rule_awards WHERE rule_id=? LIMIT 1",(rule_id,)).fetchone()
-   if issued and any((row[k]!=getattr(data,k)) for k in ("rule_type","period","game","reward_cost_cents","reward_title","delivery")):
+   if issued and any((row[k]!=getattr(data,k)) for k in ("rule_type","period","game","reward_cost_cents","reward_title","delivery","currency")):
     raise HTTPException(409,"Create a new rule to change the conditions or prize terms after rewards have been issued")
    con.execute("""UPDATE reward_rules SET title=?,rule_type=?,game=?,period=?,target_count=?,reward_title=?,
-    delivery=?,reward_cost_cents=?,budget_cents=?,max_awards=?,is_active=? WHERE id=? AND brand_id=?""",
+    delivery=?,reward_cost_cents=?,budget_cents=?,max_awards=?,is_active=?,currency=? WHERE id=? AND brand_id=?""",
     (data.title.strip(),data.rule_type,data.game,data.period,data.target_count,data.reward_title.strip(),
-     data.delivery,data.reward_cost_cents,data.budget_cents,data.max_awards,int(data.is_active),rule_id,brand["id"]))
+     data.delivery,data.reward_cost_cents,data.budget_cents,data.max_awards,int(data.is_active),data.currency,rule_id,brand["id"]))
   return {"ok":True}
 
  @app.get("/api/public/brands/{slug}/reward-rules")

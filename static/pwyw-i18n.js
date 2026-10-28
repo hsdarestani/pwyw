@@ -219,8 +219,8 @@
     ["Einmalcode","Einmalcode","کد یک‌بارمصرف"],
     ["Bestätigung am Tresen","Bestätigung am Tresen","تأیید توسط کارکنان"],
     ["QR-Code zur Kontrolle","QR-Code zur Kontrolle","QR برای بررسی"],
-    ["Kosten pro Preis (€)","Kosten pro Preis (€)","هزینه هر جایزه (€)"],
-    ["Budget pro Zeitraum (€)","Budget pro Zeitraum (€)","سقف بودجه هر دوره (€)"],
+    ["Kosten pro Preis (Toman)","Kosten pro Preis (Toman)","هزینه هر جایزه (تومان)"],
+    ["Budget pro Zeitraum (Toman)","Budget pro Zeitraum (Toman)","سقف بودجه هر دوره (تومان)"],
     ["Maximale Preise pro Zeitraum","Maximale Preise pro Zeitraum","حداکثر جایزه هر دوره"],
     ["Sofort aktivieren","Sofort aktivieren","همین حالا فعال بشه"],
     ["Spielpunkte kommen aus dem Browser. Ranglisten werden erst nach Prüfung durch dein Team abgerechnet. Die Auswertung beweist keinen zusätzlichen Umsatz.","Spielpunkte kommen aus dem Browser. Ranglisten werden erst nach Prüfung durch dein Team abgerechnet. Die Auswertung beweist keinen zusätzlichen Umsatz.","امتیازها از مرورگر ثبت می‌شن و برای جوایز مسابقه باید کارکنان تأیید کنن. این گزارش اثبات افزایش فروش نیست."],
@@ -406,7 +406,7 @@
     ["ADVANCED SETTINGS (OPTIONAL)","WEITERE EINSTELLUNGEN (OPTIONAL)","تنظیمات بیشتر (اختیاری)"],
     ["THESE FIELDS ARE OPTIONAL. THE CAMPAIGN WORKS WITHOUT THEM.","Diese Angaben sind freiwillig. Die Kampagne funktioniert auch ohne sie.","پر کردن این قسمت‌ها اجباری نیست. کمپین بدون اون‌ها هم کار می‌کنه."],
     ["Claim code","Kundencode","کد مشتری"],
-    ["Verified contribution (EUR)","Bestätigter Betrag (EUR)","مبلغ تأییدشده (یورو)"],
+    ["Verified contribution (Toman)","Bestätigter Betrag (Toman)","مبلغ تأییدشده (تومان)"],
 
     ["PLAY NOW ↗","JETZT SPIELEN ↗","شروع بازی ↗"],
     ["MORE GAMES","WEITERE SPIELE","بازی‌های بیشتر"],
@@ -611,8 +611,8 @@
     ["CALL TO ACTION","HANDLUNGSAUFFORDERUNG","دعوت به اقدام"],
     ["OFFER OR INSTRUCTION","ANGEBOT ODER HINWEIS","پیشنهاد یا راهنما"],
     ["DESTINATION URL (OPTIONAL, HTTPS)","ZIELLINK (OPTIONAL, HTTPS)","لینک مقصد (اختیاری، HTTPS)"],
-    ["GROSS CONTRIBUTION PER VERIFIED ACTION (EUR)","BRUTTOBEITRAG PRO BESTÄTIGTER AKTION (EUR)","مبلغ ناخالص هر اقدام تأییدشده (یورو)"],
-    ["REWARD COST PER REDEMPTION (EUR)","PRÄMIENKOSTEN PRO EINLÖSUNG (EUR)","هزینه پاداش هر استفاده (یورو)"],
+    ["GROSS CONTRIBUTION PER VERIFIED ACTION (TOMAN)","BRUTTOBEITRAG PRO BESTÄTIGTER AKTION (TOMAN)","مبلغ ناخالص هر اقدام تأییدشده (تومان)"],
+    ["REWARD COST PER REDEMPTION (TOMAN)","PRÄMIENKOSTEN PRO EINLÖSUNG (TOMAN)","هزینه هر جایزه استفاده‌شده (تومان)"],
     ["INTRO TO THE CUSTOMER","EINFÜHRUNG FÜR KUNDEN","متن معرفی برای مشتری"],
     ["PUBLISH THIS CAMPAIGN","KAMPAGNE VERÖFFENTLICHEN","انتشار کمپین"],
     ["PLAY TO LEARN / INTERACTIVE KNOWLEDGE","WISSEN / INTERAKTIVER LERNTEST","بازی برای یادگیری / آزمون تعاملی"],
@@ -992,16 +992,33 @@
     ["CREATE ACCOUNT ","KONTO ERSTELLEN ","ثبت‌نام "],
     ["Could not load campaigns: ","Kampagnen konnten nicht geladen werden: ","کمپین‌ها بارگذاری نشدن: "]
   ]) catalog.set(source.trim(),{de,fa});
-  const initialDocumentTitle=document.title;
+  // Canonical product template values, not merchant-authored content.
+   for(const [de,fa] of [
+     ["Willkommen im Spielportal","به پورتال بازی خوش اومدی"],
+     ["Überraschung beim nächsten Besuch","یک هدیه برای مراجعه بعدی"],
+     ["Drei Tage gespielt","سه روز بازی کردی"],
+     ["Extra beim nächsten Besuch","جایزه مراجعه بعدی"],
+     ["Top 3 der Woche","سه نفر برتر هفته"],
+     ["Gratis Getränk","نوشیدنی رایگان"],
+     ["Heute ganz oben","برنده‌های امروز"],
+     ["Tagespreis","جایزه امروز"],
+     ["Freunde bringen Freunde","معرفی دوست به دوست"],
+     ["Dankeschön für deine Empfehlung","هدیه معرفی دوست"],
+     ["Schön, dass du da bist","خوش اومدی"],
+     ["Treue-Bonus","امتیاز مشتری وفادار"],
+     ["Wettbewerbsergebnisse bleiben vorläufig. Spielpunkte kommen aus dem Browser. Ranglisten werden erst nach Prüfung durch dein Team abgerechnet. Die Auswertung beweist keinen zusätzlichen Umsatz.",
+      "نتیجه مسابقه تا تأیید کارکنان قطعی نیست. امتیازها از مرورگر ثبت می‌شن و این گزارش به‌تنهایی افزایش فروش رو ثابت نمی‌کنه."]
+   ])catalog.set(de,{de,fa});
+   const initialDocumentTitle=document.title;
   const normalized = new WeakMap();
   const emitted = new WeakMap();
   const attrOriginal = new WeakMap();
   const attrs = ['placeholder','title','aria-label','alt'];
-  let selected = 'de';
+  let selected = 'fa';
   try {
     const urlLocale=new URLSearchParams(location.search).get('lang');
     const saved=localStorage.getItem('pwyw.locale');
-    selected = (urlLocale==='fa'||urlLocale==='de')?urlLocale:((saved==='fa'||saved==='de')?saved:'de');
+    selected = (urlLocale==='fa'||urlLocale==='de')?urlLocale:((saved==='fa'||saved==='de')?saved:'fa');
   } catch {}
   function t(value,locale=selected) {
     const text=String(value??'');
@@ -1017,7 +1034,7 @@
       [/^([0-9]+) PTS$/,(m,n)=>locale==='fa'?n+' امتیاز':n+' PUNKTE'],
       [/^Hidden card ([0-9]+)$/,(m,n)=>locale==='fa'?'کارت پنهان '+n:'Verdeckte Karte '+n],
       [/^Card (.+)$/,(m,n)=>locale==='fa'?'کارت '+n:'Karte '+n],
-      [/^([0-9]+) issued · ([0-9]+) CTA clicks · (.+) € declared net contribution$/,(m,a,b,v)=>locale==='fa'?a+' کد صادرشده · '+b+' کلیک · '+v+' یورو مبلغ خالص اعلام‌شده':a+' Codes · '+b+' Klicks · '+v+' € deklarierter Nettobeitrag'],
+      [/^([0-9]+) issued · ([0-9]+) CTA clicks · (.+) € declared net contribution$/,(m,a,b,v)=>locale==='fa'?a+' کد صادرشده · '+b+' کلیک · '+v+' تومان مبلغ خالص اعلام‌شده':a+' Codes · '+b+' Klicks · '+v+' € deklarierter Nettobeitrag'],
       [/^SCENE: (ACTIVE|GENERATED) · OBJECT: (ACTIVE|GENERATED)$/,(m,a,b)=>locale==='fa'?'صحنه: '+(a==='ACTIVE'?'فعال':'تولیدشده')+' · شیء: '+(b==='ACTIVE'?'فعال':'تولیدشده'):'SZENE: '+(a==='ACTIVE'?'AKTIV':'GENERIERT')+' · OBJEKT: '+(b==='ACTIVE'?'AKTIV':'GENERIERT')]
     ];
     for(const [re,fn] of rules){const m=trimmed.match(re);if(m)return text.replace(trimmed,fn(...m))}
@@ -1061,6 +1078,10 @@
     document.documentElement.lang=selected;
     document.documentElement.dir=selected==='fa'?'rtl':'ltr';
     document.documentElement.dataset.locale=selected;
+     document.querySelectorAll('.workspace-nav [data-de][data-fa]').forEach(el=>{
+       const value=el.getAttribute('data-'+selected);
+       if(el.textContent!==value)el.textContent=value;
+     });
     // Page titles are part of the localized experience too. Do not overwrite dynamic tenant titles.
     if(!document.body?.classList.contains('player-v2')){
       const translatedTitle=t(initialDocumentTitle);

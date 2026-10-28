@@ -12,7 +12,12 @@ const typeNames={
  verified_referral:["Echte Empfehlung","معرفی واقعی"]
 };
 function trType(type){const a=typeNames[type]||[type,type];return a[fa()?1:0]}
-const euro=cents=>(Number(cents)/100).toLocaleString(fa()?"fa-IR":"de-DE",{style:"currency",currency:"EUR"});
+// *_cents remains a compatibility key: IRT rules store whole toman.
+const toman=value=>Number(value||0).toLocaleString("fa-IR",{maximumFractionDigits:0})+" تومان";
+const templateField=(value,field)=>{
+ const template=state.templates.find(t=>t[field]===value);
+ return fa()&&template?template[field+"_fa"]:value;
+};
 async function api(path,method="GET",body){
  const r=await fetch(path,{method,credentials:"same-origin",headers:{"Content-Type":"application/json"},body:body===undefined?undefined:JSON.stringify(body)});
  let result={};try{result=await r.json()}catch{}
@@ -29,7 +34,7 @@ function renderInsights(stats){
  $("reward-stat-plays").textContent=format(stats.finished);
  $("reward-stat-rules").textContent=format(stats.live_rules);
  $("reward-stat-issued").textContent=format(stats.issued);
- $("reward-stat-liability").textContent=euro(stats.estimated_prize_liability_cents);
+ $("reward-stat-liability").textContent=toman(stats.estimated_prize_liability_cents);
  const container=$("reward-trend-bars");container.replaceChildren();
  const byDay=new Map((stats.days||[]).map(x=>[x.day,Number(x.finishes)]));
  const today=new Date(),max=Math.max(1,...byDay.values()),days=[];
@@ -74,26 +79,32 @@ function formData(){
   title:n("title").value.trim(),rule_type:type,game:n("game").value,period,
   target_count:Number(n("target_count").value)||1,reward_title:n("reward_title").value.trim(),
   delivery:n("delivery").value,
-  reward_cost_cents:Math.round(Number(n("reward_cost").value)*100),
-  budget_cents:Math.round(Number(n("budget").value)*100),
+  reward_cost_cents:Math.round(Number(n("reward_cost").value)),
+  budget_cents:Math.round(Number(n("budget").value)),
   max_awards:Number(n("max_awards").value)||1,
-  is_active:n("is_active").checked
+  currency:"IRT",is_active:n("is_active").checked
  };
 }
 function setForm(rule){
  const f=$("rule-form");state.editing=rule.id||null;
- for(const [key,value] of Object.entries(rule)){
+ const source=fa()&&rule.title_fa?{...rule,title:rule.title_fa,reward_title:rule.reward_title_fa}:rule;
+ for(const [key,value] of Object.entries(source)){
   let name=key;
   if(key==="reward_cost_cents")name="reward_cost";
   if(key==="budget_cents")name="budget";
   const field=f.elements.namedItem(name);if(!field)continue;
-  const final=(key==="reward_cost_cents"||key==="budget_cents")?(Number(value)/100).toFixed(2):value;
+  const final=(key==="reward_cost_cents"||key==="budget_cents")?(rule.currency==="EUR"?"":Math.round(Number(value))):value;
   if(field.type==="checkbox")field.checked=Boolean(final);else field.value=final;
  }
  $("rule-editor").open=true;
  $("rule-advanced").open=false;
  typeChanged();
- message("rule-form-status","");
+ message("rule-form-status",rule.currency==="EUR"?
+   "این قانون قبلاً با مبلغ یورویی ثبت شده. هزینه و بودجه رو دوباره به تومان وارد کن.":"");
+ if(rule.currency==="EUR"&&rule.awards_issued){
+   state.editing=null;
+   message("rule-form-status","این قانون قبلاً جایزه صادر کرده. یک قانون جدید با بودجه تومانی بساز.");
+ }
  $("rule-editor").scrollIntoView({behavior:"smooth",block:"start"});
 }
 function typeChanged(){
@@ -125,20 +136,20 @@ function renderTemplates(){
 }
 function ruleCard(rule){
  const box=el("div","reward-rule-item");
- const top=el("div","reward-rule-top");const title=el("strong","",rule.title);
+ const top=el("div","reward-rule-top");const title=el("strong","",templateField(rule.title,"title"));
  const status=el("span",rule.is_active?"reward-on":"reward-off",rule.is_active?txt("Aktiv","فعال"):txt("Pausiert","غیرفعال"));
  top.append(title,status);box.append(top);
  box.append(el("p","reward-rule-description",
   trType(rule.rule_type)+" · "+(rule.game==="all"?txt("Alle Spiele","همه بازی‌ها"):games[rule.game])+
-  " · "+rule.reward_title));
- box.append(el("small","reward-rule-budget",txt("Budget: ","بودجه: ")+euro(rule.budget_cents)+
+  " · "+templateField(rule.reward_title,"reward_title")));
+ box.append(el("small","reward-rule-budget",txt("Budget: ","بودجه: ")+(rule.currency==="EUR"?"نیاز به ثبت بودجه تومانی":toman(rule.budget_cents))+
   " · "+txt("Ausgegeben: ","صادرشده: ")+rule.awards_issued+
   " · "+txt("Eingelöst: ","استفاده‌شده: ")+rule.awards_redeemed));
  const actions=el("div","reward-rule-actions");
  const edit=el("button","reward-secondary",txt("Bearbeiten","ویرایش"));edit.type="button";
  edit.addEventListener("click",()=>setForm(rule));actions.append(edit);
  const toggle=el("button","reward-secondary",rule.is_active?txt("Pausieren","توقف"):txt("Aktivieren","فعال‌سازی"));
- toggle.type="button";
+ toggle.type="button";if(rule.currency==="EUR")toggle.disabled=true;
  toggle.addEventListener("click",async()=>{
   toggle.disabled=true;
   try{const payload={...rule,is_active:!rule.is_active};
@@ -161,7 +172,7 @@ function ruleCard(rule){
      const messageText=txt("Zeitraum: ","دوره: ")+review.period_key+"\n"+
        (rows||txt("Keine qualifizierten Ergebnisse","نتیجه معتبری ثبت نشده"))+"\n\n"+
        txt("Maximale Gewinner: ","حداکثر برنده: ")+review.winners_possible+
-       " · "+txt("Prämienkosten: ","هزینه جوایز: ")+euro(review.estimated_prize_cost_cents)+"\n\n"+
+       " · "+txt("Prämienkosten: ","هزینه جوایز: ")+toman(review.estimated_prize_cost_cents)+"\n\n"+
        txt("Punkte bleiben browserbasiert. Nur nach manueller Prüfung bestätigen?",
            "امتیازها هنوز از مرورگر ثبت می‌شن. بعد از بررسی دستی تأیید می‌کنی؟");
      if(!confirm(messageText))return;
@@ -221,9 +232,9 @@ $("rule-type").addEventListener("change",typeChanged);
 $("rule-form").addEventListener("input",updateRulePreview);
 $("rule-form").addEventListener("change",updateRulePreview);
 $("rule-from-scratch").addEventListener("click",()=>{
- $("rule-form").reset();setForm({id:null,title:"Meine neue Regel",rule_type:"first_play",game:"all",period:"lifetime",
-  target_count:1,reward_title:"Kleines Dankeschön",delivery:"code",
-  reward_cost_cents:100,budget_cents:2000,max_awards:20,is_active:false});
+ $("rule-form").reset();setForm({id:null,title:txt("Meine neue Regel","قانون جدید من"),rule_type:"first_play",game:"all",period:"lifetime",
+  target_count:1,reward_title:txt("Kleines Dankeschön","یک هدیه کوچک"),delivery:"code",
+  reward_cost_cents:25000,budget_cents:500000,max_awards:20,is_active:false,currency:"IRT"});
 });
 $("rule-cancel").addEventListener("click",()=>{$("rule-editor").open=false;state.editing=null});
 $("rule-form").addEventListener("submit",async e=>{
@@ -255,7 +266,19 @@ $("rule-redeem-form").addEventListener("submit",async e=>{
  }catch(err){message("rule-staff-status",err.message,true)}
 });
 document.addEventListener("pwyw:brand-selected",e=>chooseBrand(e.detail?.slug||""));
-document.addEventListener("pwyw:language-changed",()=>{if(state.slug)load().catch(()=>{});else renderTemplates()});
+function refreshTemplateFormLocale(){
+ const form=$("rule-form");
+ for(const field of ["title","reward_title"]){
+  const input=form.elements.namedItem(field);
+  const template=state.templates.find(t=>t[field]===input.value||t[field+"_fa"]===input.value);
+  if(template)input.value=fa()?template[field+"_fa"]:template[field];
+ }
+ updateRulePreview();
+}
+document.addEventListener("pwyw:language-changed",()=>{
+ refreshTemplateFormLocale();
+ if(state.slug)load().catch(()=>{});else renderTemplates();
+});
 api("/api/reward-rule-templates").then(templates=>{
  state.templates=templates;renderTemplates();
 }).catch(e=>message("rule-recommendation",e.message,true));

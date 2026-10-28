@@ -7,6 +7,8 @@ const {chromium}=require('playwright');
   page.on('console',m=>{if(m.type()==='error' && !m.text().includes('401 (Unauthorized)'))errors.push('CONSOLE '+m.text())});
   const base='http://127.0.0.1:8080';
   await page.goto(base+'/',{waitUntil:'networkidle'});
+  if(await page.locator('html').getAttribute('lang')!=='fa')throw Error('New visitors should see Persian by default');
+  await page.locator('#pwyw-language-switch [data-lang=de]').click();
   if(!await page.locator('.hero h1').count() || !(await page.locator('.hero h1').innerText()).trim())
     throw Error('Branded landing headline missing');
   const valuePromise=await page.locator('.hero h1').innerText();
@@ -347,6 +349,16 @@ const {chromium}=require('playwright');
   if(await page.locator('#rule-advanced').evaluate(x=>x.open))throw Error('Advanced rule controls must be initially collapsed');
   if(!(await page.locator('#rule-preview-copy').textContent()).includes('Überraschung'))
     throw Error('Reward rule preview does not explain the selected prize');
+  if(await page.locator('#rule-form input[name=reward_cost]').inputValue()!=='25000')
+    throw Error('Reward cost should be whole toman');
+  if(await page.locator('#rule-form input[name=budget]').inputValue()!=='500000')
+    throw Error('Reward budget should be whole toman');
+  await page.locator('#pwyw-language-switch [data-lang=fa]').click();
+  if((await page.locator('.workspace-nav a').first().innerText())!=='نمای کلی')
+    throw Error('Reward navigation not localized into Persian');
+  if(!(await page.locator('#rule-preview-copy').textContent()).includes('هدیه'))
+    throw Error('Reward preview lacks Persian prize name');
+  await page.locator('#pwyw-language-switch [data-lang=de]').click();
   if(!await page.locator('#reward-overview').isVisible())
     throw Error('Merchant overview is missing real reward metrics');
   if(!await page.locator('#rule-editor').evaluate(x=>x.open))
