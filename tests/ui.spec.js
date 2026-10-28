@@ -543,10 +543,10 @@ const {chromium}=require('playwright');
     throw Error('All ten games should be immediately visible in portal mode');
   if(await page.locator('#game-choices .game-pick').count()!==10)
     throw Error('Portal is missing games');
-  const duplicate=page.locator('#game-choices .game-pick.is-featured-duplicate');
-  await duplicate.waitFor({state:'hidden'});
-  if(await duplicate.count()!==1)throw Error('Recommended game must appear in the hero, not again in the gallery');
-  const tileHeight=await page.locator('#game-choices .game-pick:not(.is-featured-duplicate)').first().evaluate(el=>el.getBoundingClientRect().height);
+  const featuredChoice=page.locator('#game-choices .game-pick.is-featured-duplicate');
+  if(await featuredChoice.count()!==1||!await featuredChoice.isVisible())
+    throw Error('All ten game choices must remain accessible, including the recommended game');
+  const tileHeight=await page.locator('#game-choices .game-pick').first().evaluate(el=>el.getBoundingClientRect().height);
   if(tileHeight>215)throw Error('Game list still wastes mobile space: '+tileHeight);
   if(!await page.locator('#portal-offers').isVisible())
     throw Error('Published rewards are not visible in portal');
