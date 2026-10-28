@@ -26,7 +26,7 @@
   relocate('reward-portal-share','mc-share-slot');
   const actions=document.createElement('div');actions.className='mc-head-actions';
   const settings=$('open-studio-settings');
-  $('mc-headrow')?.append(actions);
+  shell.querySelector('.mc-headrow')?.append(actions);
   actions.append($('mc-portal-link'));if(settings)actions.append(settings);
   root.classList.add('mc-ready');
   shell.hidden=false;
