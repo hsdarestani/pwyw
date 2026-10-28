@@ -18,7 +18,8 @@ const fs=require('fs');
   for(const language of ['fa','de']){
    for(const size of sizes){
     const u=new URL(entry.path,base);u.searchParams.set('lang',language);
-    const page=await browser.newPage({viewport:size,isMobile:size.width<769,hasTouch:size.width<769});
+    const context=await browser.newContext({viewport:size,isMobile:size.width<769,hasTouch:size.width<769});
+    const page=await context.newPage();
     const errors=[];page.on('pageerror',e=>errors.push(e.message));
     try{
      const result=await page.goto(u.href,{waitUntil:'domcontentloaded',timeout:20000});
@@ -50,7 +51,7 @@ const fs=require('fs');
      if(metrics.locale!==language||metrics.dir!==(language==='fa'?'rtl':'ltr'))report.failures.push(entry.label+' '+size.width+'px: locale/dir mismatch');
      if(size.width===390){await page.screenshot({path:'/tmp/pwyw-quality-'+entry.label+'-'+language+'-mobile.png',fullPage:true});}
     }catch(err){report.failures.push(entry.label+' '+language+' '+size.width+': '+err.message);}
-    finally{await page.close();}
+    finally{await context.close();}
    }
   }
  }
