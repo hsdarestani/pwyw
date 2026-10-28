@@ -81,7 +81,11 @@
   const settings=$('open-studio-settings');
   const container=shell.querySelector('.mc-head-actions');
   if(settings&&container){
-   if(slug&&settings.parentElement!==container)container.append(settings);
+   if(slug){
+    if(settings.parentElement!==container)container.append(settings);
+    settings.textContent=tr('تنظیمات','Einstellungen');
+    settings.setAttribute('aria-label',tr('تنظیمات کسب‌وکار','Geschäftseinstellungen'));
+   }
    else if(!slug){const original=document.querySelector('.studio-intro .studio-top-actions');if(original&&settings.parentElement!==original)original.append(settings)}
   }
   $('mc-brand-name').textContent=tr('بازی‌ها، جایزه‌ها و عملکرد کسب‌وکار','Spiele, Prämien und Geschäftsergebnisse');
