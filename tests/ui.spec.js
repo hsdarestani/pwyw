@@ -346,7 +346,9 @@ const {chromium}=require('playwright');
     throw Error('Novice merchant should start with budget-first mode');
   if(!await page.locator('#mc-budget-range').isVisible())throw Error('No-skill budget gauge is missing');
   await page.locator('[data-mc-budget="1000000"]').click();
-  await page.waitForFunction(()=>document.querySelector('#mc-est-revenue')?.textContent!=='—',{timeout:10000});
+  await page.waitForFunction(()=>document.querySelector('#mc-est-awards')?.textContent?.replace(/[^0-9۰-۹]/g,'')==='۴۰');
+  if((await page.locator('#mc-est-awards').textContent()).trim()!=='۴۰')
+    throw Error('Budget gauge and forecast disagree on 1m toman / 25k reward cap');
   if(!await page.locator('#mc-est-assumptions-note').textContent().then(x=>x.includes('Beispiel')||x.includes('تخمین')))
     throw Error('Forecast is missing its non-guarantee notice');
   if(await page.locator('#mc-auto-activate').isEnabled())throw Error('Plan must require explicit estimate acknowledgement');
