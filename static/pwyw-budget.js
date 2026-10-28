@@ -72,6 +72,7 @@
  function requestPreview(){
   const seq=++requestSeq;
   preview=null;
+  renderPreview(); // Never show a forecast for an older slider value.
   $('mc-auto-activate').disabled=true;
   if(!slug||!validInputs())return;
   clearTimeout(previewTimer);
