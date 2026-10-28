@@ -10,6 +10,7 @@
  let slug='',mode='managed',goal='welcome',budget=500000,preview=null,program=null,requestSeq=0,previewTimer=0,busy=false,ready=false;
  function setText(id,text){const el=$(id);if(el&&el.textContent!==text)el.textContent=text}
  function localized(){
+  panel.querySelectorAll('[data-aria-fa][data-aria-de]').forEach(el=>el.setAttribute('aria-label',el.dataset[fa()?'ariaFa':'ariaDe']));
   panel.querySelectorAll('[data-fa][data-de]').forEach(el=>{
    const val=el.dataset[fa()?'fa':'de'];
    if(el.textContent!==val)el.textContent=val;
@@ -187,7 +188,10 @@
  function brandChange(e){
   slug=e.detail?.slug||window.PWYWStudio?.getBrand?.()?.slug||'';
   if(!slug)return;
-  try{mode=localStorage.getItem('pwyw.merchant.mode.'+slug)||'managed'}catch{mode='managed'}
+  // A selected onboarding track takes precedence only for a newly seen business.
+  const requested=new URLSearchParams(location.search).get('mode');
+  const initial=(requested==='expert'||requested==='managed')?requested:'managed';
+  try{mode=localStorage.getItem('pwyw.merchant.mode.'+slug)||initial}catch{mode=initial}
   if(mode!=='expert')mode='managed';
   modeSet(mode);
   program=null;preview=null;$('mc-auto-confirm').checked=false;$('mc-auto-replace').checked=false;

@@ -126,6 +126,7 @@
   const brand=window.PWYWStudio?.getBrand?.();
   slug=brand?.slug||'';
   document.body.classList.toggle('mc-active',Boolean(slug));
+  const skip=document.querySelector('.pw4-skip');if(skip)skip.href=slug?'#mc-shell':'#auth-shell';
   const settings=$('open-studio-settings');
   const container=shell.querySelector('.mc-head-actions');
   if(settings&&container){

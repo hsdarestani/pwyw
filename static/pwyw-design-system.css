@@ -1,0 +1,204 @@
+/* PWYW Product Design System v4 — authored for all four shipped surfaces.
+   Priorities: clear hierarchy, restrained decoration, readable Persian/Latin, mobile ergonomic controls.
+   No reward, pricing, auth, or business-state logic in this file. */
+:root{
+ --pw4-ink:#241b37;--pw4-muted:#655d73;--pw4-subtle:#847b91;
+ --pw4-primary:#33244f;--pw4-primary-hover:#46326b;
+ --pw4-lime:#d9fa82;--pw4-paper:#faf9fc;--pw4-surface:#fff;
+ --pw4-stroke:#e5e0eb;--pw4-focus:#8463c7;
+ --pw4-radius:16px;--pw4-shadow:0 9px 30px rgba(39,23,62,.07);
+}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html[lang=fa] body{font-family:"PW Vazir","Estedad",Tahoma,sans-serif}
+html[lang=de] body{font-family:"PW Manrope",system-ui,sans-serif}
+:is(a,button,input,select,textarea,summary):focus-visible{outline:3px solid var(--pw4-focus)!important;outline-offset:3px}
+button{touch-action:manipulation}
+button:disabled{cursor:not-allowed}
+.pw4-skip{position:fixed;z-index:99999;inset-inline-start:14px;top:-80px;display:block;background:var(--pw4-lime);color:#241837;padding:12px 16px;border-radius:0 0 12px 12px;font-size:14px;font-weight:800;text-decoration:none}
+.pw4-skip:focus{top:0}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+/* Landing: two honest, equally actionable journeys, not a generic marketing parade. */
+.sms-landing{color:var(--pw4-ink)}
+.sms-landing .site-nav{background:#fff}
+.sms-landing .hero-grid{gap:clamp(18px,4vw,54px)}
+.sms-landing .hero h1{max-width:800px;line-height:1.13;letter-spacing:-.055em}
+.sms-landing .hero-description{max-width:540px;line-height:1.85}
+.sms-landing .hero .button,.sms-landing .closing .button{min-height:50px;border-radius:13px}
+.sms-landing .operating-modes{padding:clamp(38px,6vw,85px) 0;background:#faf9fc;border-block:1px solid #eae6ed}
+.sms-landing .mode-intro{max-width:740px;margin:0 auto 26px;text-align:center}
+.sms-landing .mode-intro .section-heading{font-size:clamp(24px,3.5vw,42px);line-height:1.32;letter-spacing:-.025em}
+.sms-landing .operating-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;max-width:1050px;margin:auto}
+.sms-landing .operating-card{display:flex;flex-direction:column;gap:14px;min-width:0;border:1px solid #e3ddea;border-radius:24px;padding:clamp(20px,3vw,34px);background:white;box-shadow:0 9px 28px #311e4c08}
+.sms-landing .operating-card.is-guided{background:linear-gradient(165deg,#34254f 0%,#231a38 100%);color:#fff;border-color:#342550}
+.sms-landing .mode-tag{font:800 11px/1.4 inherit;letter-spacing:.08em;color:#6f548e;text-transform:uppercase}
+.sms-landing .operating-card.is-guided .mode-tag{color:#d9fa82}
+.sms-landing .operating-card h3{font-size:clamp(21px,2.3vw,29px);font-weight:850;line-height:1.38;letter-spacing:-.03em;margin:0}
+.sms-landing .operating-card p{font-size:14px;line-height:1.9;max-width:470px;margin:0;color:#645a72}
+.sms-landing .operating-card.is-guided p{color:#e1dbe9}
+.sms-landing .mode-sample{display:flex;flex-direction:column;gap:5px;border:1px solid #ffffff28;border-radius:16px;padding:17px;background:#ffffff10;min-height:130px}
+.sms-landing .mode-sample span{font-size:12px;color:#ddd3e7}
+.sms-landing .mode-sample strong{font:800 27px/1.5 "PW Vazir","PW Manrope",sans-serif;color:#d9fa82;direction:ltr;text-align:start}
+.sms-landing .mode-sample small{font-size:12px;line-height:1.8;color:#eee7f8}
+.sms-landing .mode-capabilities{display:flex;flex-wrap:wrap;gap:8px;padding:5px 0;align-items:center;min-height:130px;align-content:center}
+.sms-landing .mode-capabilities span{border:1px solid #e4ddeb;background:#f9f7fc;padding:8px 13px;border-radius:99px;color:#4f4261;font-size:12px;font-weight:720}
+.sms-landing .mode-action{margin-top:auto;display:flex;justify-content:space-between;align-items:center;min-height:52px;border-radius:12px;background:#d9fa82;color:#291f38;text-decoration:none!important;padding:12px 18px;font-size:14px;font-weight:850}
+.sms-landing .mode-action.secondary{background:#32244f;color:#fff}
+.sms-landing .mode-action:hover{filter:brightness(.96)}
+.sms-landing .mode-action span{font-size:25px;line-height:1;transform:none}
+.sms-landing .mode-transparency{max-width:940px;margin:19px auto 0;text-align:center;font-size:12px;line-height:1.85;color:#675f75}
+.sms-landing .hero-note{font-size:12px;line-height:1.8}
+.sms-landing .showcase-art{object-fit:contain}
+/* Shared merchant UI. Keep all interaction and data contracts intact. */
+.studio-v2.mc-active{background:var(--pw4-paper);color:var(--pw4-ink)}
+.studio-v2.mc-active .studio-content{max-width:1050px!important}
+.studio-v2.mc-active .mc-headrow h2{font-size:clamp(20px,2.8vw,28px)!important;line-height:1.35!important}
+.studio-v2.mc-active .mc-headrow p{font-size:12px!important;color:var(--pw4-muted)!important}
+.studio-v2.mc-active .mc-mode-switch{box-shadow:none}
+.studio-v2.mc-active .mc-status{box-shadow:var(--pw4-shadow);border-radius:18px}
+.studio-v2.mc-active .mc-sectionhead h3{font-size:16px}
+.studio-v2.mc-active .mc-forecast-flag{font-size:11px;line-height:1.7}
+.studio-v2.mc-active .mc-forecast-range>div,.studio-v2.mc-active .mc-forecast-facts>div{border-radius:13px}
+.studio-v2.mc-active .mc-auto-check{color:#51485f}
+.studio-v2.mc-active .mc-auto-submit #mc-auto-activate{border:1px solid #c4ef6d}
+.studio-v2.mc-active .mc-autopilot .mc-auto-details summary{border-radius:10px}
+.studio-v2.mc-active .mc-bottom-nav{padding-bottom:max(7px,env(safe-area-inset-bottom));box-shadow:0 -4px 15px #24163212}
+.studio-v2.mc-active .mc-bottom-nav button{min-height:60px;font-size:12px;line-height:1.3}
+.studio-v2.mc-active .mc-bottom-nav button.is-current{background:#f0eafa;border-radius:12px}
+.studio-v2.mc-active .mc-view-heading p,.studio-v2.mc-active .reward-section-heading p{color:var(--pw4-muted)}
+.studio-v2.mc-active .mc-portal-link{text-align:center}
+.studio-v2.mc-active .mc-budget-presets button{white-space:normal;overflow-wrap:normal}
+.studio-v2.mc-active .mc-budget-heading span,.studio-v2.mc-active .mc-auto-micro{font-size:12px;line-height:1.65}
+.studio-v2 .studio-settings-dialog .ux-settings-tabs{scroll-padding-inline:16px}
+.studio-v2 .studio-settings-dialog .ux-settings-tabs button{min-height:44px}
+.studio-v2 .studio-settings-dialog #brand-form .status-row #brand-save{min-height:48px}
+.studio-v2 .studio-settings-dialog #brand-form .ux-upload-control{min-height:50px}
+.studio-v2 .studio-settings-dialog .ux-settings-tabs button[aria-selected=true]{box-shadow:none}
+.studio-v2 .studio-settings-dialog #brand-form .builder-panel{box-shadow:none!important}
+.studio-v2 .studio-settings-dialog input[type=file]:focus-visible+.ux-upload-control{outline:3px solid var(--pw4-focus)}
+/* The public arcade should showcase games, without a dense visual stack. */
+.player-v2 .featured-game{box-shadow:0 8px 28px #090b2530!important}
+.player-v2 .game-library[open] .game-pick{transition:border-color .18s ease!important}
+.player-v2 .game-library[open] .game-pick:active{transform:scale(.99)}
+.player-v2 .game-library[open] .game-pick-copy{min-width:0}
+.player-v2 .play-header .play-nav{min-width:44px;min-height:44px}
+.player-v2 .featured-start{min-height:52px!important}
+.player-v2 .play-footer{opacity:.8}
+/* Admin: reduce excessive headline hierarchy and make search/table functional on mobile. */
+.control .cr-content{max-width:1240px;padding:clamp(18px,4vw,55px)}
+.control .cr-content h1{font:860 clamp(30px,5vw,55px)/1.2 "PW Manrope","PW Vazir",sans-serif;letter-spacing:-.045em;margin:14px 0 9px}
+.control .cr-content h1 i{font:inherit;letter-spacing:inherit}
+.control .cr-eyebrow{color:#3a6670;font-size:11px}
+.control .cr-lead{max-width:720px;font-size:14px;line-height:1.8;margin:0 0 20px}
+.control .cr-login{max-width:580px;border-radius:18px}
+.control .cr-stats{gap:10px;margin:18px 0 20px}
+.control .cr-stats>div{min-height:102px;border-radius:14px;padding:16px;background:#15353a}
+.control .cr-stats span{font-size:12px;line-height:1.55}
+.control .cr-stats strong{font-size:clamp(24px,3vw,34px)}
+.control .cr-panel{border-radius:15px;padding:18px}
+.control .cr-panel>summary{min-height:45px;cursor:pointer}
+.control .cr-search input{min-height:44px;border-radius:10px}
+.control :is(button,a,summary):focus-visible{outline-color:#4594a5!important}
+.control .cr-table{max-width:100%;overflow-x:auto;overscroll-behavior-x:contain}
+.control .cr-table table{min-width:540px}
+.control .cr-btn{min-height:47px;border-radius:10px}
+.control .cr-disclaimer{font-size:12px;line-height:1.8}
+/* Small screen hierarchy, consistent edge gutters and no accidental overflow. */
+@media(max-width:800px){
+ .sms-landing .operating-grid{grid-template-columns:1fr;gap:12px}
+ .sms-landing .operating-card{border-radius:18px;padding:22px}
+ .sms-landing .mode-capabilities{min-height:0;margin:8px 0}
+ .sms-landing .mode-sample{min-height:0}
+ .control .cr-content h1{font-size:clamp(31px,7vw,44px)}
+ .control .cr-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:600px){
+ .sms-landing .operating-modes{padding:35px 0}
+ .sms-landing .operating-card h3{font-size:23px}
+ .sms-landing .operating-card p{font-size:13px}
+ .sms-landing .mode-action{font-size:14px}
+ .sms-landing .mode-transparency{font-size:11.5px;padding:0 5px}
+ .sms-landing .hero h1{line-height:1.2}
+ .studio-v2.mc-active .studio-menu{overflow:visible}
+ .studio-v2.mc-active .studio-content{padding-inline:14px!important}
+ .studio-v2.mc-active .mc-portal-link{font-size:12px!important}
+ .studio-v2.mc-active .mc-head-actions #open-studio-settings{max-width:41px}
+ .studio-v2.mc-active .mc-headrow h2{font-size:21px!important}
+ .studio-v2.mc-active .mc-budget-area,.studio-v2.mc-active .mc-forecast-area{border-radius:17px}
+ .studio-v2.mc-active .mc-forecast-main strong{font-size:31px;overflow-wrap:anywhere}
+ .studio-v2 .studio-settings-dialog .studio-settings-heading{z-index:12}
+ .studio-v2 .studio-settings-dialog .ux-settings-tabs{z-index:11}
+ .control .cr-content{padding-inline:16px}
+ .control .cr-top{padding-inline:16px}
+ .control .cr-stats>div{padding:12px;min-height:95px}
+ .control .cr-stats strong{font-size:27px}
+ .control .cr-panel{padding:14px}
+ .control .cr-table table{min-width:470px}
+}
+@media(prefers-reduced-motion:reduce){.player-v2 .game-library[open] .game-pick{transition:none!important}}
+
+/* Account creation is a form, not a full-screen poster. Keep primary action in first viewport. */
+.studio-v2 #auth-shell{min-height:calc(100dvh - 72px);grid-template-columns:1fr 1fr}
+.studio-v2 #auth-shell .studio-auth-art{display:flex;flex-direction:column;justify-content:center;min-width:0;overflow:hidden;padding:clamp(30px,5vw,72px)}
+.studio-v2 #auth-shell .studio-auth-art::after{opacity:.24}
+.studio-v2 #auth-shell .studio-auth-art h1{font:850 clamp(36px,4.4vw,68px)/1.12 "PW Manrope","PW Vazir",sans-serif;letter-spacing:-.055em;margin:18px 0}
+.studio-v2 #auth-shell .studio-auth-art p{font-size:14px;line-height:1.85;color:#e2dbeb}
+.studio-v2 #auth-shell .studio-auth-box{display:flex;flex-direction:column;justify-content:center;min-width:0;padding:clamp(24px,4vw,66px);background:#faf9fc}
+.studio-v2 #auth-shell .mode-toggle{display:flex;align-items:stretch;gap:5px;background:#eeebf3;border:1px solid #e2ddea;border-radius:13px;padding:5px;width:fit-content;max-width:100%}
+.studio-v2 #auth-shell .mode-toggle button{font:750 13px/1.5 "PW Vazir","PW Manrope",sans-serif;min-height:40px;padding:9px 17px;border:0;border-radius:10px;background:transparent;color:#564b68}
+.studio-v2 #auth-shell .mode-toggle button.active{background:#33244f;color:#fff}
+.studio-v2 #auth-shell .studio-auth-box h2{font:850 24px/1.5 "PW Vazir","PW Manrope",sans-serif;letter-spacing:0;margin:18px 0 5px;color:#2a2039}
+.studio-v2 #auth-shell .studio-auth-box>p{font-size:13px;color:#695e76;line-height:1.8}
+.studio-v2 #auth-shell #auth-form{display:flex;flex-direction:column;gap:13px;margin:12px 0 13px}
+.studio-v2 #auth-shell #auth-form label{display:flex;flex-direction:column;gap:7px;color:#3f3553;font:710 13px/1.6 "PW Vazir","PW Manrope",sans-serif;letter-spacing:0}
+.studio-v2 #auth-shell #auth-form input{min-height:49px;width:100%;border-radius:11px;border:1px solid #d9d1e4;background:#fff;color:#2b203c;font-size:15px;padding:11px 13px}
+.studio-v2 #auth-shell #auth-submit{min-height:52px;border-radius:12px;background:#33244f;color:#fff;font-size:14px}
+.studio-v2 #auth-shell .pw4-password-wrap{position:relative;display:flex;align-items:center}
+.studio-v2 #auth-shell .pw4-password-wrap>input{padding-inline-end:86px}
+.studio-v2 #auth-shell .pw4-password-toggle{position:absolute;inset-inline-end:7px;min-width:63px;height:37px;border:0;border-radius:8px;background:#f1edf6;color:#44325c;font:750 12px "PW Vazir","PW Manrope",sans-serif;cursor:pointer}
+.studio-v2 #auth-shell #auth-error{font-size:12px}
+@media(max-width:800px){
+ .studio-v2 #auth-shell{display:flex;flex-direction:column;min-height:0!important}
+ .studio-v2 #auth-shell .studio-auth-art{padding:21px 20px!important;min-height:0!important;flex:0 0 auto}
+ .studio-v2 #auth-shell .studio-auth-art::after{display:none!important}
+ .studio-v2 #auth-shell .studio-auth-art>span{font-size:10px;letter-spacing:.06em}
+ .studio-v2 #auth-shell .studio-auth-art h1{font-size:clamp(22px,5.6vw,32px)!important;line-height:1.25;margin:9px 0 7px}
+ .studio-v2 #auth-shell .studio-auth-art p{font-size:12px;line-height:1.65;margin:0}
+ .studio-v2 #auth-shell .studio-auth-box{width:100%;padding:20px 20px 28px!important;max-width:600px;margin:0 auto;flex:1}
+ .studio-v2 #auth-shell .studio-auth-box h2{font-size:21px;margin-top:14px}
+ .studio-v2 #auth-shell .studio-auth-box>p{font-size:12px;margin:2px 0 5px}
+ .studio-v2 #auth-shell #auth-form{gap:10px;margin:10px 0}
+ .studio-v2 #auth-shell #auth-form input{min-height:47px}
+ .studio-v2 #auth-shell #auth-submit{min-height:50px}
+}
+@media(max-width:390px){
+ .studio-v2 #auth-shell .studio-auth-art{padding:15px 17px!important}
+ .studio-v2 #auth-shell .studio-auth-box{padding:16px 17px 25px!important}
+ .studio-v2 #auth-shell .studio-auth-box h2{margin-top:11px}
+}
+
+/* Minimum finger-target pass: applies even when legacy locale CSS uses smaller chips. */
+#pwyw-language-switch{display:flex;align-items:center;gap:1px;max-width:100%}
+#pwyw-language-switch button{display:grid!important;place-items:center;flex:0 0 auto;min-width:40px!important;min-height:44px!important;padding:8px 9px!important;font-size:12px!important;line-height:1.2!important}
+.sms-landing .brand-sign{display:inline-flex;align-items:center;min-height:44px}
+.sms-landing .header-how{display:inline-flex;align-items:center;min-height:44px}
+.player-v2 .play-footer a{display:inline-flex;align-items:center;justify-content:center;min-width:58px;min-height:44px;padding:8px 6px}
+.studio-v2 #auth-shell .mode-toggle button{min-width:91px}
+.control .cr-top :is(a,button){min-height:44px;display:inline-flex;align-items:center}
+.control .cr-top #pwyw-language-switch button{min-height:44px!important}
+@media(max-width:720px){
+ .studio-v2.mc-active.mc-streamlined .studio-menu>.pwyw-locale-switch button{min-width:36px!important;min-height:42px!important;padding:7px!important}
+ .studio-v2.mc-active.mc-streamlined .studio-menu{gap:5px!important}
+ .studio-v2.mc-active.mc-streamlined .studio-menu>#logout{min-width:48px}
+ .studio-v2 #auth-shell .mode-toggle button{min-width:90px!important;min-height:44px!important}
+}
+
+/* WCAG audit remediations from exact 390px targets; overrides older theme !important rules. */
+.studio-v2 #auth-shell .mode-toggle button:not(.active){color:#33244f!important}
+.studio-v2 .studio-top .identity-word>small{color:#554b62!important}
+.studio-v2 #auth-shell .studio-auth-box>.helper{color:#51465e!important;font-size:12px}
+.control .cr-lead{color:#344b56!important}
+.sms-landing .showcase-bottom a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:8px 10px;border-radius:9px}
+
+/* Last two contrast findings were caused by opacity on legacy secondary labels. */
+.studio-v2 .studio-top .identity-word>small{opacity:1!important;color:#33244f!important}
+.studio-v2 #auth-shell .studio-auth-box>.helper{opacity:1!important;color:#33244f!important}

@@ -38,7 +38,7 @@ async function api(url,method='GET',body){
   if(!resp.ok)throw Error(typeof data.detail==='string'?data.detail:'Request failed.');
   return data;
 }
-function message(id,text,failed=false){const node=$(id);node.textContent=text;node.classList.toggle('error',failed)}
+function message(id,text,failed=false){const node=$(id);if(!node)return;node.textContent=text;node.hidden=!String(text||'').trim();node.classList.toggle('error',failed)}
 function mode(value){
  state.mode=value;
  $('tab-login').classList.toggle('active',value==='login');
@@ -61,7 +61,8 @@ $('auth-form').addEventListener('submit',async e=>{
 });
 $('logout').onclick=async()=>{await api('/api/logout','POST',{});
   $('auth-shell').hidden=false;$('app-shell').hidden=true;$('logout').hidden=true;
-  $('user-email').textContent='';const link=$('platform-admin-link');if(link)link.hidden=true;state.brand=null};
+  $('user-email').textContent='';const link=$('platform-admin-link');if(link)link.hidden=true;state.brand=null;
+  document.dispatchEvent(new CustomEvent('pwyw:brand-selected',{detail:{slug:''}}));};
 async function boot(){
   try{const info=await api('/api/me');$('user-email').textContent=info.email;
     $('auth-shell').hidden=true;$('app-shell').hidden=false;$('logout').hidden=false;

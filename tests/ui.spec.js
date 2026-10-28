@@ -1,7 +1,8 @@
 const {chromium}=require('playwright');
 (async()=>{
   const browser=await chromium.launch({headless:true});
-  const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+  const merchantContext=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+  const page=await merchantContext.newPage();
   const errors=[];
   page.on('pageerror',e=>errors.push('PAGE '+(e.stack||e.message)));
   page.on('console',m=>{if(m.type()==='error' && !m.text().includes('401 (Unauthorized)'))errors.push('CONSOLE '+m.text())});
@@ -12,8 +13,11 @@ const {chromium}=require('playwright');
   if(!await page.locator('.hero h1').count() || !(await page.locator('.hero h1').innerText()).trim())
     throw Error('Branded landing headline missing');
   const valuePromise=await page.locator('.hero h1').innerText();
-  if(!valuePromise.includes('Spielen.')||!valuePromise.includes('Wiederkommen.'))
-    throw Error('Landing fails to explain business outcome: '+valuePromise);
+  if(!valuePromise.includes('Mehr Gäste.')||!valuePromise.includes('Spielen, die zu deinem Geschäft passen.'))
+    throw Error('Landing fails to explain new budget/expert positioning: '+valuePromise);
+  const paths=await page.locator('.operating-card .mode-action').all();
+  if(paths.length!==2||!(await paths[0].getAttribute('href')).includes('mode=managed')||!(await paths[1].getAttribute('href')).includes('mode=expert'))
+    throw Error('Merchant must be able to choose between the simple and professional path');
   const example=await page.locator('.journey-item').allInnerTexts();
   if(example.length!==3||!example.some(x=>x.includes('Wiederkommen')))
     throw Error('Concrete customer return journey missing: '+JSON.stringify(example));
@@ -41,6 +45,21 @@ const {chromium}=require('playwright');
   await page.goto(base+signupUrl,{waitUntil:'networkidle'});
   if(!await page.locator('#tab-signup').evaluate(el=>el.classList.contains('active')))
     throw Error('SMS traffic lands on sign-in instead of sign-up');
+  // User-visible validation is not optional: failed authentication must show a real alert.
+  await page.locator('#tab-login').click();
+  await page.locator('#auth-form [name=email]').fill('pwyw-nonexistent-'+Date.now()+'@example.org');
+  await page.locator('#auth-form [name=password]').fill('WrongPassword123!');
+  await page.locator('#auth-submit').click();
+  await page.locator('#auth-error').waitFor({state:'visible',timeout:12000});
+  if(!(await page.locator('#auth-error').textContent()).trim())throw Error('Failed login alert is blank');
+  await page.locator('#tab-signup').click();
+  if(!await page.locator('.pw4-password-toggle').isVisible())throw Error('Password visibility control is missing');
+  await page.locator('.pw4-password-toggle').click();
+  if(await page.locator('#auth-form input[name=password]').getAttribute('type')!=='text')
+    throw Error('Show-password action does not work');
+  await page.locator('.pw4-password-toggle').click();
+  if(await page.locator('#auth-form input[name=password]').getAttribute('type')!=='password')
+    throw Error('Password must be hideable again');
   await page.goto(base+'/',{waitUntil:'networkidle'});
   await page.screenshot({path:'/tmp/pwyw-landing-mobile.png',fullPage:true});
   await page.locator('#pwyw-language-switch [data-lang=fa]').click();
@@ -52,7 +71,7 @@ const {chromium}=require('playwright');
   if(!/[\u0600-\u06FF]/.test(await page.locator('.hero h1').textContent()))throw Error('Landing headline did not localize');
 
   const nativeHome=await page.locator('.hero h1').innerText();
-  if(!nativeHome.includes('بازی کن.')||!nativeHome.includes('دوباره برگرد.'))
+  if(!nativeHome.includes('مشتری‌های بیشتر.')||!nativeHome.includes('با بازی‌هایی که به کسب‌وکارت می‌خورن.'))
     throw Error('Native Persian landing headline is missing: '+nativeHome);
   if(await page.title()!=='PWYW — پورتال بازی کسب‌وکار تو')
     throw Error('Browser title not localized in Persian');
@@ -291,7 +310,7 @@ const {chromium}=require('playwright');
   const studioCss=await page.evaluate(()=>[...document.styleSheets].some(x=>x.href?.includes('pwyw-unified.css')));
   if(!studioCss)throw Error('Merchant login not using shared site design');
   const faStudioHero=(await page.locator('.studio-auth-art h1').innerText()).replace(/\\s+/g,' ');
-  if(!faStudioHero.includes('پورتال خودت.') || !faStudioHero.includes('قانون‌های خودت.'))
+  if(!faStudioHero.includes('بودجه تو.') || !faStudioHero.includes('انتخاب تو.'))
     throw Error('Persian studio headline is grammatically broken: '+faStudioHero);
   await page.locator('#pwyw-language-switch [data-lang=de]').click();
   if((await page.locator('#merchant-goal-title').textContent())!=='Was möchtest du erreichen?')
@@ -358,6 +377,20 @@ const {chromium}=require('playwright');
     throw Error('Forecast is missing its non-guarantee notice');
   if(await page.locator('#mc-auto-activate').isEnabled())throw Error('Plan must require explicit estimate acknowledgement');
   await page.screenshot({path:'/tmp/pwyw-budget-autopilot-mobile.png',fullPage:true});
+  // The authenticated merchant must be equally usable on desktop, not only a 390px phone.
+  const merchantDesktop=await page.context().newPage();
+  await merchantDesktop.setViewportSize({width:1365,height:900});
+  await merchantDesktop.goto(base+'/dashboard?lang=de',{waitUntil:'networkidle'});
+  await merchantDesktop.locator('#mc-autopilot').waitFor({state:'visible'});
+  if(await merchantDesktop.evaluate(()=>document.documentElement.scrollWidth-innerWidth)>4)
+    throw Error('Desktop merchant dashboard has horizontal overflow');
+  if(!await merchantDesktop.locator('#mc-budget-range').isVisible())
+    throw Error('Desktop merchant cannot access budget pilot');
+  await merchantDesktop.locator('#mc-mode-expert').click();
+  if(!await merchantDesktop.locator('#reward-overview').isVisible())
+    throw Error('Desktop expert view hides the underlying business metrics');
+  await merchantDesktop.screenshot({path:'/tmp/pwyw-merchant-desktop.png',fullPage:true});
+  await merchantDesktop.close();
   await page.locator('#mc-mode-expert').click();
   if(!await page.locator('#reward-overview').isVisible())throw Error('Expert cannot access original real metrics');
   if(await page.locator('#mc-view-home .reward-hub-main').count())
