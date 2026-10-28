@@ -361,6 +361,20 @@ const {chromium}=require('playwright');
     throw Error('Forecast is missing its non-guarantee notice');
   if(await page.locator('#mc-auto-activate').isEnabled())throw Error('Plan must require explicit estimate acknowledgement');
   await page.screenshot({path:'/tmp/pwyw-budget-autopilot-mobile.png',fullPage:true});
+  // The authenticated merchant must be equally usable on desktop, not only a 390px phone.
+  const merchantDesktop=await page.context().newPage();
+  await merchantDesktop.setViewportSize({width:1365,height:900});
+  await merchantDesktop.goto(base+'/dashboard?lang=de',{waitUntil:'networkidle'});
+  await merchantDesktop.locator('#mc-autopilot').waitFor({state:'visible'});
+  if(await merchantDesktop.evaluate(()=>document.documentElement.scrollWidth-innerWidth)>4)
+    throw Error('Desktop merchant dashboard has horizontal overflow');
+  if(!await merchantDesktop.locator('#mc-budget-range').isVisible())
+    throw Error('Desktop merchant cannot access budget pilot');
+  await merchantDesktop.locator('#mc-mode-expert').click();
+  if(!await merchantDesktop.locator('#reward-overview').isVisible())
+    throw Error('Desktop expert view hides the underlying business metrics');
+  await merchantDesktop.screenshot({path:'/tmp/pwyw-merchant-desktop.png',fullPage:true});
+  await merchantDesktop.close();
   await page.locator('#mc-mode-expert').click();
   if(!await page.locator('#reward-overview').isVisible())throw Error('Expert cannot access original real metrics');
   if(await page.locator('#mc-view-home .reward-hub-main').count())
