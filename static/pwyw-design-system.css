@@ -198,3 +198,7 @@ button:disabled{cursor:not-allowed}
 .studio-v2 #auth-shell .studio-auth-box>.helper{color:#51465e!important;font-size:12px}
 .control .cr-lead{color:#344b56!important}
 .sms-landing .showcase-bottom a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:8px 10px;border-radius:9px}
+
+/* Last two contrast findings were caused by opacity on legacy secondary labels. */
+.studio-v2 .studio-top .identity-word>small{opacity:1!important;color:#33244f!important}
+.studio-v2 #auth-shell .studio-auth-box>.helper{opacity:1!important;color:#33244f!important}
