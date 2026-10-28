@@ -84,7 +84,7 @@
    if(slug&&settings.parentElement!==container)container.append(settings);
    else if(!slug){const original=document.querySelector('.studio-intro .studio-top-actions');if(original&&settings.parentElement!==original)original.append(settings)}
   }
-  $('mc-brand-name').textContent=brand?.name||'';
+  $('mc-brand-name').textContent=tr('بازی‌ها، جایزه‌ها و عملکرد کسب‌وکار','Spiele, Prämien und Geschäftsergebnisse');
   if(brand?.name)$('mc-heading').textContent=tr('داشبورد '+brand.name,'Dashboard · '+brand.name);
   const path=slug?'/play/'+encodeURIComponent(slug):'/demo';
   const url=new URL(path,location.origin);
