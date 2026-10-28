@@ -27,7 +27,7 @@
   const actions=document.createElement('div');actions.className='mc-head-actions';
   const settings=$('open-studio-settings');
   shell.querySelector('.mc-headrow')?.append(actions);
-  actions.append($('mc-portal-link'));if(settings)actions.append(settings);
+  actions.append($('mc-portal-link'));
   root.classList.add('mc-ready');
   shell.hidden=false;
   bind();
@@ -58,6 +58,12 @@
   const brand=window.PWYWStudio?.getBrand?.();
   slug=brand?.slug||'';
   document.body.classList.toggle('mc-active',Boolean(slug));
+  const settings=$('open-studio-settings');
+  const container=shell.querySelector('.mc-head-actions');
+  if(settings&&container){
+   if(slug&&settings.parentElement!==container)container.append(settings);
+   else if(!slug){const original=document.querySelector('.studio-intro .studio-top-actions');if(original&&settings.parentElement!==original)original.append(settings)}
+  }
   $('mc-brand-name').textContent=brand?.name||'';
   const path=slug?'/play/'+encodeURIComponent(slug):'/demo';
   const url=new URL(path,location.origin);
