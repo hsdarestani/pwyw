@@ -45,6 +45,14 @@ const {chromium}=require('playwright');
   await page.goto(base+signupUrl,{waitUntil:'networkidle'});
   if(!await page.locator('#tab-signup').evaluate(el=>el.classList.contains('active')))
     throw Error('SMS traffic lands on sign-in instead of sign-up');
+  // User-visible validation is not optional: failed authentication must show a real alert.
+  await page.locator('#tab-login').click();
+  await page.locator('#auth-form [name=email]').fill('pwyw-nonexistent-'+Date.now()+'@example.org');
+  await page.locator('#auth-form [name=password]').fill('WrongPassword123!');
+  await page.locator('#auth-submit').click();
+  await page.locator('#auth-error').waitFor({state:'visible',timeout:12000});
+  if(!(await page.locator('#auth-error').textContent()).trim())throw Error('Failed login alert is blank');
+  await page.locator('#tab-signup').click();
   if(!await page.locator('.pw4-password-toggle').isVisible())throw Error('Password visibility control is missing');
   await page.locator('.pw4-password-toggle').click();
   if(await page.locator('#auth-form input[name=password]').getAttribute('type')!=='text')
