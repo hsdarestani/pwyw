@@ -350,11 +350,19 @@ const {chromium}=require('playwright');
   if(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)>4)throw Error('New merchant home overflows mobile');
   await page.locator('[data-mc-template="return"]').click();
   await page.locator('#mc-quick-create').waitFor({state:'visible'});
+  if(await page.locator('#mc-quick-create').getAttribute('role')!=='dialog'||!await page.locator('#mc-wizard-backdrop').isVisible())
+    throw Error('Quick reward editor must be a focused dialog with backdrop');
   if(await page.locator('#mc-wizard-form input').count()!==3)throw Error('Quick reward flow is not a three-field form');
   if(await page.locator('#mc-wizard-form input[name="budget"]').inputValue()!=='600000')
     throw Error('Quick reward budget is not whole toman');
   await page.locator('#mc-wizard-close').click();
+  if(await page.locator('#mc-wizard-backdrop').isVisible())throw Error('Reward dialog backdrop did not close');
   await page.locator('#mc-bottom-nav [data-mc-view="rewards"]').click();
+  if(await page.locator('#mc-heading').textContent()!=='Belohnungen')throw Error('Rewards tab heading is not contextual');
+  await page.locator('#mc-new-rule').click();
+  await page.locator('#mc-quick-create').waitFor({state:'visible'});
+  await page.keyboard.press('Escape');
+  if(await page.locator('#mc-quick-create').isVisible())throw Error('Escape must close quick reward dialog');
   if(await page.locator('#mc-template-panel').evaluate(el=>el.open))
     throw Error('Six reward templates must not all be expanded by default');
   await page.locator('#mc-template-panel summary').click();
@@ -389,6 +397,8 @@ const {chromium}=require('playwright');
   await page.locator('#mc-view-home').waitFor({state:'visible'});
   await page.locator('#mc-bottom-nav [data-mc-view="report"]').click();
   await page.locator('#reward-trends').waitFor({state:'visible'});
+  if(await page.locator('#mc-heading').textContent()!=='Auswertung')throw Error('Report heading is duplicated instead of contextual');
+  if(!await page.locator('#mc-report-insight').isVisible())throw Error('Empty rewards report lacks actionable next step');
   if(await page.locator('#reward-trend-bars .reward-trend-day').count()!==14)
     throw Error('Merchant activity report must show 14 days');
   await page.locator('#mc-bottom-nav [data-mc-view="home"]').click();
@@ -481,6 +491,8 @@ const {chromium}=require('playwright');
   if(!await page.locator('#mc-portal-link').isVisible())throw Error('New always-visible portal link is missing');
   await page.locator('#mc-bottom-nav [data-mc-view="share"]').click();
   if(!await page.locator('#reward-portal-share').isVisible())throw Error('QR sharing view is inaccessible');
+  if(await page.locator('#reward-portal-share>summary').isVisible())throw Error('QR tab repeats an unnecessary disclosure header');
+  if(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)>4)throw Error('Merchant QR view overflows mobile');
   await page.locator('#mc-bottom-nav [data-mc-view="rewards"]').click();
   if(!await page.locator('#proposal-open').getAttribute('href'))
     throw Error('Approved campaign has no share link');

@@ -41,6 +41,27 @@
   if(note)scope('mc-rewards-slot').append(note);
   relocate('reward-trends','mc-report-slot');
   relocate('reward-portal-share','mc-share-slot');
+  // Quick activation is a focused dialog, accessible from any tab.
+  const backdrop=document.createElement('div');
+  backdrop.id='mc-wizard-backdrop';backdrop.className='mc-wizard-backdrop';backdrop.hidden=true;
+  backdrop.setAttribute('aria-hidden','true');
+  const wizard=$('mc-quick-create');
+  wizard.setAttribute('role','dialog');wizard.setAttribute('aria-modal','true');
+  wizard.setAttribute('tabindex','-1');
+  wizard.setAttribute('aria-label','ساخت جایزه');
+  root.append(backdrop,wizard);
+  backdrop.addEventListener('click',closeWizard);
+  document.addEventListener('keydown',e=>{
+    if(wizard.hidden)return;
+    if(e.key==='Escape'){e.preventDefault();closeWizard();return}
+    if(e.key!=='Tab')return;
+    const controls=Array.from(wizard.querySelectorAll('button,input,select,textarea'))
+      .filter(el=>!el.disabled&&el.getClientRects().length>0);
+    if(!controls.length)return;
+    const first=controls[0],last=controls.at(-1);
+    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
+    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
+  });
   const actions=document.createElement('div');actions.className='mc-head-actions';
   const settings=$('open-studio-settings');
   shell.querySelector('.mc-headrow')?.append(actions);
@@ -71,7 +92,34 @@
   });
   if(next==='share'){const share=$('reward-portal-share');if(share)share.open=true}
   if(next==='report'){const trends=$('reward-trends');if(trends)trends.open=true}
+  updateHeader();
   if(scroll)scrollToTop();
+ }
+ function updateHeader(){
+  const brand=window.PWYWStudio?.getBrand?.();
+  const label=brand?.name||'PWYW';
+  const titles={
+   home:tr(label,label),
+   rewards:tr('جایزه‌ها','Belohnungen'),
+   report:tr('گزارش عملکرد','Auswertung'),
+   share:tr('لینک و QR','Link & QR')
+  };
+  const subtitles={
+   home:tr('مدیریت روزانه '+label,'Deine Geschäftsübersicht · '+label),
+   rewards:tr('برای '+label,'Für '+label),
+   report:tr(label+' · نتایج ثبت‌شده',label+' · erfasste Ergebnisse'),
+   share:tr('پورتال مشتریان '+label,'Kundenportal '+label)
+  };
+  $('mc-heading').textContent=titles[active];
+  $('mc-brand-name').textContent=subtitles[active];
+ }
+ function closeWizard(){
+  $('mc-quick-create').hidden=true;
+  $('mc-wizard-backdrop').hidden=true;
+  document.body.classList.remove('mc-dialog-open');
+  selectedTemplate=null;
+  const previous=window.__mcFocusReturn;
+  if(previous?.isConnected)previous.focus({preventScroll:true});
  }
  function scrollToTop(){const y=shell.getBoundingClientRect().top+window.scrollY-12;window.scrollTo({top:Math.max(0,y),behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'})}
  function updateBrand(){
@@ -88,8 +136,7 @@
    }
    else if(!slug){const original=document.querySelector('.studio-intro .studio-top-actions');if(original&&settings.parentElement!==original)original.append(settings)}
   }
-  $('mc-brand-name').textContent=tr('بازی‌ها، جایزه‌ها و عملکرد کسب‌وکار','Spiele, Prämien und Geschäftsergebnisse');
-  if(brand?.name)$('mc-heading').textContent=tr('داشبورد '+brand.name,'Dashboard · '+brand.name);
+  updateHeader();
   const path=slug?'/play/'+encodeURIComponent(slug):'/demo';
   const url=new URL(path,location.origin);
   if(fa())url.searchParams.set('lang','fa');
@@ -117,6 +164,17 @@
    [tr('قانون فعال','Aktive Regeln'),$('reward-stat-rules')?.textContent||'۰'],
    [tr('هزینه تخمینی جایزه','Geschätzte Prämienkosten'),$('reward-stat-liability')?.textContent||'۰']
   ];
+  const insight=$('mc-report-insight'),copy=$('mc-report-insight-copy');
+  if(insight&&copy){
+   insight.hidden=live>0&&issued>0;
+   copy.textContent=live===0?tr(
+    readable(plays)+' بازی ثبت شده اما هنوز جایزه فعالی وجود نداره. برای سنجش بازگشت مشتری، اول یک جایزه مشخص کن.',
+    readable(plays)+' Spiele registriert, aber noch keine aktive Belohnung. Starte mit einer Belohnung, um Rückkehr messbar zu machen.'):
+    tr('قانون فعال داری؛ وقتی اولین جایزه صادر بشه، استفاده از جایزه هم قابل بررسی می‌شه.',
+    'Du hast aktive Regeln. Sobald die erste Prämie ausgegeben wurde, wird die Einlösung messbar.');
+  }
+  const redeem=shell.querySelector('.mc-shortcuts [data-mc-go="redeem"]');
+  if(redeem)redeem.hidden=live===0;
   const summary=$('mc-report-numbers');
   if(summary){
    summary.replaceChildren();
@@ -129,7 +187,7 @@
   }
  }
  function applyLocale(){
-  shell.querySelectorAll('[data-fa][data-de]').forEach(el=>{
+  root.querySelectorAll('[data-fa][data-de]').forEach(el=>{
    const value=el.dataset[fa()?'fa':'de'];
    if(el.textContent!==value)el.textContent=value;
   });
@@ -160,9 +218,11 @@
    form.elements.cost.value=found.reward_cost_cents;
    form.elements.budget.value=found.budget_cents;
    $('mc-wizard-error').textContent='';
+   window.__mcFocusReturn=document.activeElement;
+   $('mc-wizard-backdrop').hidden=false;
    $('mc-quick-create').hidden=false;
-   setView('home',false);renderWizardTitle();renderEstimate();
-   $('mc-quick-create').scrollIntoView({behavior:'smooth',block:'center'});
+   document.body.classList.add('mc-dialog-open');
+   renderWizardTitle();renderEstimate();
    form.elements.prize.focus({preventScroll:true});
   }catch(err){$('mc-status-description').textContent=err.message}
   finally{cards.forEach(b=>b.disabled=false)}
@@ -195,11 +255,11 @@
     method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
    const data=await r.json().catch(()=>({}));
    if(!r.ok)throw Error(typeof data.detail==='string'?data.detail:tr('ذخیره انجام نشد.','Speichern fehlgeschlagen.'));
-   selectedTemplate=null;$('mc-quick-create').hidden=true;form.reset();
+   closeWizard();form.reset();
    const status=$('mc-action-status');
    if(status)status.textContent=tr('جایزه فعال شد. کد QR رو برای مشتری‌هات به اشتراک بذار.','Belohnung aktiviert. Teile jetzt deinen QR-Code.');
    await window.PWYWRewardStudio?.refresh?.();
-   setView('home');
+   setView('rewards');
   }catch(err){error.textContent=err.message}
   finally{busy=false;button.disabled=false}
  }
@@ -235,17 +295,14 @@
   $('mc-main-cta').addEventListener('click',()=>count('reward-stat-rules')>0?setView('rewards'):openTemplate('welcome'));
   $('mc-wizard-form').addEventListener('submit',saveQuick);
   $('mc-wizard-form').addEventListener('input',renderEstimate);
-  $('mc-wizard-close').addEventListener('click',()=>{$('mc-quick-create').hidden=true;selectedTemplate=null});
+  $('mc-wizard-close').addEventListener('click',closeWizard);
   $('mc-wizard-advanced').addEventListener('click',openAdvanced);
-  $('mc-new-rule').addEventListener('click',()=>{
-   const disclosure=$('mc-template-panel');if(disclosure)disclosure.open=true;
-   $('rule-from-scratch').click();
-   $('rule-editor')?.scrollIntoView({behavior:'smooth',block:'start'});
-  });
+  $('mc-new-rule').addEventListener('click',()=>openTemplate('welcome'));
+  $('mc-report-insight-cta').addEventListener('click',()=>openTemplate('welcome'));
   $('mc-advanced-campaigns').addEventListener('click',openLegacy);
   document.addEventListener('pwyw:brand-selected',e=>{
    slug=e.detail?.slug||'';templates=null;selectedTemplate=null;
-   $('mc-quick-create').hidden=true;setView('home',false);updateBrand();updateStatus();
+   closeWizard();setView('home',false);updateBrand();updateStatus();
   });
   document.addEventListener('pwyw:language-changed',applyLocale);
   document.addEventListener('pwyw:reward-saved',()=>{updateStatus();setView('home')});
