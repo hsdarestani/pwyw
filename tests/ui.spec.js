@@ -334,6 +334,9 @@ const {chromium}=require('playwright');
     throw Error('Language switching erased unsaved Persian edits');
   await page.locator('#pwyw-language-switch [data-lang=de]').click();
   await page.locator('#open-studio-settings').click();
+  if(await page.locator('.ux-settings-tabs button').count()!==5)throw Error('Settings workspace must have five usable sections');
+  if(!await page.locator('#brand-logo').evaluate(el=>el.closest('label')?.querySelector('.ux-upload-control')?.getClientRects().length>0))
+    throw Error('Native English file input should have a localized upload control');
   await page.locator('#brand-name').fill('Playwright Garage');
   await page.locator('#brand-slug').fill('playwright-garage');
   await page.locator('[data-theme=neon]').click();
@@ -540,6 +543,11 @@ const {chromium}=require('playwright');
     throw Error('All ten games should be immediately visible in portal mode');
   if(await page.locator('#game-choices .game-pick').count()!==10)
     throw Error('Portal is missing games');
+  const featuredChoice=page.locator('#game-choices .game-pick.is-featured-duplicate');
+  if(await featuredChoice.count()!==1||!await featuredChoice.isVisible())
+    throw Error('All ten game choices must remain accessible, including the recommended game');
+  const tileHeight=await page.locator('#game-choices .game-pick').first().evaluate(el=>el.getBoundingClientRect().height);
+  if(tileHeight>215)throw Error('Game list still wastes mobile space: '+tileHeight);
   if(!await page.locator('#portal-offers').isVisible())
     throw Error('Published rewards are not visible in portal');
   await page.locator('#game-choices [data-game="rush"]').click();
