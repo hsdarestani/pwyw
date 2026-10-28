@@ -42,7 +42,7 @@ const fs=require('fs');
        title:document.title,headings:[...document.querySelectorAll('h1')].map(el=>el.textContent.trim().slice(0,80))};
      });
      const ax=size.width===390?await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa']).analyze():{violations:[]};
-     const severe=ax.violations.filter(v=>v.impact==='serious'||v.impact==='critical').map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.length,help:v.help}));
+     const severe=ax.violations.filter(v=>v.impact==='serious'||v.impact==='critical').map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.length,help:v.help,targets:v.nodes.slice(0,5).map(n=>({selector:n.target.join(' '),summary:n.failureSummary?.slice(0,200)}))}));
      const item={page:entry.label,locale:language,width:size.width,metrics,accessibility:severe,accessibilityScanned:size.width===390,errors};
      report.pages.push(item);
      if(metrics.overflow>4)report.failures.push(entry.label+' '+language+' '+size.width+'px: horizontal overflow '+metrics.overflow+'px');
