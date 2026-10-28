@@ -38,7 +38,7 @@ async function api(url,method='GET',body){
   if(!resp.ok)throw Error(typeof data.detail==='string'?data.detail:'Request failed.');
   return data;
 }
-function message(id,text,failed=false){const node=$(id);node.textContent=text;node.classList.toggle('error',failed)}
+function message(id,text,failed=false){const node=$(id);if(!node)return;node.textContent=text;node.hidden=!String(text||'').trim();node.classList.toggle('error',failed)}
 function mode(value){
  state.mode=value;
  $('tab-login').classList.toggle('active',value==='login');
