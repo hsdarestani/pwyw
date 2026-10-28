@@ -44,6 +44,13 @@ const {chromium}=require('playwright');
   await page.goto(base+signupUrl,{waitUntil:'networkidle'});
   if(!await page.locator('#tab-signup').evaluate(el=>el.classList.contains('active')))
     throw Error('SMS traffic lands on sign-in instead of sign-up');
+  if(!await page.locator('.pw4-password-toggle').isVisible())throw Error('Password visibility control is missing');
+  await page.locator('.pw4-password-toggle').click();
+  if(await page.locator('#auth-form input[name=password]').getAttribute('type')!=='text')
+    throw Error('Show-password action does not work');
+  await page.locator('.pw4-password-toggle').click();
+  if(await page.locator('#auth-form input[name=password]').getAttribute('type')!=='password')
+    throw Error('Password must be hideable again');
   await page.goto(base+'/',{waitUntil:'networkidle'});
   await page.screenshot({path:'/tmp/pwyw-landing-mobile.png',fullPage:true});
   await page.locator('#pwyw-language-switch [data-lang=fa]').click();
