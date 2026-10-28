@@ -96,3 +96,24 @@
  .studio-v2 .mc-auto-submit{padding:15px}
 }
 @media(prefers-reduced-motion:reduce){.studio-v2 #mc-gauge-fill{transition:none}}
+
+/* One true mobile app bar: brand, add, language, logout. No stacked empty global header. */
+.studio-v2.mc-active.mc-streamlined .studio-top{display:none!important}
+.studio-v2.mc-active.mc-streamlined .studio-menu{display:flex;flex-direction:row;align-items:center;gap:9px;min-height:60px!important;background:#fff!important;border-bottom:1px solid #e8e3ec!important;padding:10px 16px!important}
+.studio-v2.mc-active.mc-streamlined .studio-menu .brand-list{flex:1;min-width:0;overflow-x:auto;order:1}
+.studio-v2.mc-active.mc-streamlined .studio-menu .menu-title{order:2;flex:0 0 auto}
+.studio-v2.mc-active.mc-streamlined .studio-menu>.pwyw-locale-switch{order:3;border-color:#c3b9d1;color:#382b55!important;background:#f8f6fa}
+.studio-v2.mc-active.mc-streamlined .studio-menu>#logout{order:4;display:block!important;background:#fff;color:#3b2e53;border:1px solid #d9d1e2;border-radius:10px;min-height:41px;padding:9px 12px;font:760 12px "PW Vazir",sans-serif}
+.studio-v2.mc-active.mc-streamlined .studio-menu>#platform-admin-link{order:5}
+.studio-v2.mc-active.mc-streamlined .studio-content{padding-top:13px!important}
+.studio-v2.mc-active.mc-streamlined .mc-head-actions #open-studio-settings{display:flex;align-items:center;justify-content:center}
+@media(max-width:640px){
+ .studio-v2.mc-active.mc-streamlined .studio-menu{gap:6px;min-height:54px!important;padding:7px 12px!important}
+ .studio-v2.mc-active.mc-streamlined .studio-menu .menu-title button{width:37px;height:37px}
+ .studio-v2.mc-active.mc-streamlined .studio-menu>.pwyw-locale-switch{padding:2px;border-radius:999px}
+ .studio-v2.mc-active.mc-streamlined .studio-menu>.pwyw-locale-switch button{min-width:29px;min-height:30px;padding:5px}
+ .studio-v2.mc-active.mc-streamlined .studio-menu>#logout{min-height:37px;padding:7px 9px;font-size:11px}
+ .studio-v2.mc-active.mc-streamlined .studio-content{padding:12px 14px 90px!important}
+ .studio-v2.mc-active.mc-streamlined .mc-headrow h2{font-size:21px!important}
+ .studio-v2.mc-active.mc-streamlined .mc-head-actions{max-width:127px}
+}
