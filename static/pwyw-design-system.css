@@ -135,3 +135,43 @@ button:disabled{cursor:not-allowed}
  .control .cr-table table{min-width:470px}
 }
 @media(prefers-reduced-motion:reduce){.player-v2 .game-library[open] .game-pick{transition:none!important}}
+
+/* Account creation is a form, not a full-screen poster. Keep primary action in first viewport. */
+.studio-v2 #auth-shell{min-height:calc(100dvh - 72px);grid-template-columns:1fr 1fr}
+.studio-v2 #auth-shell .studio-auth-art{display:flex;flex-direction:column;justify-content:center;min-width:0;overflow:hidden;padding:clamp(30px,5vw,72px)}
+.studio-v2 #auth-shell .studio-auth-art::after{opacity:.24}
+.studio-v2 #auth-shell .studio-auth-art h1{font:850 clamp(36px,4.4vw,68px)/1.12 "PW Manrope","PW Vazir",sans-serif;letter-spacing:-.055em;margin:18px 0}
+.studio-v2 #auth-shell .studio-auth-art p{font-size:14px;line-height:1.85;color:#e2dbeb}
+.studio-v2 #auth-shell .studio-auth-box{display:flex;flex-direction:column;justify-content:center;min-width:0;padding:clamp(24px,4vw,66px);background:#faf9fc}
+.studio-v2 #auth-shell .mode-toggle{display:flex;align-items:stretch;gap:5px;background:#eeebf3;border:1px solid #e2ddea;border-radius:13px;padding:5px;width:fit-content;max-width:100%}
+.studio-v2 #auth-shell .mode-toggle button{font:750 13px/1.5 "PW Vazir","PW Manrope",sans-serif;min-height:40px;padding:9px 17px;border:0;border-radius:10px;background:transparent;color:#564b68}
+.studio-v2 #auth-shell .mode-toggle button.active{background:#33244f;color:#fff}
+.studio-v2 #auth-shell .studio-auth-box h2{font:850 24px/1.5 "PW Vazir","PW Manrope",sans-serif;letter-spacing:0;margin:18px 0 5px;color:#2a2039}
+.studio-v2 #auth-shell .studio-auth-box>p{font-size:13px;color:#695e76;line-height:1.8}
+.studio-v2 #auth-shell #auth-form{display:flex;flex-direction:column;gap:13px;margin:12px 0 13px}
+.studio-v2 #auth-shell #auth-form label{display:flex;flex-direction:column;gap:7px;color:#3f3553;font:710 13px/1.6 "PW Vazir","PW Manrope",sans-serif;letter-spacing:0}
+.studio-v2 #auth-shell #auth-form input{min-height:49px;width:100%;border-radius:11px;border:1px solid #d9d1e4;background:#fff;color:#2b203c;font-size:15px;padding:11px 13px}
+.studio-v2 #auth-shell #auth-submit{min-height:52px;border-radius:12px;background:#33244f;color:#fff;font-size:14px}
+.studio-v2 #auth-shell .pw4-password-wrap{position:relative;display:flex;align-items:center}
+.studio-v2 #auth-shell .pw4-password-wrap>input{padding-inline-end:86px}
+.studio-v2 #auth-shell .pw4-password-toggle{position:absolute;inset-inline-end:7px;min-width:63px;height:37px;border:0;border-radius:8px;background:#f1edf6;color:#44325c;font:750 12px "PW Vazir","PW Manrope",sans-serif;cursor:pointer}
+.studio-v2 #auth-shell #auth-error{font-size:12px}
+@media(max-width:800px){
+ .studio-v2 #auth-shell{display:flex;flex-direction:column;min-height:0!important}
+ .studio-v2 #auth-shell .studio-auth-art{padding:21px 20px!important;min-height:0!important;flex:0 0 auto}
+ .studio-v2 #auth-shell .studio-auth-art::after{display:none!important}
+ .studio-v2 #auth-shell .studio-auth-art>span{font-size:10px;letter-spacing:.06em}
+ .studio-v2 #auth-shell .studio-auth-art h1{font-size:clamp(22px,5.6vw,32px)!important;line-height:1.25;margin:9px 0 7px}
+ .studio-v2 #auth-shell .studio-auth-art p{font-size:12px;line-height:1.65;margin:0}
+ .studio-v2 #auth-shell .studio-auth-box{width:100%;padding:20px 20px 28px!important;max-width:600px;margin:0 auto;flex:1}
+ .studio-v2 #auth-shell .studio-auth-box h2{font-size:21px;margin-top:14px}
+ .studio-v2 #auth-shell .studio-auth-box>p{font-size:12px;margin:2px 0 5px}
+ .studio-v2 #auth-shell #auth-form{gap:10px;margin:10px 0}
+ .studio-v2 #auth-shell #auth-form input{min-height:47px}
+ .studio-v2 #auth-shell #auth-submit{min-height:50px}
+}
+@media(max-width:390px){
+ .studio-v2 #auth-shell .studio-auth-art{padding:15px 17px!important}
+ .studio-v2 #auth-shell .studio-auth-box{padding:16px 17px 25px!important}
+ .studio-v2 #auth-shell .studio-auth-box h2{margin-top:11px}
+}
