@@ -39,7 +39,7 @@
   const ratio=Math.min(1,Math.max(0,(budget-50000)/(5000000-50000)));
   const circumference=408.4;
   $('mc-gauge-fill').setAttribute('stroke-dasharray',(ratio*circumference).toFixed(1)+' '+circumference);
-  $('mc-budget-presets')?.querySelectorAll('[data-mc-budget]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.mcBudget)===budget)));
+  panel.querySelectorAll('[data-mc-budget]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.mcBudget)===budget)));
   requestPreview();
  }
  function setGoal(next){
@@ -172,10 +172,10 @@
   finally{busy=false;$('mc-auto-pause').disabled=false;updateActivate()}
  }
  function moveGlobalControls(){
-  const actions=document.querySelector('.mc-head-actions');
+  const actions=document.querySelector('.studio-menu');
   if(!actions||!slug)return;
   const switcher=$('pwyw-language-switch');
-  if(switcher&&switcher.parentElement!==actions)actions.prepend(switcher);
+  if(switcher&&switcher.parentElement!==actions)actions.append(switcher);
   const logout=$('logout');
   if(logout&&logout.parentElement!==actions)actions.append(logout);
   if(logout){logout.textContent=t('خروج','Abmelden');logout.setAttribute('aria-label',t('خروج از حساب','Abmelden'))}
