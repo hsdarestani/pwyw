@@ -12,7 +12,7 @@
 .player-v2 .featured-info .featured-label{font-size:11px!important;margin-bottom:6px!important}
 .player-v2 .featured-content{margin-bottom:12px!important}
 .player-v2 .featured-content h2{font-size:22px!important;line-height:1.5!important}
-.player-v2 .featured-start{min-height:46px!important;font-size:14px!important}
+.player-v2 .featured-start{min-height:53px!important;font-size:14px!important}
 .player-v2 .game-library[open]{margin:13px 0 20px!important}
 .player-v2 .game-library[open]>summary{font-size:15px!important;min-height:44px;padding:8px 2px!important}
 .player-v2 .game-library[open] .play-game-list{align-items:stretch;gap:10px!important}
@@ -41,7 +41,7 @@
  .player-v2 .featured-info{padding:12px 15px 15px!important}
  .player-v2 .featured-content{margin-bottom:10px!important}
  .player-v2 .featured-content h2{font-size:20px!important}
- .player-v2 .featured-start{min-height:44px!important}
+ .player-v2 .featured-start{min-height:52px!important}
  .player-v2 .game-library[open] .play-game-list{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
  .player-v2 .game-library[open] .game-pick,.player-v2 .game-library[open] .game-pick:nth-child(4n+2){padding:8px!important;gap:7px!important}
  .player-v2 .game-library[open] .game-pick-poster{aspect-ratio:1.82 / 1;height:auto!important;min-height:0!important}
